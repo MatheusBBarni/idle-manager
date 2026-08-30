@@ -153,13 +153,13 @@ export function Chrome() {
           </IconButton>
           {platform !== 'darwin' ? (
             <>
-              <IconButton label="Minimize" onPress={() => void window.opsource.windowControl('min')}>
+              <IconButton label={t(locale, 'minimize')} onPress={() => void window.opsource.windowControl('min')}>
                 <Minus className="size-4" />
               </IconButton>
-              <IconButton label="Maximize" onPress={() => void window.opsource.windowControl('max')}>
+              <IconButton label={t(locale, 'maximize')} onPress={() => void window.opsource.windowControl('max')}>
                 <Square className="size-3.5" />
               </IconButton>
-              <IconButton label="Close" onPress={() => void window.opsource.windowControl('close')}>
+              <IconButton label={t(locale, 'closeWindow')} onPress={() => void window.opsource.windowControl('close')}>
                 <X className="size-4" />
               </IconButton>
             </>
@@ -184,7 +184,7 @@ export function Chrome() {
           id="url-bar"
           value={urlDraft}
           disabled={!account}
-          aria-label="URL"
+          aria-label={t(locale, 'urlBar')}
           className="h-8 flex-1 rounded-full border-0 bg-field px-3 font-mono text-xs text-foreground outline-none ring-0 focus:ring-2 focus:ring-ink"
           onFocus={() => useAppStore.getState().setUrlFocused(true)}
           onBlur={() => useAppStore.getState().setUrlFocused(false)}

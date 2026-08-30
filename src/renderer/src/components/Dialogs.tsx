@@ -260,14 +260,14 @@ function SettingsModal({ onClose }: { onClose: () => void }) {
               variant={locale === 'pt' ? 'primary' : 'secondary'}
               onPress={() => void dispatch({ type: 'prefs/locale', locale: 'pt' })}
             >
-              PT
+              {t(locale, 'localePt')}
             </Button>
             <Button
               size="sm"
               variant={locale === 'en' ? 'primary' : 'secondary'}
               onPress={() => void dispatch({ type: 'prefs/locale', locale: 'en' })}
             >
-              EN
+              {t(locale, 'localeEn')}
             </Button>
           </div>
         </div>

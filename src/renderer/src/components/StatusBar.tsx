@@ -29,7 +29,7 @@ export function StatusBar() {
       <span>{account?.name ?? '-'}</span>
       <span className="flex-1" />
       <span>
-        {running} {locale === 'pt' ? 'contas' : 'live'}
+        {running} {t(locale, 'runningCount')}
       </span>
       <span>
         {t(locale, 'cpu')} {formatCpu(metrics?.aggregate.cpu ?? 0)}
