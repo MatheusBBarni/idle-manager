@@ -4,7 +4,7 @@ Canonical execution order. Numeric IDs are the run order. Parallelizable tasks s
 
 | ID | Title | Primary slice | Type | Complexity | Dependencies | Status |
 |---|---|---|---|---|---|---|
-| task_01 | Ship the English isolation landing | US-01 | frontend | high | [] | pending |
+| task_01 | Ship the English isolation landing | US-01 | frontend | high | [] | completed |
 | task_02 | Select a Windows Download href from GitHub Releases JSON | US-03 | frontend | medium | [] | pending |
 | task_03 | Ship the Portuguese landing and locale links | US-06 | frontend | medium | [task_01] | pending |
 | task_04 | Ship privacy copy, MIT LICENSE, and source link | US-05 | frontend | medium | [task_01, task_03] | pending |

@@ -1,0 +1,222 @@
+---
+import '@fontsource/oxanium/700.css'
+import '@fontsource/figtree/400.css'
+import '@fontsource/figtree/500.css'
+import '@fontsource/ibm-plex-mono/400.css'
+
+interface Props {
+  lang?: string
+  title: string
+  description: string
+}
+
+const { lang = 'en', title, description } = Astro.props
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <title>{title}</title>
+    <link rel="icon" href={`${import.meta.env.BASE_URL}icon.png`} type="image/png" />
+  </head>
+  <body>
+    <a class="skip" href="#isolation">Skip to isolation claim</a>
+    <header class="chrome">
+      <p class="mark">
+        <img src={`${import.meta.env.BASE_URL}icon.png`} width="32" height="32" alt="" />
+        Idle manager
+      </p>
+      <nav aria-label="On this page">
+        <a href="#isolation">Isolation</a>
+        <a href="#not-a-bot">What it is not</a>
+      </nav>
+    </header>
+    <main>
+      <slot />
+    </main>
+  </body>
+</html>
+
+<style is:global>
+  :root {
+    --ink: #141414;
+    --ink-lift: #1c1c1c;
+    --hairline: #2c2c2c;
+    --paper: #eceae4;
+    --mute: #9a9a9a;
+    --signal: #0066ff;
+    --seal: #3a3a3a;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    color-scheme: dark;
+  }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: var(--ink);
+    color: var(--paper);
+    font-family: Figtree, "Segoe UI", sans-serif;
+    font-size: 1.125rem;
+    line-height: 1.55;
+  }
+
+  a {
+    color: var(--paper);
+  }
+
+  a:focus-visible,
+  .skip:focus-visible {
+    outline: 2px solid var(--signal);
+    outline-offset: 3px;
+  }
+
+  .skip {
+    position: absolute;
+    left: 1rem;
+    top: 0.75rem;
+    z-index: 2;
+    padding: 0.4rem 0.7rem;
+    background: var(--ink-lift);
+    color: var(--paper);
+    text-decoration: none;
+    transform: translateY(-200%);
+  }
+
+  .skip:focus {
+    transform: none;
+  }
+
+  .chrome {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid var(--hairline);
+  }
+
+  .mark {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    margin: 0;
+    font-family: Oxanium, Figtree, sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .mark img {
+    display: block;
+    border-radius: 6px;
+  }
+
+  nav[aria-label="On this page"] {
+    display: flex;
+    gap: 1.25rem;
+  }
+
+  nav[aria-label="On this page"] a {
+    font-size: 0.95rem;
+    text-underline-offset: 0.28em;
+  }
+
+  main {
+    padding: 0 1.5rem 4rem;
+  }
+
+  h1,
+  h2 {
+    font-family: Oxanium, Figtree, sans-serif;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+  }
+
+  h1 {
+    margin: 0 0 1rem;
+    max-width: 18ch;
+    font-size: clamp(2.4rem, 7vw, 4.4rem);
+  }
+
+  h2 {
+    margin: 0 0 0.85rem;
+    font-size: 1.35rem;
+  }
+
+  .claim {
+    padding: 3.5rem 0 2.5rem;
+    max-width: 72rem;
+  }
+
+  .claim p {
+    max-width: 42rem;
+    margin: 0 0 2rem;
+    font-size: 1.2rem;
+  }
+
+  .rack {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+    gap: 0.85rem;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    max-width: 40rem;
+  }
+
+  .rack li {
+    padding: 1rem 1rem 0.9rem;
+    background: var(--ink-lift);
+    border: 1px solid var(--seal);
+    border-radius: 2px;
+  }
+
+  .rack .jar {
+    display: block;
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 0.78rem;
+    color: var(--mute);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .rack strong {
+    display: block;
+    margin-top: 0.45rem;
+    font-weight: 500;
+  }
+
+  .not-bot {
+    max-width: 42rem;
+    padding-top: 1rem;
+  }
+
+  .not-bot ul {
+    margin: 0;
+    padding-left: 1.15rem;
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 0.98rem;
+  }
+
+  .not-bot li + li {
+    margin-top: 0.45rem;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * {
+      animation: none !important;
+      transition: none !important;
+    }
+  }
+</style>

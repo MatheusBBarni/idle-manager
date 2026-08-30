@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 title: Ship the English isolation landing
 type: frontend
 complexity: high
@@ -69,11 +69,11 @@ A multi-account idle player can open the English player page and read that Idle 
 
 ## Subtasks
 
-- [ ] 01.1 Create `site/` package so Astro static build runs with pnpm without changing root Electron scripts.
-- [ ] 01.2 Configure public `site`/`base` and English route so output matches TechSpec Public URLs for `/en/`.
-- [ ] 01.3 Ship English isolation-vs-bot copy as the first content on that route.
-- [ ] 01.4 Keep meaningful images (if any) text-equivalent and controls reachable without a mouse.
-- [ ] 01.5 Confirm root `pnpm test` still only runs `src/shared/**/*.test.ts` and isolation code is untouched.
+- [x] 01.1 Create `site/` package so Astro static build runs with pnpm without changing root Electron scripts.
+- [x] 01.2 Configure public `site`/`base` and English route so output matches TechSpec Public URLs for `/en/`.
+- [x] 01.3 Ship English isolation-vs-bot copy as the first content on that route.
+- [x] 01.4 Keep meaningful images (if any) text-equivalent and controls reachable without a mouse.
+- [x] 01.5 Confirm root `pnpm test` still only runs `src/shared/**/*.test.ts` and isolation code is untouched.
 
 ## Implementation Details
 
@@ -110,15 +110,15 @@ Follow TechSpec Architecture (`site/` Astro, static only), Contracts (Public URL
 
 ### Unit Tests
 
-- [ ] Not applicable for copy-only HTML beyond build output; picker tests are task_02.
+- [x] Not applicable for copy-only HTML beyond build output; picker tests are task_02.
 
 ### Integration Tests
 
-- [ ] After `pnpm --dir site build`, output includes an English index under `base` whose text includes the product name and the not-a-bot claim.
+- [x] After `pnpm --dir site build`, output includes an English index under `base` whose text includes the product name and the not-a-bot claim.
 
 ### Platform or Manual Evidence
 
-- [ ] Keyboard pass on the English page, or document that only build HTML was inspected if no browser is available, then continue with the automated gate.
+- [x] Keyboard pass on the English page, or document that only build HTML was inspected if no browser is available, then continue with the automated gate.
 
 ### Verification Commands
 
