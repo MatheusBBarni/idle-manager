@@ -25,24 +25,24 @@ export function selectWindowsDownload(
   return { kind: 'fallback', href: fallbackHref }
 }
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return value !== null && typeof value === 'object' && !Array.isArray(value)
+}
+
 function releaseAssets(json: unknown): unknown[] | null {
-  if (json === null || typeof json !== 'object' || Array.isArray(json)) {
+  if (!isRecord(json) || !Array.isArray(json.assets)) {
     return null
   }
 
-  const assets = (json as { assets?: unknown }).assets
-  return Array.isArray(assets) ? assets : null
+  return json.assets
 }
 
 function selectAllowlistedExe(asset: unknown): Extract<ProbeResult, { kind: 'asset' }> | null {
-  if (asset === null || typeof asset !== 'object') {
+  if (!isRecord(asset)) {
     return null
   }
 
-  const { name, browser_download_url: href } = asset as {
-    name?: unknown
-    browser_download_url?: unknown
-  }
+  const { name, browser_download_url: href } = asset
 
   if (typeof name !== 'string' || !name.toLowerCase().endsWith('.exe')) {
     return null

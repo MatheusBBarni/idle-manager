@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest'
 import { selectWindowsDownload } from './selectWindowsDownload'
+import { FALLBACK_DOWNLOAD_HREF } from './urls'
 
-const fallbackHref = 'https://github.com/MatheusBBarni/idle-manager/releases/latest'
+const fallbackHref = FALLBACK_DOWNLOAD_HREF
 
 describe('selectWindowsDownload', () => {
   it('falls back when the probe is a 404', () => {

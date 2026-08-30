@@ -1,33 +1,30 @@
 import { selectWindowsDownload } from './selectWindowsDownload'
+import { FALLBACK_DOWNLOAD_HREF, RELEASES_LATEST_API } from './urls'
 
-export const FALLBACK_DOWNLOAD_HREF =
-  'https://github.com/MatheusBBarni/idle-manager/releases/latest'
+async function readJson(response: Response): Promise<unknown> {
+  try {
+    return await response.json()
+  } catch {
+    return null
+  }
+}
 
-export const RELEASES_LATEST_API =
-  'https://api.github.com/repos/MatheusBBarni/idle-manager/releases/latest'
-
-export async function probeWindowsDownload(link: HTMLAnchorElement): Promise<void> {
-  let ok = false
-  let status = 0
-  let json: unknown = null
-
+async function readLatestRelease(): Promise<{ ok: boolean; status: number; json: unknown }> {
   try {
     const response = await fetch(RELEASES_LATEST_API, {
       headers: { Accept: 'application/vnd.github+json' }
     })
-    status = response.status
-    ok = response.ok
-    try {
-      json = await response.json()
-    } catch {
-      json = null
+    return {
+      ok: response.ok,
+      status: response.status,
+      json: await readJson(response)
     }
   } catch {
-    ok = false
-    status = 0
-    json = null
+    return { ok: false, status: 0, json: null }
   }
+}
 
-  const result = selectWindowsDownload({ ok, status, json }, FALLBACK_DOWNLOAD_HREF)
+export async function probeWindowsDownload(link: HTMLAnchorElement): Promise<void> {
+  const result = selectWindowsDownload(await readLatestRelease(), FALLBACK_DOWNLOAD_HREF)
   link.href = result.href
 }

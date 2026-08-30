@@ -12,8 +12,7 @@ export default defineConfig({
     locales: ['en', 'pt'],
     routing: {
       prefixDefaultLocale: true,
-      // Index redirect is `src/pages/index.astro` via Astro.redirect so static
-      // build does not warn about two owners of `/`.
+      // Astro 7 requires `src/pages/index.astro` for `/` and warns if this is also true.
       redirectToDefaultLocale: false
     }
   }

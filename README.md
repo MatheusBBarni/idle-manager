@@ -8,6 +8,8 @@ Desktop shell for many isolated idle-game accounts in one window.
 
 [Features](#features) • [Getting started](#getting-started) • [Architecture](#how-it-is-put-together) • [Keyboard](#keyboard) • [Privacy](#privacy)
 
+<img src="assets/screenshots/app.webp" width="1200" alt="Idle manager with three isolated accounts of the same game tiled in one window" />
+
 </div>
 
 Idle manager is a small multi-session browser, not a bot.
