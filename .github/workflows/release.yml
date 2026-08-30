@@ -100,6 +100,24 @@ jobs:
           if-no-files-found: error
           retention-days: 14
 
+      - name: Upload Windows latest.yml
+        if: matrix.electron_os == 'win'
+        uses: actions/upload-artifact@v4
+        with:
+          name: feed-win-yml
+          path: dist/latest.yml
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Upload Windows blockmap
+        if: matrix.electron_os == 'win'
+        uses: actions/upload-artifact@v4
+        with:
+          name: feed-win-blockmap
+          path: dist/*.exe.blockmap
+          if-no-files-found: error
+          retention-days: 14
+
   release:
     name: GitHub Release
     needs: build
@@ -127,6 +145,8 @@ jobs:
             installers/*.dmg
             installers/*.AppImage
             installers/SHA256SUMS.txt
+            installers/latest.yml
+            installers/*.exe.blockmap
           generate_release_notes: true
           fail_on_unmatched_files: true
           prerelease: ${{ contains(github.ref_name, '-') }}

@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 title: Attach Windows latest.yml on GitHub Releases
 type: infra
 complexity: medium
@@ -74,10 +74,10 @@ A tagged Windows release must publish feed metadata next to the NSIS installer s
 
 ## Subtasks
 
-- [ ] 05.1 Read task_02 handoff; apply pack glob/asarUnpack if required.
-- [ ] 05.2 Extend the Windows artifact upload and GitHub Release files to include feed metadata; fail if missing.
-- [ ] 05.3 Leave mac/linux artifact patterns installer-only.
-- [ ] 05.4 Run `pnpm typecheck` (and `pnpm test` if src unchanged still green).
+- [x] 05.1 Read task_02 handoff; apply pack glob/asarUnpack if required.
+- [x] 05.2 Extend the Windows artifact upload and GitHub Release files to include feed metadata; fail if missing.
+- [x] 05.3 Leave mac/linux artifact patterns installer-only.
+- [x] 05.4 Run `pnpm typecheck` (and `pnpm test` if src unchanged still green).
 
 ## Implementation Details
 
