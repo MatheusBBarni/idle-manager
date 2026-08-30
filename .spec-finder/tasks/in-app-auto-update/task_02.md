@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 title: Spike pack/feed artifact names
 type: spike
 complexity: medium
@@ -67,10 +67,10 @@ Task_05 cannot guess Windows feed globs. Primary **G-01**. This spike records (1
 
 ## Subtasks
 
-- [ ] 02.1 Inspect builder 26 NSIS output names for `latest.yml` / blockmap with `--publish never`.
-- [ ] 02.2 Inspect whether current `files` packs an externalized runtime dependency.
-- [ ] 02.3 Write both answers into task and shared memory for task_05.
-- [ ] 02.4 File `reports/task_02.md` with evidence paths or the pack-unavailable limitation.
+- [x] 02.1 Inspect builder 26 NSIS output names for `latest.yml` / blockmap with `--publish never`.
+- [x] 02.2 Inspect whether current `files` packs an externalized runtime dependency.
+- [x] 02.3 Write both answers into task and shared memory for task_05.
+- [x] 02.4 File `reports/task_02.md` with evidence paths or the pack-unavailable limitation.
 
 ## Implementation Details
 
@@ -115,7 +115,7 @@ Follow TechSpec Open Questions, Architecture packing risk, Sequencing 5–6, ADR
 
 ### Platform or Manual Evidence
 
-- [ ] `dist/` listing from a Windows pack if the environment can run it; otherwise cite builder 26 docs + `electron-builder.yml` and record the gap.
+- [x] `dist/` listing from a Windows pack if the environment can run it; otherwise cite builder 26 docs + `electron-builder.yml` and record the gap.
 
 ### Verification Commands
 

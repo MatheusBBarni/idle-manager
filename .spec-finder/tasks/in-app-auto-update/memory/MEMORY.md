@@ -2,7 +2,7 @@
 
 ## Current State
 
-- Packet `in-app-auto-update` task_01 completed. task_02–task_05 pending.
+- Packet `in-app-auto-update` task_01 and task_02 completed. task_03–task_05 pending.
 
 ## Shared Decisions
 
@@ -17,14 +17,17 @@
 
 - No main `ops:updateCommand` handler yet; preload invoke is typed only. task_04 must register it.
 - Update status is not on `WorkspaceSnapshot`.
+- Windows NSIS pack was not executed on this macOS host (no wine, no `dist/`). Feed names are from electron-builder 26.15.3 + `artifactName`.
 
 ## Open Risks
 
 - G-01 packaged apply is dogfood, not CI.
-- `electron-builder.yml` `files` may omit `electron-updater` until task_02/task_05 decide the glob.
 - Per-machine NSIS/UAC on apply is unknown.
+- First Windows pack should confirm `latest.yml` and `*.exe.blockmap` exist beside the NSIS exe; if either is missing, fail the release job rather than guessing new names.
 
 ## Handoffs
 
 - task_03: subscribe `window.opsource.onUpdate`; send `updateCommand('apply' | 'later')`; channels `ops:update` / `ops:updateCommand`.
-- task_04: emit reduced `UpdateStatus` over `ops:update`; enforce apply/later no-op unless `ready`.
+- task_04: emit reduced `UpdateStatus` over `ops:update`; enforce apply/later no-op unless `ready`. Add `electron-updater` as a **runtime** `dependencies` entry (not devDependency) so it is packed.
+- task_05 feed globs (relative to `dist/`, same tree as `*.exe`): `latest.yml` and `*.exe.blockmap`. Expected names: `latest.yml` and `idle-manager-${version}-win-x64.exe.blockmap`. Fail-closed if missing.
+- task_05 pack change: `none`. Do not add a `files` or `asarUnpack` glob. Production deps are copied by `computeNodeModuleFileSets` even though `files` is `out/**/*` + `package.json` (matcher adds `!**/node_modules/**`).
