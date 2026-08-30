@@ -39,11 +39,13 @@ export function App() {
     const offState = window.opsource.onState((snapshot) => useAppStore.getState().setSnapshot(snapshot))
     const offMetrics = window.opsource.onMetrics((metrics) => useAppStore.getState().setMetrics(metrics))
     const offNav = window.opsource.onNavigation((nav) => useAppStore.getState().setNav(nav))
+    const offUpdate = window.opsource.onUpdate((status) => useAppStore.getState().setUpdateStatus(status))
     return () => {
       cancelled = true
       offState()
       offMetrics()
       offNav()
+      offUpdate()
     }
   }, [])
 

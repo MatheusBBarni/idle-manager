@@ -1,5 +1,7 @@
+import { Button } from '@heroui/react'
 import { formatBytes, formatCpu, formatUptime, t, type MessageKey } from '@shared/i18n'
 import type { LayoutMode } from '@shared/types'
+import type { UpdateCommand } from '@shared/updateStatus'
 import { activeAccount, visibleTabs } from '@shared/workspace'
 import { useAppStore } from '../store'
 
@@ -11,11 +13,16 @@ const layoutLabel: Record<LayoutMode, MessageKey> = {
   free: 'layoutFree'
 }
 
+function sendUpdateCommand(command: UpdateCommand): void {
+  void window.opsource.updateCommand(command).catch(() => undefined)
+}
+
 export function StatusBar() {
   const snapshot = useAppStore((state) => state.snapshot)
   const metrics = useAppStore((state) => state.metrics)
   const fps = useAppStore((state) => state.fps)
   const version = useAppStore((state) => state.version)
+  const updateStatus = useAppStore((state) => state.updateStatus)
   const locale = snapshot.locale
   const tab = visibleTabs(snapshot).find((item) => item.id === snapshot.activeTabId)
   const account = activeAccount(snapshot)
@@ -43,6 +50,31 @@ export function StatusBar() {
       <span>
         {t(locale, 'uptime')} {formatUptime(metrics?.aggregate.uptimeMs ?? 0)}
       </span>
+      {updateStatus.phase === 'getting' ? <span>{t(locale, 'updateGetting')}</span> : null}
+      {updateStatus.phase === 'ready' ? (
+        <>
+          <span>
+            {t(locale, 'version')}
+            {updateStatus.version}
+          </span>
+          <Button
+            size="sm"
+            variant="secondary"
+            className="h-6 min-h-0 px-2 text-xs text-signal"
+            onPress={() => sendUpdateCommand('apply')}
+          >
+            {t(locale, 'updateApply')}
+          </Button>
+          <Button
+            size="sm"
+            variant="ghost"
+            className="h-6 min-h-0 px-2 text-xs"
+            onPress={() => sendUpdateCommand('later')}
+          >
+            {t(locale, 'updateLater')}
+          </Button>
+        </>
+      ) : null}
       <span>
         {t(locale, 'version')}
         {version}

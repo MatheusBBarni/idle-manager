@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 title: Show Apply/Later on the chrome strip
 type: frontend
 complexity: high
@@ -78,10 +78,10 @@ A Windows operator sees a quiet getting state, then Apply and Later on the foote
 
 ## Subtasks
 
-- [ ] 03.1 Hold `UpdateStatus` on the renderer store and subscribe in `App.tsx`.
-- [ ] 03.2 Render getting / Apply / Later on `StatusBar.tsx` without a modal.
-- [ ] 03.3 Add EN+PT keys and i18n tests.
-- [ ] 03.4 Run `pnpm test` (i18n + existing shared) and `pnpm typecheck` to terminal exit.
+- [x] 03.1 Hold `UpdateStatus` on the renderer store and subscribe in `App.tsx`.
+- [x] 03.2 Render getting / Apply / Later on `StatusBar.tsx` without a modal.
+- [x] 03.3 Add EN+PT keys and i18n tests.
+- [x] 03.4 Run `pnpm test` (i18n + existing shared) and `pnpm typecheck` to terminal exit.
 
 ## Implementation Details
 
@@ -117,7 +117,7 @@ Follow TechSpec Architecture (StatusBar, store), Contracts (status phases), Sequ
 
 ### Unit Tests
 
-- [ ] Given `en` and `pt`, when looking up getting/apply/later keys, then both locales return non-empty strings and `MESSAGE_KEYS` stays a bijection (extend existing i18n tests).
+- [x] Given `en` and `pt`, when looking up getting/apply/later keys, then both locales return non-empty strings and `MESSAGE_KEYS` stays a bijection (extend existing i18n tests).
 
 ### Integration Tests
 
@@ -125,7 +125,7 @@ Follow TechSpec Architecture (StatusBar, store), Contracts (status phases), Sequ
 
 ### Platform or Manual Evidence
 
-- [ ] G-04: StatusBar controls do not use `dialog` / `overlayOpen`. If UI cannot be launched here, document that and continue with typecheck + i18n tests.
+- [x] G-04: StatusBar controls do not use `dialog` / `overlayOpen`. If UI cannot be launched here, document that and continue with typecheck + i18n tests.
 
 ### Verification Commands
 

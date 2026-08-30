@@ -41,6 +41,14 @@ describe('i18n', () => {
     expect(t('pt', 'shortcutStart')).not.toMatch(/start/i)
   })
 
+  it('has getting, apply, and later copy in both locales', () => {
+    for (const key of ['updateGetting', 'updateApply', 'updateLater'] as const) {
+      expect(t('en', key).length).toBeGreaterThan(0)
+      expect(t('pt', key).length).toBeGreaterThan(0)
+      expect(t('pt', key)).not.toBe(t('en', key))
+    }
+  })
+
   it('translates every key that is not a shared brand or unit label', () => {
     for (const key of MESSAGE_KEYS) {
       expect(t('en', key).length).toBeGreaterThan(0)

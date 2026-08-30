@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import type { MetricsPayload, NavigationState, WorkspaceSnapshot } from '@shared/types'
+import type { UpdateStatus } from '@shared/updateStatus'
 import { activeAccount, emptySnapshot, type WorkspaceAction } from '@shared/workspace'
 
 export type DialogCommand =
@@ -32,8 +33,10 @@ type AppStore = {
   version: string
   fps: number
   sidebarCollapsed: boolean
+  updateStatus: UpdateStatus
   setSnapshot: (snapshot: WorkspaceSnapshot) => void
   setMetrics: (metrics: MetricsPayload) => void
+  setUpdateStatus: (updateStatus: UpdateStatus) => void
   setNav: (nav: NavigationState) => void
   setUrlDraft: (value: string) => void
   setUrlFocused: (value: boolean) => void
@@ -54,8 +57,10 @@ export const useAppStore = create<AppStore>((set) => ({
   version: '0.1.0',
   fps: 0,
   sidebarCollapsed: false,
+  updateStatus: { phase: 'idle' },
   setSnapshot: (snapshot) => set({ snapshot }),
   setMetrics: (metrics) => set({ metrics }),
+  setUpdateStatus: (updateStatus) => set({ updateStatus }),
   setNav: (nav) =>
     set((state) => ({
       nav: { ...state.nav, [nav.accountId]: nav },

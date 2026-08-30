@@ -89,7 +89,10 @@ const en = {
   shortcutCreate: 'Create account',
   shortcutPrev: 'Previous account',
   shortcutNext: 'Next account',
-  shortcutStart: 'Start targeted account'
+  shortcutStart: 'Start targeted account',
+  updateGetting: 'Getting update',
+  updateApply: 'Apply',
+  updateLater: 'Later'
 } as const
 
 const pt: Record<keyof typeof en, string> = {
@@ -182,7 +185,10 @@ const pt: Record<keyof typeof en, string> = {
   shortcutCreate: 'Criar conta',
   shortcutPrev: 'Conta anterior',
   shortcutNext: 'Próxima conta',
-  shortcutStart: 'Iniciar a conta em foco'
+  shortcutStart: 'Iniciar a conta em foco',
+  updateGetting: 'Baixando atualização',
+  updateApply: 'Aplicar',
+  updateLater: 'Depois'
 }
 
 const dictionaries = { en, pt }
