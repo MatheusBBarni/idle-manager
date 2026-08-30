@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 title: Ship the keyboard account loop
 type: backend
 complexity: high

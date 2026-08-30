@@ -2,6 +2,7 @@ import { BrowserWindow, WebContentsView, session, type WebContents } from 'elect
 import iconPath from '../../assets/icon.png?asset'
 import { partitionForAccount } from '@shared/partition'
 import type { Account, NavigationState, Rect, StageReport, WorkspaceSnapshot } from '@shared/types'
+import { attachAccountLoop } from './accountLoop'
 
 type LiveView = {
   accountId: string
@@ -69,6 +70,7 @@ function attachSessionHandlers(account: Account, contents: WebContents): void {
   contents.on('page-title-updated', () => emitNav(account.id, contents))
   contents.on('did-finish-load', () => emitNav(account.id, contents))
   contents.on('before-input-event', () => touch(account.id))
+  attachAccountLoop(contents, 'game')
   contents.on('media-started-playing', () => touch(account.id))
   contents.on('render-process-gone', () => {
     onCrash?.(account.id)

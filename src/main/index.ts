@@ -7,6 +7,7 @@ import type { NavCommand, WindowCommand } from '@shared/ipc'
 import type { StageReport, WorkspaceSnapshot } from '@shared/types'
 import { normalizeUrl } from '@shared/urls'
 import { accountIdsToWipe, applyAction, emptySnapshot, exportMetadata, snapshotFromImport, type WorkspaceAction } from '@shared/workspace'
+import { attachAccountLoop, bindAccountLoop } from './accountLoop'
 import { verifyIsolation } from './isolationVerify'
 import { collectMetrics } from './metrics'
 import { loadSnapshot, saveSnapshot } from './persistence'
@@ -42,6 +43,7 @@ let mainWindow: BrowserWindow | null = null
 let snapshot: WorkspaceSnapshot = emptySnapshot()
 let saveTimer: NodeJS.Timeout | null = null
 let fps = 0
+let overlayOpen = false
 
 function scheduleSave(): void {
   if (saveTimer) {
@@ -104,6 +106,7 @@ function createWindow(): void {
 
   setChromeWindow(mainWindow)
   Menu.setApplicationMenu(null)
+  attachAccountLoop(mainWindow.webContents, 'chrome')
 
   mainWindow.on('ready-to-show', () => mainWindow?.show())
   mainWindow.on('resized', persistBounds)
@@ -165,6 +168,7 @@ function registerIpc(): void {
     await clearAccountSession(accountId)
   })
   ipcMain.on('ops:reportStage', (_event, report: StageReport) => {
+    overlayOpen = report.overlayOpen
     applyStage(report)
   })
   ipcMain.handle('ops:window', (_event, command: WindowCommand) => {
@@ -260,6 +264,12 @@ app.whenReady().then(async () => {
         restartView(account)
       }
     }
+  })
+
+  bindAccountLoop({
+    commit,
+    getSnapshot: () => snapshot,
+    overlayOpen: () => overlayOpen
   })
 
   registerIpc()

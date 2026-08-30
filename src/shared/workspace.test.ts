@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import { keyboardCreateActions } from './accountLoop'
 import { applyAction, emptySnapshot, accountsForTab, lastArchivedTab, parseSnapshot, snapshotFromImport, visibleTabs } from './workspace'
 
 function withTab() {
@@ -123,6 +124,23 @@ describe('workspace', () => {
       }
     })
     expect(imported.accounts['acc-1']?.status).toBe('closed')
+  })
+
+  it('keyboard create then activate makes the new id the start target; mouse create does not steal active', () => {
+    let state = withTab()
+    state = applyAction(state, { type: 'account/create', tabId: 'tab-gengar', id: 'acc-a' })
+    expect(state.tabs[0]?.activeAccountId).toBe('acc-a')
+    for (const action of keyboardCreateActions('tab-gengar', 'acc-k')) {
+      state = applyAction(state, action)
+    }
+    expect(state.tabs[0]?.activeAccountId).toBe('acc-k')
+    expect(state.accounts['acc-k']?.status).toBe('closed')
+
+    state = withTab()
+    state = applyAction(state, { type: 'account/create', tabId: 'tab-gengar', id: 'acc-a' })
+    state = applyAction(state, { type: 'account/create', tabId: 'tab-gengar' })
+    expect(state.tabs[0]?.activeAccountId).toBe('acc-a')
+    expect(Object.keys(state.accounts)).toHaveLength(2)
   })
 
   it('reopens the last archived tab', () => {
