@@ -1,5 +1,8 @@
 ---
-import { getRelativeLocaleUrl } from 'astro:i18n'
+import Landing from '../layouts/Landing.astro'
 
-return Astro.redirect(getRelativeLocaleUrl('en'))
+// GitHub Pages cannot emit an HTTP 301. Astro.redirect() in static output
+// is a 2s "Redirecting from / to /en/" HTML page, so `/` is the English landing.
 ---
+
+<Landing lang="en" />
