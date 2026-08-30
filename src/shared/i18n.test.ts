@@ -11,15 +11,7 @@ const shared = new Set<MessageKey>([
   'layout',
   'urlPlaceholder',
   'localePt',
-  'localeEn',
-  'shortcutCreateMac',
-  'shortcutCreateWin',
-  'shortcutPrevMac',
-  'shortcutPrevWin',
-  'shortcutNextMac',
-  'shortcutNextWin',
-  'shortcutStartMac',
-  'shortcutStartWin'
+  'localeEn'
 ])
 
 describe('i18n', () => {

@@ -138,6 +138,14 @@ export function liveViews(): Map<string, LiveView> {
   return live
 }
 
+export function stageOverlayOpen(): boolean {
+  return latestStage?.overlayOpen === true
+}
+
+export function stageChromeEditable(): boolean {
+  return latestStage?.chromeEditable === true
+}
+
 export function applyStage(report: StageReport): void {
   latestStage = report
   for (const [accountId, item] of live) {

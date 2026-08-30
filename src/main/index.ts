@@ -21,6 +21,8 @@ import {
   restartView,
   setChromeWindow,
   setViewCallbacks,
+  stageChromeEditable,
+  stageOverlayOpen,
   syncViews
 } from './views'
 
@@ -43,7 +45,6 @@ let mainWindow: BrowserWindow | null = null
 let snapshot: WorkspaceSnapshot = emptySnapshot()
 let saveTimer: NodeJS.Timeout | null = null
 let fps = 0
-let overlayOpen = false
 
 function scheduleSave(): void {
   if (saveTimer) {
@@ -69,14 +70,23 @@ function applyDispatchEffects(action: WorkspaceAction, before: WorkspaceSnapshot
   }
 }
 
-function commit(action: WorkspaceAction): WorkspaceSnapshot {
-  const before = snapshot
-  snapshot = applyAction(snapshot, action)
+function commitAll(actions: WorkspaceAction[]): WorkspaceSnapshot {
+  if (actions.length === 0) {
+    return snapshot
+  }
+  for (const action of actions) {
+    const before = snapshot
+    snapshot = applyAction(snapshot, action)
+    applyDispatchEffects(action, before)
+  }
   syncViews(snapshot)
   broadcast()
   scheduleSave()
-  applyDispatchEffects(action, before)
   return snapshot
+}
+
+function commit(action: WorkspaceAction): WorkspaceSnapshot {
+  return commitAll([action])
 }
 
 function createWindow(): void {
@@ -168,7 +178,6 @@ function registerIpc(): void {
     await clearAccountSession(accountId)
   })
   ipcMain.on('ops:reportStage', (_event, report: StageReport) => {
-    overlayOpen = report.overlayOpen
     applyStage(report)
   })
   ipcMain.handle('ops:window', (_event, command: WindowCommand) => {
@@ -267,9 +276,10 @@ app.whenReady().then(async () => {
   })
 
   bindAccountLoop({
-    commit,
+    commitAll,
     getSnapshot: () => snapshot,
-    overlayOpen: () => overlayOpen
+    overlayOpen: stageOverlayOpen,
+    chromeEditable: stageChromeEditable
   })
 
   registerIpc()

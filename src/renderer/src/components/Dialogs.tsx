@@ -1,5 +1,6 @@
 import { useState, type ReactNode } from 'react'
 import { Button, Input, Label, Modal, TextField } from '@heroui/react'
+import { ACCOUNT_LOOP_SHORTCUTS } from '@shared/accountLoop'
 import { t } from '@shared/i18n'
 import { isValidHttpUrl } from '@shared/urls'
 import { tabById } from '@shared/workspace'
@@ -239,12 +240,12 @@ function AccountModal({ onClose }: { onClose: () => void }) {
   )
 }
 
-const SHORTCUT_ROWS = [
-  { label: 'shortcutCreate', mac: 'shortcutCreateMac', win: 'shortcutCreateWin' },
-  { label: 'shortcutPrev', mac: 'shortcutPrevMac', win: 'shortcutPrevWin' },
-  { label: 'shortcutNext', mac: 'shortcutNextMac', win: 'shortcutNextWin' },
-  { label: 'shortcutStart', mac: 'shortcutStartMac', win: 'shortcutStartWin' }
-] as const
+const SHORTCUT_LABELS = {
+  'account-create': 'shortcutCreate',
+  'account-prev': 'shortcutPrev',
+  'account-next': 'shortcutNext',
+  'account-start': 'shortcutStart'
+} as const
 
 function SettingsModal({ onClose }: { onClose: () => void }) {
   const snapshot = useAppStore((state) => state.snapshot)
@@ -312,10 +313,10 @@ function SettingsModal({ onClose }: { onClose: () => void }) {
         <div>
           <p className="mb-2 text-sm">{t(locale, 'shortcuts')}</p>
           <ul className="flex flex-col gap-1.5 text-sm text-muted">
-            {SHORTCUT_ROWS.map((row) => (
-              <li key={row.label} className="flex items-baseline justify-between gap-3">
-                <span>{t(locale, row.label)}</span>
-                <kbd className="font-mono text-xs text-foreground">{t(locale, mac ? row.mac : row.win)}</kbd>
+            {ACCOUNT_LOOP_SHORTCUTS.map((row) => (
+              <li key={row.command} className="flex items-baseline justify-between gap-3">
+                <span>{t(locale, SHORTCUT_LABELS[row.command])}</span>
+                <kbd className="font-mono text-xs text-foreground">{mac ? row.mac : row.win}</kbd>
               </li>
             ))}
           </ul>

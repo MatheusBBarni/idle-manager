@@ -3,7 +3,7 @@ import type { WorkspaceAction } from './workspace'
 export type AccountLoopCommand = 'account-create' | 'account-prev' | 'account-next' | 'account-start'
 
 export type AccountLoopKeyInput = {
-  type: 'keyDown' | 'keyUp'
+  type: string
   key: string
   code: string
   control: boolean
@@ -13,12 +13,15 @@ export type AccountLoopKeyInput = {
   isAutoRepeat: boolean
 }
 
-function hasMod(input: AccountLoopKeyInput): boolean {
-  return input.meta || input.control
-}
+export const ACCOUNT_LOOP_SHORTCUTS = [
+  { command: 'account-create', mac: '⌘⇧N', win: 'Ctrl+Shift+N' },
+  { command: 'account-prev', mac: '⌘⇧[', win: 'Ctrl+Shift+[' },
+  { command: 'account-next', mac: '⌘⇧]', win: 'Ctrl+Shift+]' },
+  { command: 'account-start', mac: '⌘↩', win: 'Ctrl+Enter' }
+] as const
 
 export function matchAccountLoopChord(input: AccountLoopKeyInput): AccountLoopCommand | null {
-  if (input.type !== 'keyDown' || input.isAutoRepeat || input.alt || !hasMod(input)) {
+  if (input.type !== 'keyDown' || input.isAutoRepeat || input.alt || !(input.meta || input.control)) {
     return null
   }
 

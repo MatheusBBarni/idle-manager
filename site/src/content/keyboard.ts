@@ -1,4 +1,6 @@
-export type Locale = 'en' | 'pt'
+import type { Locale } from './landing'
+
+export type { Locale }
 
 export type KeyboardBind = {
   keys: string

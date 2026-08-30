@@ -20,6 +20,7 @@ const emptyRect: Rect = { x: 0, y: 0, width: 0, height: 0 }
 export function Stage() {
   const snapshot = useAppStore((state) => state.snapshot)
   const dialog = useAppStore((state) => state.dialog)
+  const urlFocused = useAppStore((state) => state.urlFocused)
   const ref = useRef<HTMLDivElement>(null)
   const [stage, setStage] = useState<Rect>(emptyRect)
   const locale = snapshot.locale
@@ -42,6 +43,7 @@ export function Stage() {
       window.opsource.reportStage({
         stage: nextStage,
         overlayOpen: dialog.id !== 'none',
+        chromeEditable: urlFocused,
         panels: nextPanels
       })
     }
@@ -53,7 +55,7 @@ export function Stage() {
       observer.disconnect()
       window.removeEventListener('resize', report)
     }
-  }, [tab, snapshot.activeTabId, snapshot.accounts, dialog.id])
+  }, [tab, snapshot.activeTabId, snapshot.accounts, dialog.id, urlFocused])
 
   return (
     <section ref={ref} className="relative h-full overflow-hidden bg-background">

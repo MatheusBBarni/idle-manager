@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import {
+  ACCOUNT_LOOP_SHORTCUTS,
   keyboardCreateActions,
   matchAccountLoopChord,
   nextAccountId,
@@ -65,6 +66,17 @@ describe('nextAccountId', () => {
   it('treats unknown active as index 0 then applies delta', () => {
     expect(nextAccountId(['a', 'b', 'c'], 'missing', 1)).toBe('b')
     expect(nextAccountId(['a', 'b', 'c'], null, -1)).toBe('c')
+  })
+})
+
+describe('ACCOUNT_LOOP_SHORTCUTS', () => {
+  it('exposes the four frozen display chords', () => {
+    expect(ACCOUNT_LOOP_SHORTCUTS.map((row) => row.win)).toEqual([
+      'Ctrl+Shift+N',
+      'Ctrl+Shift+[',
+      'Ctrl+Shift+]',
+      'Ctrl+Enter'
+    ])
   })
 })
 

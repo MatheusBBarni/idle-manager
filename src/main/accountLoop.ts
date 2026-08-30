@@ -3,112 +3,65 @@ import {
   keyboardCreateActions,
   matchAccountLoopChord,
   nextAccountId,
-  type AccountLoopCommand,
-  type AccountLoopKeyInput
+  type AccountLoopCommand
 } from '@shared/accountLoop'
 import { newId } from '@shared/ids'
 import type { WorkspaceSnapshot } from '@shared/types'
 import { activeAccount, tabById, type WorkspaceAction } from '@shared/workspace'
 
-const CHROME_EDITABLE_PROBE = `(() => {
-  const el = document.activeElement
-  if (!el || el === document.body || el === document.documentElement) return false
-  const tag = el.tagName
-  if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return true
-  return Boolean(el.isContentEditable)
-})()`
-
 type AccountLoopHost = {
-  commit: (action: WorkspaceAction) => void
+  commitAll: (actions: WorkspaceAction[]) => void
   getSnapshot: () => WorkspaceSnapshot
   overlayOpen: () => boolean
+  chromeEditable: () => boolean
 }
 
 type LoopSource = 'chrome' | 'game'
 
 let host: AccountLoopHost | null = null
-const chromeEditable = new WeakMap<WebContents, boolean>()
 
 export function bindAccountLoop(next: AccountLoopHost): void {
   host = next
 }
 
-function mapInput(input: Electron.Input): AccountLoopKeyInput | null {
-  if (input.type !== 'keyDown' && input.type !== 'keyUp') {
+function liveTab(snapshot: WorkspaceSnapshot) {
+  const tab = tabById(snapshot, snapshot.activeTabId)
+  if (!tab || tab.archived) {
     return null
   }
-  return {
-    type: input.type,
-    key: input.key,
-    code: input.code,
-    control: input.control,
-    meta: input.meta,
-    shift: input.shift,
-    alt: input.alt,
-    isAutoRepeat: input.isAutoRepeat
-  }
-}
-
-function refreshChromeEditable(contents: WebContents): void {
-  if (contents.isDestroyed()) {
-    return
-  }
-  void contents
-    .executeJavaScript(CHROME_EDITABLE_PROBE, false)
-    .then((value: unknown) => {
-      chromeEditable.set(contents, value === true)
-    })
-    .catch(() => undefined)
+  return tab
 }
 
 function actionsForCommand(command: AccountLoopCommand, snapshot: WorkspaceSnapshot): WorkspaceAction[] {
-  const tab = tabById(snapshot, snapshot.activeTabId)
-  if (command === 'account-create') {
-    if (!tab || tab.archived) {
+  if (command === 'account-start') {
+    const account = activeAccount(snapshot)
+    if (!account) {
       return []
     }
-    return keyboardCreateActions(tab.id, newId())
+    return [{ type: 'account/setStatus', id: account.id, status: 'running' }]
   }
-  if (command === 'account-prev' || command === 'account-next') {
-    if (!tab || tab.archived) {
-      return []
-    }
-    const id = nextAccountId(tab.accountOrder, tab.activeAccountId, command === 'account-next' ? 1 : -1)
-    if (!id) {
-      return []
-    }
-    return [{ type: 'account/activate', id }]
-  }
-  const account = activeAccount(snapshot)
-  if (!account) {
+
+  const tab = liveTab(snapshot)
+  if (!tab) {
     return []
   }
-  return [{ type: 'account/setStatus', id: account.id, status: 'running' }]
+  if (command === 'account-create') {
+    return keyboardCreateActions(tab.id, newId())
+  }
+  const id = nextAccountId(tab.accountOrder, tab.activeAccountId, command === 'account-next' ? 1 : -1)
+  if (!id) {
+    return []
+  }
+  return [{ type: 'account/activate', id }]
 }
 
 export function attachAccountLoop(contents: WebContents, source: LoopSource): void {
-  if (source === 'chrome') {
-    refreshChromeEditable(contents)
-    contents.on('dom-ready', () => refreshChromeEditable(contents))
-    contents.on('before-mouse-event', () => refreshChromeEditable(contents))
-  }
-
   contents.on('before-input-event', (event, input) => {
-    const mapped = mapInput(input)
-    if (!mapped) {
+    const command = matchAccountLoopChord(input)
+    if (!command || !host || host.overlayOpen()) {
       return
     }
-    const command = matchAccountLoopChord(mapped)
-    if (source === 'chrome') {
-      refreshChromeEditable(contents)
-    }
-    if (!command || !host) {
-      return
-    }
-    if (host.overlayOpen()) {
-      return
-    }
-    if (source === 'chrome' && chromeEditable.get(contents)) {
+    if (source === 'chrome' && host.chromeEditable()) {
       return
     }
     const actions = actionsForCommand(command, host.getSnapshot())
@@ -116,8 +69,6 @@ export function attachAccountLoop(contents: WebContents, source: LoopSource): vo
       return
     }
     event.preventDefault()
-    for (const action of actions) {
-      host.commit(action)
-    }
+    host.commitAll(actions)
   })
 }

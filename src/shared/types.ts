@@ -97,6 +97,7 @@ export type PanelGeometry = {
 export type StageReport = {
   stage: Rect
   overlayOpen: boolean
+  chromeEditable: boolean
   panels: PanelGeometry[]
 }
 

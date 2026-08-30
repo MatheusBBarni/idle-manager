@@ -89,15 +89,7 @@ const en = {
   shortcutCreate: 'Create account',
   shortcutPrev: 'Previous account',
   shortcutNext: 'Next account',
-  shortcutStart: 'Start targeted account',
-  shortcutCreateMac: '⌘⇧N',
-  shortcutCreateWin: 'Ctrl+Shift+N',
-  shortcutPrevMac: '⌘⇧[',
-  shortcutPrevWin: 'Ctrl+Shift+[',
-  shortcutNextMac: '⌘⇧]',
-  shortcutNextWin: 'Ctrl+Shift+]',
-  shortcutStartMac: '⌘↩',
-  shortcutStartWin: 'Ctrl+Enter'
+  shortcutStart: 'Start targeted account'
 } as const
 
 const pt: Record<keyof typeof en, string> = {
@@ -190,15 +182,7 @@ const pt: Record<keyof typeof en, string> = {
   shortcutCreate: 'Criar conta',
   shortcutPrev: 'Conta anterior',
   shortcutNext: 'Próxima conta',
-  shortcutStart: 'Iniciar a conta em foco',
-  shortcutCreateMac: '⌘⇧N',
-  shortcutCreateWin: 'Ctrl+Shift+N',
-  shortcutPrevMac: '⌘⇧[',
-  shortcutPrevWin: 'Ctrl+Shift+[',
-  shortcutNextMac: '⌘⇧]',
-  shortcutNextWin: 'Ctrl+Shift+]',
-  shortcutStartMac: '⌘↩',
-  shortcutStartWin: 'Ctrl+Enter'
+  shortcutStart: 'Iniciar a conta em foco'
 }
 
 const dictionaries = { en, pt }

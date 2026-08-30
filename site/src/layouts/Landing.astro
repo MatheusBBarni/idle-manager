@@ -2,6 +2,7 @@
 import { getRelativeLocaleUrl } from 'astro:i18n'
 import { landing, type Locale } from '../content/landing'
 import { FALLBACK_DOWNLOAD_HREF, SOURCE_HREF } from '../lib/urls'
+import '../styles/chrome.css'
 import '@fontsource/oxanium/700.css'
 import '@fontsource/figtree/400.css'
 import '@fontsource/figtree/500.css'
@@ -244,110 +245,11 @@ const downloadCopyJson = JSON.stringify({
 </html>
 
 <style is:global>
-  :root {
-    --ink: #141414;
-    --ink-lift: #1c1c1c;
-    --hairline: #2c2c2c;
-    --paper: #eceae4;
-    --mute: #9a9a9a;
-    --signal: #0066ff;
-    --seal: #3a3a3a;
-    --shell: 80rem;
-    --gutter: 1.5rem;
-  }
-
-  * {
-    box-sizing: border-box;
-  }
-
-  html {
-    color-scheme: dark;
-  }
-
-  body {
-    margin: 0;
-    min-height: 100vh;
-    background: var(--ink);
-    color: var(--paper);
-    font-family: Figtree, "Segoe UI", sans-serif;
-    font-size: 1.125rem;
-    line-height: 1.55;
-  }
-
-  a {
-    color: var(--paper);
-  }
-
-  a:focus-visible,
-  .skip:focus-visible,
-  summary:focus-visible {
-    outline: 2px solid var(--signal);
-    outline-offset: 3px;
-  }
-
-  .skip {
-    position: absolute;
-    left: 1rem;
-    top: 0.75rem;
-    z-index: 2;
-    padding: 0.4rem 0.7rem;
-    background: var(--ink-lift);
-    color: var(--paper);
-    text-decoration: none;
-    transform: translateY(-200%);
-  }
-
-  .skip:focus {
-    transform: none;
-  }
-
   main,
   footer {
     width: min(var(--shell), 100%);
     margin-inline: auto;
     padding-inline: var(--gutter);
-  }
-
-  .chrome {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-    width: 100%;
-    padding: 1rem max(var(--gutter), calc((100% - var(--shell)) / 2 + var(--gutter)));
-    border-bottom: 1px solid var(--hairline);
-  }
-
-  .mark {
-    display: flex;
-    align-items: center;
-    gap: 0.65rem;
-    margin: 0;
-    font-family: Oxanium, Figtree, sans-serif;
-    font-weight: 700;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-  }
-
-  .mark img {
-    display: block;
-    border-radius: 6px;
-  }
-
-  .chrome nav {
-    display: flex;
-    gap: 1.25rem;
-  }
-
-  .chrome nav a {
-    font-size: 0.95rem;
-    text-underline-offset: 0.28em;
-  }
-
-  .chrome nav a[aria-current='page'] {
-    color: var(--signal);
-    text-decoration: none;
   }
 
   .chrome-end {
