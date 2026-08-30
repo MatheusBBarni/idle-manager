@@ -2,6 +2,7 @@ import { contextBridge, ipcRenderer } from 'electron'
 import type { OpsourceAPI } from '@shared/ipc'
 import type { NavCommand, WindowCommand } from '@shared/ipc'
 import type { MetricsPayload, NavigationState, StageReport, WorkspaceSnapshot } from '@shared/types'
+import type { UpdateCommand, UpdateStatus } from '@shared/updateStatus'
 import type { WorkspaceAction } from '@shared/workspace'
 
 const api: OpsourceAPI = {
@@ -32,6 +33,12 @@ const api: OpsourceAPI = {
     ipcRenderer.on('ops:navigation', listen)
     return () => ipcRenderer.removeListener('ops:navigation', listen)
   },
+  onUpdate: (handler) => {
+    const listen = (_event: unknown, status: UpdateStatus) => handler(status)
+    ipcRenderer.on('ops:update', listen)
+    return () => ipcRenderer.removeListener('ops:update', listen)
+  },
+  updateCommand: (command: UpdateCommand) => ipcRenderer.invoke('ops:updateCommand', command),
   reportFps: (value: number) => {
     ipcRenderer.send('ops:fps', value)
   }

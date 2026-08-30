@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 title: Lock idle/getting/ready/later and the update IPC types
 type: backend
 complexity: medium
@@ -76,10 +76,10 @@ Chrome must not offer Apply unless the shared status machine says `ready`, and e
 
 ## Subtasks
 
-- [ ] 01.1 Add shared reduce + unit tests for the TechSpec transition table.
-- [ ] 01.2 Expose `onUpdate` / `updateCommand` on `OpsourceAPI` and preload without snapshot fields.
-- [ ] 01.3 Leave main handlers unimplemented beyond what preload needs to compile (no updater process).
-- [ ] 01.4 Run focused Vitest and `pnpm typecheck` to terminal exit.
+- [x] 01.1 Add shared reduce + unit tests for the TechSpec transition table.
+- [x] 01.2 Expose `onUpdate` / `updateCommand` on `OpsourceAPI` and preload without snapshot fields.
+- [x] 01.3 Leave main handlers unimplemented beyond what preload needs to compile (no updater process).
+- [x] 01.4 Run focused Vitest and `pnpm typecheck` to terminal exit.
 
 ## Implementation Details
 
@@ -113,12 +113,12 @@ Follow TechSpec Contracts (Public interfaces, reduce table), Architecture (`upda
 
 ### Unit Tests
 
-- [ ] Given `idle`, when `checking` / `available` / `progress`, then `getting`.
-- [ ] Given `getting`, when `downloaded` with `1.2.3`, then `ready` `{ version: '1.2.3' }`.
-- [ ] Given `ready`, when `later`, then `later` with the same version.
-- [ ] Given `later`, when `downloaded` same version, then stay `later`.
-- [ ] Given `later`, when `reset`, then `idle`.
-- [ ] Given any phase, when `error` or `not-available`, then `idle`.
+- [x] Given `idle`, when `checking` / `available` / `progress`, then `getting`.
+- [x] Given `getting`, when `downloaded` with `1.2.3`, then `ready` `{ version: '1.2.3' }`.
+- [x] Given `ready`, when `later`, then `later` with the same version.
+- [x] Given `later`, when `downloaded` same version, then stay `later`.
+- [x] Given `later`, when `reset`, then `idle`.
+- [x] Given any phase, when `error` or `not-available`, then `idle`.
 
 ### Integration Tests
 

@@ -4,7 +4,7 @@ Canonical execution order. Numeric IDs are the run order. Parallelizable tasks s
 
 | ID | Title | Primary slice | Type | Complexity | Dependencies | Status |
 |---|---|---|---|---|---|---|
-| task_01 | Lock idle/getting/ready/later and the update IPC types | US-05 | backend | medium | [] | pending |
+| task_01 | Lock idle/getting/ready/later and the update IPC types | US-05 | backend | medium | [] | completed |
 | task_02 | Spike pack/feed artifact names | G-01 | spike | medium | [] | pending |
 | task_03 | Show Apply/Later on the chrome strip | US-01 | frontend | high | [task_01] | pending |
 | task_04 | Obtain and apply from packaged Windows | US-03 | backend | high | [task_01] | pending |

@@ -1,5 +1,6 @@
 import type { WorkspaceAction } from './workspace'
 import type { MetricsPayload, NavigationState, StageReport, WorkspaceSnapshot } from './types'
+import type { UpdateCommand, UpdateStatus } from './updateStatus'
 
 export type NavCommand =
   | { kind: 'back'; accountId: string }
@@ -25,6 +26,9 @@ export type OpsourceAPI = {
   onState: (handler: (snapshot: WorkspaceSnapshot) => void) => () => void
   onMetrics: (handler: (metrics: MetricsPayload) => void) => () => void
   onNavigation: (handler: (nav: NavigationState) => void) => () => void
+  onUpdate: (handler: (status: UpdateStatus) => void) => () => void
+  /** No-op unless main status is `ready`; main enforces this. */
+  updateCommand: (command: UpdateCommand) => Promise<void>
   reportFps: (fps: number) => void
 }
 
