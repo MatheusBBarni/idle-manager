@@ -7,6 +7,7 @@ import type { NavCommand, WindowCommand } from '@shared/ipc'
 import type { StageReport, WorkspaceSnapshot } from '@shared/types'
 import { normalizeUrl } from '@shared/urls'
 import { accountIdsToWipe, applyAction, emptySnapshot, exportMetadata, snapshotFromImport, type WorkspaceAction } from '@shared/workspace'
+import { attachAccountLoop, bindAccountLoop } from './accountLoop'
 import { verifyIsolation } from './isolationVerify'
 import { collectMetrics } from './metrics'
 import { loadSnapshot, saveSnapshot } from './persistence'
@@ -20,6 +21,8 @@ import {
   restartView,
   setChromeWindow,
   setViewCallbacks,
+  stageChromeEditable,
+  stageOverlayOpen,
   syncViews
 } from './views'
 
@@ -67,14 +70,23 @@ function applyDispatchEffects(action: WorkspaceAction, before: WorkspaceSnapshot
   }
 }
 
-function commit(action: WorkspaceAction): WorkspaceSnapshot {
-  const before = snapshot
-  snapshot = applyAction(snapshot, action)
+function commitAll(actions: WorkspaceAction[]): WorkspaceSnapshot {
+  if (actions.length === 0) {
+    return snapshot
+  }
+  for (const action of actions) {
+    const before = snapshot
+    snapshot = applyAction(snapshot, action)
+    applyDispatchEffects(action, before)
+  }
   syncViews(snapshot)
   broadcast()
   scheduleSave()
-  applyDispatchEffects(action, before)
   return snapshot
+}
+
+function commit(action: WorkspaceAction): WorkspaceSnapshot {
+  return commitAll([action])
 }
 
 function createWindow(): void {
@@ -104,6 +116,7 @@ function createWindow(): void {
 
   setChromeWindow(mainWindow)
   Menu.setApplicationMenu(null)
+  attachAccountLoop(mainWindow.webContents, 'chrome')
 
   mainWindow.on('ready-to-show', () => mainWindow?.show())
   mainWindow.on('resized', persistBounds)
@@ -260,6 +273,13 @@ app.whenReady().then(async () => {
         restartView(account)
       }
     }
+  })
+
+  bindAccountLoop({
+    commitAll,
+    getSnapshot: () => snapshot,
+    overlayOpen: stageOverlayOpen,
+    chromeEditable: stageChromeEditable
   })
 
   registerIpc()

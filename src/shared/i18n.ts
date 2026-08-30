@@ -84,7 +84,12 @@ const en = {
   runningCount: 'running',
   localePt: 'Português',
   localeEn: 'English',
-  urlBar: 'Address'
+  urlBar: 'Address',
+  shortcuts: 'Keyboard shortcuts',
+  shortcutCreate: 'Create account',
+  shortcutPrev: 'Previous account',
+  shortcutNext: 'Next account',
+  shortcutStart: 'Start targeted account'
 } as const
 
 const pt: Record<keyof typeof en, string> = {
@@ -172,7 +177,12 @@ const pt: Record<keyof typeof en, string> = {
   runningCount: 'em execução',
   localePt: 'Português',
   localeEn: 'English',
-  urlBar: 'Endereço'
+  urlBar: 'Endereço',
+  shortcuts: 'Atalhos de teclado',
+  shortcutCreate: 'Criar conta',
+  shortcutPrev: 'Conta anterior',
+  shortcutNext: 'Próxima conta',
+  shortcutStart: 'Iniciar a conta em foco'
 }
 
 const dictionaries = { en, pt }

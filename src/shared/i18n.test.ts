@@ -30,6 +30,15 @@ describe('i18n', () => {
     expect(t('pt', 'exportWorkspace')).toBe('Exportar espaço de trabalho')
     expect(t('pt', 'collapseSidebar')).toBe('Recolher barra lateral')
     expect(t('pt', 'expandSidebar')).toBe('Expandir barra lateral')
+    expect(t('pt', 'shortcuts')).toBe('Atalhos de teclado')
+    expect(t('pt', 'shortcutCreate')).toBe('Criar conta')
+    expect(t('pt', 'shortcutPrev')).toBe('Conta anterior')
+    expect(t('pt', 'shortcutNext')).toBe('Próxima conta')
+    expect(t('pt', 'shortcutStart')).toBe('Iniciar a conta em foco')
+    expect(t('pt', 'shortcutCreate')).not.toMatch(/create/i)
+    expect(t('pt', 'shortcutPrev')).not.toMatch(/previous/i)
+    expect(t('pt', 'shortcutNext')).not.toMatch(/next/i)
+    expect(t('pt', 'shortcutStart')).not.toMatch(/start/i)
   })
 
   it('translates every key that is not a shared brand or unit label', () => {

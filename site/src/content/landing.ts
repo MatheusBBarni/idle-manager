@@ -9,6 +9,7 @@ type LandingCopy = {
   isolation: string
   how: string
   faq: string
+  keyboard: string
   kicker: string
   headline: string
   subhead: string
@@ -70,6 +71,7 @@ export const landing = {
     isolation: 'Isolation',
     how: 'How it works',
     faq: 'FAQ',
+    keyboard: 'Keyboard',
     kicker: 'Idle manager is a local multi-account shell.',
     headline: 'Run every idle account in one window.',
     subhead:
@@ -216,6 +218,7 @@ export const landing = {
     isolation: 'Isolamento',
     how: 'Como funciona',
     faq: 'Perguntas',
+    keyboard: 'Teclado',
     kicker: 'Idle manager é um shell local de várias contas.',
     headline: 'Rode todas as contas idle em uma janela.',
     subhead:
