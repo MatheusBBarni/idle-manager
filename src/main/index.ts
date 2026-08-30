@@ -11,6 +11,7 @@ import { attachAccountLoop, bindAccountLoop } from './accountLoop'
 import { verifyIsolation } from './isolationVerify'
 import { collectMetrics } from './metrics'
 import { loadSnapshot, saveSnapshot } from './persistence'
+import { handleUpdateCommand, registerUpdater, startUpdater } from './updater'
 import {
   applyStage,
   clearAccountSession,
@@ -235,6 +236,7 @@ function registerIpc(): void {
   })
   ipcMain.handle('ops:version', () => app.getVersion())
   ipcMain.handle('ops:platform', () => process.platform)
+  ipcMain.handle('ops:updateCommand', (_event, command: 'apply' | 'later') => handleUpdateCommand(command))
   ipcMain.on('ops:fps', (_event, value: number) => {
     fps = Number.isFinite(value) ? value : 0
   })
@@ -283,8 +285,28 @@ app.whenReady().then(async () => {
   })
 
   registerIpc()
+  registerUpdater({
+    isPackaged: app.isPackaged,
+    platform: process.platform,
+    send: (status) => {
+      if (mainWindow && !mainWindow.isDestroyed()) {
+        mainWindow.webContents.send('ops:update', status)
+      }
+    },
+    persist: async () => {
+      if (saveTimer) {
+        clearTimeout(saveTimer)
+        saveTimer = null
+      }
+      await saveSnapshot(snapshot)
+      await flushAll()
+    }
+  })
   createWindow()
   syncViews(snapshot)
+  mainWindow?.webContents.once('did-finish-load', () => {
+    startUpdater()
+  })
 
   setInterval(() => {
     if (!mainWindow || mainWindow.isDestroyed()) {

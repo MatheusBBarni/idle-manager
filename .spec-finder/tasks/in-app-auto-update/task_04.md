@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 title: Obtain and apply from packaged Windows
 type: backend
 complexity: high
@@ -84,11 +84,11 @@ A packaged Windows operator obtains a signed build in the background and Apply r
 
 ## Subtasks
 
-- [ ] 04.1 Add `src/main/updater.ts` using electron-updater 6.x and the shared reduce.
-- [ ] 04.2 Register IPC and start only packaged win32 from `src/main/index.ts`.
-- [ ] 04.3 Flush persist+views on Apply; quit without Apply does not install.
-- [ ] 04.4 Add the runtime dependency; do not change isolation code.
-- [ ] 04.5 Run `pnpm test` and `pnpm typecheck` to terminal exit.
+- [x] 04.1 Add `src/main/updater.ts` using electron-updater 6.x and the shared reduce.
+- [x] 04.2 Register IPC and start only packaged win32 from `src/main/index.ts`.
+- [x] 04.3 Flush persist+views on Apply; quit without Apply does not install.
+- [x] 04.4 Add the runtime dependency; do not change isolation code.
+- [x] 04.5 Run `pnpm test` and `pnpm typecheck` to terminal exit.
 
 ## Implementation Details
 
@@ -124,7 +124,7 @@ Follow TechSpec Architecture (`updater.ts`, data flow), Contracts (errors, comma
 
 ### Unit Tests
 
-- [ ] Existing `reduceUpdateStatus` tests still pass (do not weaken later/error → idle).
+- [x] Existing `reduceUpdateStatus` tests still pass (do not weaken later/error → idle).
 
 ### Integration Tests
 
@@ -133,7 +133,7 @@ Follow TechSpec Architecture (`updater.ts`, data flow), Contracts (errors, comma
 ### Platform or Manual Evidence
 
 - [ ] G-01 packaged obtain+apply is dogfood after task_05 + signing. If this environment cannot pack Windows, document that and continue with `pnpm test` + `pnpm typecheck`.
-- [ ] Confirm `checkForUpdatesAndNotify` is not used (source grep).
+- [x] Confirm `checkForUpdatesAndNotify` is not used (source grep).
 
 ### Verification Commands
 

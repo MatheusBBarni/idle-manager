@@ -7,7 +7,7 @@ Canonical execution order. Numeric IDs are the run order. Parallelizable tasks s
 | task_01 | Lock idle/getting/ready/later and the update IPC types | US-05 | backend | medium | [] | completed |
 | task_02 | Spike pack/feed artifact names | G-01 | spike | medium | [] | completed |
 | task_03 | Show Apply/Later on the chrome strip | US-01 | frontend | high | [task_01] | completed |
-| task_04 | Obtain and apply from packaged Windows | US-03 | backend | high | [task_01] | pending |
+| task_04 | Obtain and apply from packaged Windows | US-03 | backend | high | [task_01] | completed |
 | task_05 | Attach Windows latest.yml on GitHub Releases | G-01 | infra | medium | [task_02, task_04] | pending |
 
 ## Execution order

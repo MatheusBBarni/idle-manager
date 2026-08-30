@@ -2,7 +2,7 @@
 
 ## Current State
 
-- Packet `in-app-auto-update` task_01–task_03 completed. task_04–task_05 pending.
+- Packet `in-app-auto-update` task_01–task_04 completed. task_05 pending.
 
 ## Shared Decisions
 
@@ -15,7 +15,7 @@
 
 ## Shared Learnings
 
-- Chrome StatusBar already sends `updateCommand` and swallows invoke errors until main handles `ops:updateCommand`.
+- Main handles `ops:updateCommand`. Updater starts only packaged `win32` after chrome load. `electron-updater` 6.8.9 is a runtime dependency.
 - Update status is not on `WorkspaceSnapshot`.
 - Windows NSIS pack was not executed on this macOS host (no wine, no `dist/`). Feed names are from electron-builder 26.15.3 + `artifactName`.
 
@@ -27,6 +27,6 @@
 
 ## Handoffs
 
-- task_04: emit reduced `UpdateStatus` over `ops:update`; enforce apply/later no-op unless `ready`. Add `electron-updater` as a **runtime** `dependencies` entry (not devDependency) so it is packed. Chrome already subscribes and shows getting/Apply/Later.
+- task_05: pack change remains `none`. `electron-updater` is already a runtime dependency.
 - task_05 feed globs (relative to `dist/`, same tree as `*.exe`): `latest.yml` and `*.exe.blockmap`. Expected names: `latest.yml` and `idle-manager-${version}-win-x64.exe.blockmap`. Fail-closed if missing.
 - task_05 pack change: `none`. Do not add a `files` or `asarUnpack` glob. Production deps are copied by `computeNodeModuleFileSets` even though `files` is `out/**/*` + `package.json` (matcher adds `!**/node_modules/**`).
