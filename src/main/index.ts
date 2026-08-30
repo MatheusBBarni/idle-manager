@@ -1,7 +1,8 @@
-import { BrowserWindow, Menu, app, dialog, ipcMain, protocol, shell } from 'electron'
+import { BrowserWindow, Menu, app, dialog, ipcMain, nativeImage, protocol, shell } from 'electron'
 import { readFile, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import iconPath from '../../assets/icon.png?asset'
 import type { NavCommand, WindowCommand } from '@shared/ipc'
 import type { StageReport, WorkspaceSnapshot } from '@shared/types'
 import { normalizeUrl } from '@shared/urls'
@@ -32,6 +33,7 @@ protocol.registerSchemesAsPrivileged([
 app.commandLine.appendSwitch('disable-renderer-backgrounding')
 app.commandLine.appendSwitch('disable-background-timer-throttling')
 app.commandLine.appendSwitch('disable-backgrounding-occluded-windows')
+app.setName('Idle manager')
 
 const verifying = process.argv.includes('--verify-isolation')
 const preloadPath = fileURLToPath(new URL('../preload/index.cjs', import.meta.url))
@@ -86,10 +88,11 @@ function createWindow(): void {
     minHeight: 700,
     show: false,
     frame: false,
-    title: 'Opsource',
+    title: 'Idle manager',
+    icon: iconPath,
     backgroundColor: snapshot.theme === 'light' ? '#ffffff' : '#141414',
     titleBarStyle: process.platform === 'darwin' ? 'hidden' : undefined,
-    trafficLightPosition: { x: 14, y: 12 },
+    trafficLightPosition: { x: 14, y: 10 },
     webPreferences: {
       preload: preloadPath,
       sandbox: true,
@@ -189,7 +192,7 @@ function registerIpc(): void {
     }
     const result = await dialog.showSaveDialog(mainWindow, {
       title: 'Export workspace',
-      defaultPath: 'opsource-workspace.json',
+      defaultPath: 'idle-manager-workspace.json',
       filters: [{ name: 'JSON', extensions: ['json'] }]
     })
     if (result.canceled || !result.filePath) {
@@ -229,6 +232,10 @@ app.whenReady().then(async () => {
     const code = await verifyIsolation()
     app.exit(code)
     return
+  }
+
+  if (process.platform === 'darwin') {
+    app.dock?.setIcon(nativeImage.createFromPath(iconPath))
   }
 
   snapshot = await loadSnapshot()

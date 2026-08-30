@@ -1,5 +1,5 @@
-appId: app.opsource.desktop
-productName: Opsource
+appId: app.idlemanager.desktop
+productName: Idle manager
 directories:
   output: dist
   buildResources: resources
@@ -10,14 +10,17 @@ asar: true
 win:
   target:
     - nsis
+  icon: assets/icon.png
 mac:
   target:
     - dmg
   category: public.app-category.utilities
+  icon: assets/icon.png
 linux:
   target:
     - AppImage
   category: Utility
+  icon: assets/icon.png
 nsis:
   oneClick: false
   allowToChangeInstallationDirectory: true

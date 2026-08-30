@@ -1,7 +1,7 @@
 import type { Locale } from './types'
 
 const en = {
-  appName: 'Opsource',
+  appName: 'Idle manager',
   newTab: 'New tab',
   closeTab: 'Close tab',
   reopenTab: 'Reopen tab',
@@ -79,7 +79,7 @@ const en = {
 } as const
 
 const pt: Record<keyof typeof en, string> = {
-  appName: 'Opsource',
+  appName: 'Idle manager',
   newTab: 'Nova aba',
   closeTab: 'Fechar aba',
   reopenTab: 'Reabrir aba',

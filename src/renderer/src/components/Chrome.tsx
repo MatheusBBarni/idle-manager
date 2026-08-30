@@ -54,14 +54,14 @@ function RecentlyClosed({ locale }: { locale: 'pt' | 'en' }) {
   const snapshot = useAppStore((state) => state.snapshot)
   const closed = archivedTabs(snapshot)
   return (
-    <Dropdown onOpenChange={(open) => useAppStore.getState().setPopoverOpen(open)}>
+    <Dropdown className="h-full justify-center">
       <Button
         isIconOnly
         size="sm"
         variant="ghost"
         isDisabled={closed.length === 0}
         aria-label={t(locale, 'recentlyClosed')}
-        className="chrome-tab-new text-muted"
+        className="chrome-tab-new"
       >
         <History className="size-4" />
       </Button>
@@ -109,33 +109,9 @@ export function Chrome() {
 
   return (
     <header className="bg-tab-strip">
-      <div className="app-drag flex h-10 items-center gap-3 px-3">
-        {platform === 'darwin' ? <div className="w-14" /> : null}
-        <div className="flex items-center gap-2 app-no-drag">
-          <span className="text-[13px] font-semibold">Opsource</span>
-        </div>
-        <div className="min-w-0 flex-1" />
-        <div className="app-no-drag flex items-center gap-1">
-          <IconButton label={t(locale, 'settings')} onPress={() => useAppStore.getState().setDialog({ id: 'settings' })}>
-            <Settings className="size-4" />
-          </IconButton>
-          {platform !== 'darwin' ? (
-            <>
-              <IconButton label="Minimize" onPress={() => void window.opsource.windowControl('min')}>
-                <Minus className="size-4" />
-              </IconButton>
-              <IconButton label="Maximize" onPress={() => void window.opsource.windowControl('max')}>
-                <Square className="size-3.5" />
-              </IconButton>
-              <IconButton label="Close" onPress={() => void window.opsource.windowControl('close')}>
-                <X className="size-4" />
-              </IconButton>
-            </>
-          ) : null}
-        </div>
-      </div>
-
-      <div className="chrome-tabstrip app-no-drag">
+      <div className="app-drag flex h-9 items-stretch">
+        {platform === 'darwin' ? <div className="w-[72px] shrink-0" /> : null}
+        <div className="chrome-tabstrip app-no-drag min-w-0 flex-1">
         {tabs.map((item) => {
           const active = item.id === snapshot.activeTabId
           return (
@@ -170,6 +146,25 @@ export function Chrome() {
           <Plus className="size-4" />
         </button>
         <RecentlyClosed locale={locale} />
+        </div>
+        <div className="app-no-drag flex shrink-0 items-center gap-1 pr-2">
+          <IconButton label={t(locale, 'settings')} onPress={() => useAppStore.getState().setDialog({ id: 'settings' })}>
+            <Settings className="size-4" />
+          </IconButton>
+          {platform !== 'darwin' ? (
+            <>
+              <IconButton label="Minimize" onPress={() => void window.opsource.windowControl('min')}>
+                <Minus className="size-4" />
+              </IconButton>
+              <IconButton label="Maximize" onPress={() => void window.opsource.windowControl('max')}>
+                <Square className="size-3.5" />
+              </IconButton>
+              <IconButton label="Close" onPress={() => void window.opsource.windowControl('close')}>
+                <X className="size-4" />
+              </IconButton>
+            </>
+          ) : null}
+        </div>
       </div>
 
       <div className="flex h-11 items-center gap-1 bg-canvas px-2">

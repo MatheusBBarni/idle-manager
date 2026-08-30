@@ -1,4 +1,5 @@
 import { BrowserWindow, WebContentsView, session, type WebContents } from 'electron'
+import iconPath from '../../assets/icon.png?asset'
 import { partitionForAccount } from '@shared/partition'
 import type { Account, NavigationState, Rect, StageReport, WorkspaceSnapshot } from '@shared/types'
 
@@ -252,6 +253,7 @@ export function popOut(account: Account): void {
     width: 1100,
     height: 740,
     title: `${account.name} · ${account.url}`,
+    icon: iconPath,
     backgroundColor: '#161218',
     webPreferences: {
       session: item.view.webContents.session,

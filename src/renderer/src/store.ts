@@ -31,7 +31,6 @@ type AppStore = {
   platform: NodeJS.Platform
   version: string
   fps: number
-  popoverOpen: boolean
   sidebarCollapsed: boolean
   setSnapshot: (snapshot: WorkspaceSnapshot) => void
   setMetrics: (metrics: MetricsPayload) => void
@@ -41,7 +40,6 @@ type AppStore = {
   setDialog: (dialog: DialogKind) => void
   setMeta: (meta: { platform: NodeJS.Platform; version: string }) => void
   setFps: (fps: number) => void
-  setPopoverOpen: (value: boolean) => void
   setSidebarCollapsed: (value: boolean) => void
 }
 
@@ -55,7 +53,6 @@ export const useAppStore = create<AppStore>((set) => ({
   platform: 'darwin',
   version: '0.1.0',
   fps: 0,
-  popoverOpen: false,
   sidebarCollapsed: false,
   setSnapshot: (snapshot) => set({ snapshot }),
   setMetrics: (metrics) => set({ metrics }),
@@ -69,7 +66,6 @@ export const useAppStore = create<AppStore>((set) => ({
   setDialog: (dialog) => set({ dialog }),
   setMeta: (meta) => set(meta),
   setFps: (fps) => set({ fps }),
-  setPopoverOpen: (popoverOpen) => set({ popoverOpen }),
   setSidebarCollapsed: (sidebarCollapsed) => set({ sidebarCollapsed })
 }))
 

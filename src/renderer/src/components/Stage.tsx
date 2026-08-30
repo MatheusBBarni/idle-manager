@@ -20,7 +20,6 @@ const emptyRect: Rect = { x: 0, y: 0, width: 0, height: 0 }
 export function Stage() {
   const snapshot = useAppStore((state) => state.snapshot)
   const dialog = useAppStore((state) => state.dialog)
-  const popoverOpen = useAppStore((state) => state.popoverOpen)
   const ref = useRef<HTMLDivElement>(null)
   const [stage, setStage] = useState<Rect>(emptyRect)
   const locale = snapshot.locale
@@ -42,7 +41,7 @@ export function Stage() {
       const nextPanels = tab ? layoutPanels(nextStage, tab, snapshot.accounts) : []
       window.opsource.reportStage({
         stage: nextStage,
-        overlayOpen: dialog.id !== 'none' || popoverOpen,
+        overlayOpen: dialog.id !== 'none',
         panels: nextPanels
       })
     }
@@ -54,7 +53,7 @@ export function Stage() {
       observer.disconnect()
       window.removeEventListener('resize', report)
     }
-  }, [tab, snapshot.activeTabId, snapshot.accounts, dialog.id, popoverOpen])
+  }, [tab, snapshot.activeTabId, snapshot.accounts, dialog.id])
 
   return (
     <section ref={ref} className="relative h-full overflow-hidden bg-background">
@@ -106,9 +105,7 @@ export function Stage() {
             >
               <div
                 className="flex h-[30px] items-center gap-2 px-2"
-                style={{
-                  background: `linear-gradient(90deg, ${account.color}, color-mix(in oklab, ${account.color} 35%, #1a161c))`
-                }}
+                style={{ background: account.color }}
                 onPointerDown={(event) => {
                   if (tab.layout !== 'free' || event.button !== 0) {
                     return

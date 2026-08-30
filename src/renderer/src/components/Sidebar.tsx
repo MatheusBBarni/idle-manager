@@ -1,6 +1,6 @@
 import { EllipsisVertical, PanelLeftClose, PanelLeftOpen, Play, Plus } from 'lucide-react'
 import { Button, Dropdown, Label } from '@heroui/react'
-import type { Account } from '@shared/types'
+import { ACCOUNT_COLORS, type Account } from '@shared/types'
 import { formatAge, formatBytes, formatCpu, t } from '@shared/i18n'
 import { accountsForTab, visibleTabs } from '@shared/workspace'
 import { dispatch, useAppStore } from '../store'
@@ -52,15 +52,24 @@ function AccountRow({ account, active }: { account: Account; active: boolean }) 
           </span>
         </span>
       </button>
-      <Dropdown
-        onOpenChange={(open) => {
-          useAppStore.getState().setPopoverOpen(open)
-        }}
-      >
+      <Dropdown>
         <Button isIconOnly size="sm" variant="ghost" aria-label={account.name} className="text-muted">
           <EllipsisVertical className="size-4" />
         </Button>
         <Dropdown.Popover placement="bottom end" className="w-48">
+          <div className="flex justify-center gap-1.5 px-2 pt-3.5 pb-1.5" aria-label={t(locale, 'recolor')}>
+            {ACCOUNT_COLORS.map((color) => (
+              <button
+                key={color}
+                type="button"
+                title={color}
+                aria-label={color}
+                className={`size-4 rounded-full ${account.color === color ? 'ring-1 ring-ink ring-offset-1 ring-offset-overlay' : ''}`}
+                style={{ background: color }}
+                onClick={() => void dispatch({ type: 'account/recolor', id: account.id, color })}
+              />
+            ))}
+          </div>
           <Dropdown.Menu
             onAction={(key) => {
               const id = String(key)
@@ -128,10 +137,7 @@ function AccountBubble({ account, active }: { account: Account; active: boolean 
       title={account.name}
       aria-label={account.name}
       aria-current={active ? 'true' : undefined}
-      className={`relative flex size-9 items-center justify-center rounded-full transition-transform ${
-        active ? 'ring-2 ring-ink ring-offset-2 ring-offset-canvas' : 'opacity-80 hover:opacity-100'
-      }`}
-      style={{ background: account.color }}
+      className="relative flex size-7 shrink-0 items-center justify-center"
       onClick={() => void dispatch({ type: 'account/activate', id: account.id })}
       onDoubleClick={() =>
         void dispatch({
@@ -141,8 +147,14 @@ function AccountBubble({ account, active }: { account: Account; active: boolean 
         })
       }
     >
+      <span
+        className={`size-5 rounded-full ${
+          active ? 'ring-1 ring-ink ring-offset-1 ring-offset-canvas' : 'opacity-80 hover:opacity-100'
+        }`}
+        style={{ background: account.color }}
+      />
       {running ? (
-        <span className="absolute -right-0.5 -bottom-0.5 size-2.5 rounded-full bg-signal ring-2 ring-canvas" />
+        <span className="absolute right-0.5 bottom-0.5 size-1.5 rounded-full bg-signal ring-1 ring-canvas" />
       ) : null}
     </button>
   )
@@ -158,7 +170,7 @@ export function Sidebar() {
 
   if (collapsed) {
     return (
-      <aside className="relative z-20 flex w-14 shrink-0 flex-col items-center border-r border-hairline bg-canvas py-2">
+      <aside className="relative z-20 flex w-11 shrink-0 flex-col items-center border-r border-hairline bg-canvas py-2">
         <Button
           isIconOnly
           size="sm"
@@ -169,7 +181,7 @@ export function Sidebar() {
         >
           <PanelLeftOpen className="size-4" />
         </Button>
-        <div className="flex min-h-0 flex-1 flex-col items-center gap-2 overflow-auto py-1">
+        <div className="flex min-h-0 w-full flex-1 flex-col items-center gap-0.5 overflow-y-auto overflow-x-hidden py-1">
           {accounts.map((account) => (
             <AccountBubble
               key={account.id}

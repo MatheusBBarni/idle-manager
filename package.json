@@ -1,12 +1,12 @@
 {
-  "name": "opsource",
-  "productName": "Opsource",
+  "name": "idle-manager",
+  "productName": "Idle manager",
   "version": "0.1.0",
   "description": "Desktop shell for many isolated idle-game accounts in one window",
   "private": true,
   "type": "module",
   "main": "./out/main/index.js",
-  "author": "Opsource",
+  "author": "Idle manager",
   "license": "MIT",
   "scripts": {
     "dev": "electron-vite dev",

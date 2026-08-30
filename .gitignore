@@ -11,3 +11,5 @@ coverage
 .vscode
 .env
 .env.*
+.agents
+.claude
