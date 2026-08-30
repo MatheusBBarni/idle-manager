@@ -1,0 +1,13 @@
+node_modules
+out
+dist
+release
+coverage
+*.log
+.DS_Store
+.vite
+*.tsbuildinfo
+.idea
+.vscode
+.env
+.env.*

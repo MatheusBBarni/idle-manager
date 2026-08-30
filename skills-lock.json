@@ -1,0 +1,35 @@
+{
+  "version": 1,
+  "skills": {
+    "desktop-app": {
+      "source": "ww-w-ai/bkit-claude-code",
+      "sourceType": "github",
+      "skillPath": "skills/desktop-app/SKILL.md",
+      "computedHash": "2294d2ddb3f108e80f04fba4d126a6e27ed1533d65cb5a929c042da073458eac"
+    },
+    "frontend-design": {
+      "source": "anthropics/skills",
+      "sourceType": "github",
+      "skillPath": "skills/frontend-design/SKILL.md",
+      "computedHash": "4eabc66183767153e404b39d1b839b1c37f2d82d86f0a0d7e880a579d8d62336"
+    },
+    "native-feel-cross-platform-desktop": {
+      "source": "yetone/native-feel-skill",
+      "sourceType": "github",
+      "skillPath": "SKILL.md",
+      "computedHash": "7f8cabfd619108eb5058087ea8bb09fbbe1edc23891bf387278d95cc564bb0f9"
+    },
+    "thermo-nuclear-code-quality-review": {
+      "source": "cursor/plugins",
+      "sourceType": "github",
+      "skillPath": "cursor-team-kit/skills/thermo-nuclear-code-quality-review/SKILL.md",
+      "computedHash": "9052b01b46b1d8dbf94c45f9313ec1983443f9a460e83d49cdc7fe0f640ca476"
+    },
+    "vercel-react-best-practices": {
+      "source": "vercel-labs/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/react-best-practices/SKILL.md",
+      "computedHash": "ca7b0c0c6e5f2750043f7f0cd72d16ac4e2abc48f9b5500d047a4b77a2506212"
+    }
+  }
+}

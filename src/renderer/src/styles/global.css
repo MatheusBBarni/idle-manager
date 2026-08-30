@@ -1,0 +1,293 @@
+@import "tailwindcss";
+@import "@heroui/styles";
+@import "@fontsource-variable/inter/wght.css";
+
+@theme inline {
+  --font-sans: "Inter Variable", Inter, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  --font-display: "Inter Variable", Inter, sans-serif;
+  --font-mono: "Inter Variable", Inter, ui-monospace, monospace;
+  --color-signal: var(--signal);
+  --color-ink: var(--ink);
+  --color-canvas: var(--canvas);
+  --color-canvas-soft: var(--canvas-soft);
+  --color-hairline: var(--hairline);
+  --color-faint: var(--text-faint);
+  --color-field: var(--field);
+  --color-tab-strip: var(--tab-strip);
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  font-family: var(--font-sans);
+  font-weight: 450;
+  letter-spacing: 0;
+  user-select: none;
+}
+
+button,
+input,
+textarea {
+  user-select: text;
+}
+
+.app-drag {
+  -webkit-app-region: drag;
+}
+
+.app-no-drag {
+  -webkit-app-region: no-drag;
+}
+
+.font-display {
+  font-family: var(--font-display);
+  font-weight: 650;
+  letter-spacing: 0;
+}
+
+.font-mono {
+  font-family: var(--font-sans);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0;
+}
+
+@layer theme {
+  :root,
+  [data-theme="mobbin-light"] {
+    color-scheme: light;
+    --ink: #141414;
+    --ink-soft: #262626;
+    --text-muted: #707070;
+    --text-faint: #adadad;
+    --canvas: #ffffff;
+    --canvas-soft: #f3f3f3;
+    --field: #f0f0f0;
+    --hairline-soft: #f0f0f0;
+    --hairline: #e0e0e0;
+    --signal: #0066ff;
+    --background: var(--canvas);
+    --foreground: var(--ink);
+    --surface: var(--canvas);
+    --surface-foreground: var(--ink);
+    --surface-secondary: var(--canvas-soft);
+    --surface-tertiary: var(--field);
+    --overlay: var(--canvas);
+    --overlay-foreground: var(--ink);
+    --muted: var(--text-muted);
+    --default: var(--canvas-soft);
+    --default-foreground: var(--ink);
+    --accent: var(--ink);
+    --accent-foreground: #ffffff;
+    --field-background: var(--field);
+    --field-foreground: var(--ink);
+    --field-placeholder: var(--text-faint);
+    --field-border: transparent;
+    --success: var(--signal);
+    --success-foreground: #ffffff;
+    --warning: #707070;
+    --warning-foreground: #ffffff;
+    --danger: #141414;
+    --danger-foreground: #ffffff;
+    --border: var(--hairline);
+    --separator: var(--hairline-soft);
+    --focus: var(--ink);
+    --link: var(--ink);
+    --tab-strip: #e3e3e3;
+    --radius: 1rem;
+    --scrollbar-thumb: color-mix(in oklab, var(--ink) 15%, transparent);
+  }
+
+  .dark,
+  [data-theme="mobbin-dark"] {
+    color-scheme: dark;
+    --ink: #ffffff;
+    --ink-soft: #f3f3f3;
+    --text-muted: #adadad;
+    --text-faint: #707070;
+    --canvas: #141414;
+    --canvas-soft: #1f1f1f;
+    --field: #262626;
+    --hairline-soft: #262626;
+    --hairline: #333333;
+    --signal: #0066ff;
+    --background: var(--canvas);
+    --foreground: var(--ink);
+    --surface: var(--canvas);
+    --surface-foreground: var(--ink);
+    --surface-secondary: var(--canvas-soft);
+    --surface-tertiary: var(--field);
+    --overlay: #1a1a1a;
+    --overlay-foreground: var(--ink);
+    --muted: var(--text-muted);
+    --default: var(--field);
+    --default-foreground: var(--ink);
+    --accent: #ffffff;
+    --accent-foreground: #141414;
+    --field-background: var(--field);
+    --field-foreground: var(--ink);
+    --field-placeholder: var(--text-faint);
+    --field-border: transparent;
+    --success: var(--signal);
+    --success-foreground: #ffffff;
+    --warning: #adadad;
+    --warning-foreground: #141414;
+    --danger: #ffffff;
+    --danger-foreground: #141414;
+    --border: var(--hairline);
+    --separator: var(--hairline-soft);
+    --focus: var(--ink);
+    --link: var(--ink);
+    --tab-strip: #0c0c0c;
+    --radius: 1rem;
+    --scrollbar-thumb: color-mix(in oklab, var(--ink) 18%, transparent);
+  }
+}
+
+@layer components {
+  .button {
+    border-radius: 9999px;
+    letter-spacing: 0;
+    font-weight: 600;
+  }
+}
+
+@layer components {
+  .chrome-tabstrip {
+    display: flex;
+    align-items: stretch;
+    height: 36px;
+    padding: 4px 8px 0;
+    gap: 2px;
+    overflow: hidden;
+  }
+
+  .chrome-tab {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    min-width: 80px;
+    max-width: 220px;
+    flex: 1 1 160px;
+    align-items: center;
+    gap: 6px;
+    height: 32px;
+    padding: 0 8px 0 14px;
+    border: 0;
+    background: transparent;
+    color: var(--text-muted);
+    cursor: default;
+  }
+
+  .chrome-tab:hover .chrome-tab-surface {
+    background: color-mix(in oklab, var(--ink) 8%, transparent);
+  }
+
+  .chrome-tab.is-active {
+    z-index: 3;
+    color: var(--foreground);
+  }
+
+  .chrome-tab.is-active .chrome-tab-surface,
+  .chrome-tab.is-active:hover .chrome-tab-surface {
+    background: var(--canvas);
+  }
+
+  .chrome-tab-surface {
+    position: absolute;
+    inset: 0;
+    border-radius: 10px 10px 0 0;
+    pointer-events: none;
+  }
+
+  .chrome-tab.is-active .chrome-tab-surface::before,
+  .chrome-tab.is-active .chrome-tab-surface::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    width: 10px;
+    height: 10px;
+  }
+
+  .chrome-tab.is-active .chrome-tab-surface::before {
+    left: -10px;
+    background: radial-gradient(circle at 0 0, transparent 10px, var(--canvas) 10.5px);
+  }
+
+  .chrome-tab.is-active .chrome-tab-surface::after {
+    right: -10px;
+    background: radial-gradient(circle at 100% 0, transparent 10px, var(--canvas) 10.5px);
+  }
+
+  .chrome-tab-label {
+    position: relative;
+    z-index: 1;
+    min-width: 0;
+    flex: 1;
+    overflow: hidden;
+    text-align: left;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 12px;
+    font-weight: 500;
+  }
+
+  .chrome-tab-close {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    border: 0;
+    border-radius: 9999px;
+    background: transparent;
+    color: inherit;
+    opacity: 0.7;
+  }
+
+  .chrome-tab-close:hover {
+    background: color-mix(in oklab, var(--ink) 12%, transparent);
+    opacity: 1;
+  }
+
+  .chrome-tab-new {
+    display: flex;
+    width: 28px;
+    height: 28px;
+    margin: 2px 4px 2px 6px;
+    align-items: center;
+    justify-content: center;
+    border: 0;
+    border-radius: 9999px;
+    background: transparent;
+    color: var(--text-muted);
+  }
+
+  .chrome-tab-new:hover {
+    background: color-mix(in oklab, var(--ink) 10%, transparent);
+    color: var(--foreground);
+  }
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
