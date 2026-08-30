@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 title: Select a Windows Download href from GitHub Releases JSON
 type: frontend
 complexity: medium
@@ -66,9 +66,9 @@ Operators get a pure, unit-tested mapping from GitHub Releases JSON to a Downloa
 
 ## Subtasks
 
-- [ ] 02.1 Add `selectWindowsDownload` under `site/` as a pure function with no Electron imports.
-- [ ] 02.2 Cover TechSpec unit cases (404, empty, 429, first `.exe`, `.dmg`, bad protocol).
-- [ ] 02.3 Expose `pnpm --dir site test` for those tests without changing root `pnpm test`.
+- [x] 02.1 Add `selectWindowsDownload` under `site/` as a pure function with no Electron imports.
+- [x] 02.2 Cover TechSpec unit cases (404, empty, 429, first `.exe`, `.dmg`, bad protocol).
+- [x] 02.3 Expose `pnpm --dir site test` for those tests without changing root `pnpm test`.
 
 ## Implementation Details
 
@@ -101,12 +101,12 @@ Follow TechSpec Contracts (`selectWindowsDownload`, Errors) and Tests (Unit). Se
 
 ### Unit Tests
 
-- [ ] Given `ok: false, status: 404`, when selecting, then `kind: 'fallback'`.
-- [ ] Given `ok: true` and `assets: []`, when selecting, then fallback.
-- [ ] Given `status: 429`, when selecting, then fallback.
-- [ ] Given two `.exe` assets, when selecting, then the first allowlisted `.exe`.
-- [ ] Given only `.dmg`, when selecting, then fallback.
-- [ ] Given `.exe` with `javascript:` URL, when selecting, then fallback.
+- [x] Given `ok: false, status: 404`, when selecting, then `kind: 'fallback'`.
+- [x] Given `ok: true` and `assets: []`, when selecting, then fallback.
+- [x] Given `status: 429`, when selecting, then fallback.
+- [x] Given two `.exe` assets, when selecting, then the first allowlisted `.exe`.
+- [x] Given only `.dmg`, when selecting, then fallback.
+- [x] Given `.exe` with `javascript:` URL, when selecting, then fallback.
 
 ### Integration Tests
 
