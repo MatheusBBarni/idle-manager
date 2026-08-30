@@ -2,6 +2,10 @@ import { create } from 'zustand'
 import type { MetricsPayload, NavigationState, WorkspaceSnapshot } from '@shared/types'
 import { activeAccount, emptySnapshot, type WorkspaceAction } from '@shared/workspace'
 
+export type DialogCommand =
+  | { type: 'workspace'; action: WorkspaceAction }
+  | { type: 'clear-session'; accountId: string }
+
 export type DialogKind =
   | { id: 'none' }
   | { id: 'tab-create' }
@@ -14,7 +18,7 @@ export type DialogKind =
       title: string
       body: string
       danger?: boolean
-      action: WorkspaceAction | { type: 'clear-session'; accountId: string }
+      command: DialogCommand
     }
 
 type AppStore = {
@@ -79,4 +83,12 @@ export async function dispatch(action: WorkspaceAction): Promise<WorkspaceSnapsh
     store.setUrlDraft(currentNav?.url ?? account?.url ?? '')
   }
   return snapshot
+}
+
+export async function runDialogCommand(command: DialogCommand): Promise<void> {
+  if (command.type === 'clear-session') {
+    await window.opsource.clearSession(command.accountId)
+    return
+  }
+  await dispatch(command.action)
 }

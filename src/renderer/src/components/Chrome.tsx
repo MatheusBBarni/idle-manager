@@ -9,6 +9,7 @@ import {
   Square,
   Move,
   Minus,
+  History,
   Plus,
   RotateCw,
   Settings,
@@ -16,10 +17,10 @@ import {
   VolumeX,
   X
 } from 'lucide-react'
-import { Button } from '@heroui/react'
+import { Button, Dropdown, Label } from '@heroui/react'
 import { t } from '@shared/i18n'
 import type { LayoutMode } from '@shared/types'
-import { activeAccount, visibleTabs } from '@shared/workspace'
+import { activeAccount, archivedTabs, visibleTabs } from '@shared/workspace'
 import { dispatch, useAppStore } from '../store'
 
 function IconButton({
@@ -45,6 +46,39 @@ function IconButton({
     >
       {children}
     </Button>
+  )
+}
+
+
+function RecentlyClosed({ locale }: { locale: 'pt' | 'en' }) {
+  const snapshot = useAppStore((state) => state.snapshot)
+  const closed = archivedTabs(snapshot)
+  return (
+    <Dropdown onOpenChange={(open) => useAppStore.getState().setPopoverOpen(open)}>
+      <Button
+        isIconOnly
+        size="sm"
+        variant="ghost"
+        isDisabled={closed.length === 0}
+        aria-label={t(locale, 'recentlyClosed')}
+        className="chrome-tab-new text-muted"
+      >
+        <History className="size-4" />
+      </Button>
+      <Dropdown.Popover placement="bottom start" className="w-52">
+        <Dropdown.Menu
+          onAction={(key) => {
+            void dispatch({ type: 'tab/reopen', id: String(key) })
+          }}
+        >
+          {closed.map((item) => (
+            <Dropdown.Item key={item.id} id={item.id} textValue={item.name}>
+              <Label>{item.name}</Label>
+            </Dropdown.Item>
+          ))}
+        </Dropdown.Menu>
+      </Dropdown.Popover>
+    </Dropdown>
   )
 }
 
@@ -135,6 +169,7 @@ export function Chrome() {
         >
           <Plus className="size-4" />
         </button>
+        <RecentlyClosed locale={locale} />
       </div>
 
       <div className="flex h-11 items-center gap-1 bg-canvas px-2">

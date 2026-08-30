@@ -73,6 +73,15 @@ export function visibleTabs(snapshot: WorkspaceSnapshot): GameTab[] {
   return snapshot.tabs.filter((tab) => !tab.archived)
 }
 
+export function archivedTabs(snapshot: WorkspaceSnapshot): GameTab[] {
+  return snapshot.tabs.filter((tab) => tab.archived)
+}
+
+export function lastArchivedTab(snapshot: WorkspaceSnapshot): GameTab | null {
+  const closed = archivedTabs(snapshot)
+  return closed[closed.length - 1] ?? null
+}
+
 export function tabById(snapshot: WorkspaceSnapshot, tabId: string | null): GameTab | null {
   if (!tabId) {
     return null
@@ -373,24 +382,128 @@ export function applyAction(snapshot: WorkspaceSnapshot, action: WorkspaceAction
   }
 }
 
+const LAYOUT_MODES = new Set<LayoutMode>(['grid', 'single', 'columns', 'rows', 'free'])
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value)
+}
+
+function asFinite(value: unknown): number | null {
+  return typeof value === 'number' && Number.isFinite(value) ? value : null
+}
+
+function asString(value: unknown): string | null {
+  return typeof value === 'string' && value.length > 0 ? value : null
+}
+
+function asTab(value: unknown): GameTab | null {
+  if (!isRecord(value)) {
+    return null
+  }
+  const id = asString(value.id)
+  const name = asString(value.name)
+  const baseUrl = asString(value.baseUrl)
+  if (!id || !name || !baseUrl) {
+    return null
+  }
+  const layout = LAYOUT_MODES.has(value.layout as LayoutMode) ? (value.layout as LayoutMode) : 'grid'
+  const accountOrder = Array.isArray(value.accountOrder)
+    ? value.accountOrder.filter((item): item is string => typeof item === 'string')
+    : []
+  const activeAccountId = asString(value.activeAccountId)
+  return {
+    id,
+    name,
+    baseUrl,
+    layout,
+    accountOrder,
+    activeAccountId,
+    archived: value.archived === true
+  }
+}
+
+function asFractionRect(value: unknown): FractionRect | null {
+  if (!isRecord(value)) {
+    return null
+  }
+  const x = asFinite(value.x)
+  const y = asFinite(value.y)
+  const w = asFinite(value.w)
+  const h = asFinite(value.h)
+  if (x === null || y === null || w === null || h === null) {
+    return null
+  }
+  return { x, y, w, h }
+}
+
+function asAccount(value: unknown): Account | null {
+  if (!isRecord(value)) {
+    return null
+  }
+  const id = asString(value.id)
+  const tabId = asString(value.tabId)
+  const name = asString(value.name)
+  const color = asString(value.color)
+  const url = asString(value.url)
+  if (!id || !tabId || !name || !color || !url) {
+    return null
+  }
+  const zoom = asFinite(value.zoomFactor)
+  return {
+    id,
+    tabId,
+    name,
+    color,
+    url,
+    homeUrl: asString(value.homeUrl) ?? url,
+    status: value.status === 'running' ? 'running' : 'closed',
+    muted: value.muted === true,
+    zoomFactor: zoom === null ? 1 : zoom,
+    lastActivityAt: asFinite(value.lastActivityAt),
+    poppedOut: value.poppedOut === true,
+    freeBounds: asFractionRect(value.freeBounds)
+  }
+}
+
+function asWindowBounds(value: unknown): WindowBounds | null {
+  if (!isRecord(value)) {
+    return null
+  }
+  const x = asFinite(value.x)
+  const y = asFinite(value.y)
+  const width = asFinite(value.width)
+  const height = asFinite(value.height)
+  if (x === null || y === null || width === null || height === null) {
+    return null
+  }
+  return { x, y, width, height }
+}
+
 export function parseSnapshot(raw: unknown): WorkspaceSnapshot {
   const fallback = emptySnapshot()
-  if (!raw || typeof raw !== 'object') {
+  if (!isRecord(raw) || raw.version !== 1 || !Array.isArray(raw.tabs) || !isRecord(raw.accounts)) {
     return fallback
   }
-  const data = raw as Partial<WorkspaceSnapshot>
-  if (data.version !== 1 || !Array.isArray(data.tabs) || typeof data.accounts !== 'object' || data.accounts === null) {
-    return fallback
+  const tabs = raw.tabs.map(asTab).filter((tab): tab is GameTab => tab !== null)
+  const accounts: Record<string, Account> = {}
+  for (const [key, value] of Object.entries(raw.accounts)) {
+    const account = asAccount(value)
+    if (account && account.id === key) {
+      accounts[key] = account
+    }
   }
+  const activeTabId = asString(raw.activeTabId)
   return {
     version: 1,
-    tabs: data.tabs,
-    accounts: data.accounts,
-    activeTabId: data.activeTabId ?? firstVisibleId(data.tabs),
-    locale: data.locale === 'en' ? 'en' : 'pt',
-    theme: data.theme === 'light' ? 'light' : 'dark',
-    windowBounds: data.windowBounds ?? null,
-    launchAtStartup: Boolean(data.launchAtStartup)
+    tabs,
+    accounts,
+    activeTabId: activeTabId && tabs.some((tab) => tab.id === activeTabId && !tab.archived)
+      ? activeTabId
+      : firstVisibleId(tabs),
+    locale: raw.locale === 'en' ? 'en' : 'pt',
+    theme: raw.theme === 'light' ? 'light' : 'dark',
+    windowBounds: asWindowBounds(raw.windowBounds),
+    launchAtStartup: raw.launchAtStartup === true
   }
 }
 
@@ -424,10 +537,7 @@ export function exportMetadata(snapshot: WorkspaceSnapshot): WorkspaceExport {
 }
 
 export function snapshotFromImport(raw: unknown): WorkspaceSnapshot {
-  const imported = parseSnapshot({
-    ...(raw && typeof raw === 'object' ? raw : {}),
-    version: 1
-  })
+  const imported = parseSnapshot(raw)
   return {
     ...imported,
     accounts: Object.fromEntries(
@@ -436,11 +546,7 @@ export function snapshotFromImport(raw: unknown): WorkspaceSnapshot {
         {
           ...account,
           status: 'closed',
-          poppedOut: false,
-          muted: false,
-          zoomFactor: account.zoomFactor ?? 1,
-          lastActivityAt: null,
-          freeBounds: account.freeBounds ?? null
+          poppedOut: false
         }
       ])
     )

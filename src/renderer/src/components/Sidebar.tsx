@@ -81,7 +81,7 @@ function AccountRow({ account, active }: { account: Account; active: boolean }) 
                   id: 'confirm',
                   title: t(locale, 'clearSession'),
                   body: t(locale, 'confirmClearSession'),
-                  action: { type: 'clear-session', accountId: account.id }
+                  command: { type: 'clear-session', accountId: account.id }
                 })
               }
               if (id === 'delete') {
@@ -90,7 +90,7 @@ function AccountRow({ account, active }: { account: Account; active: boolean }) 
                   title: t(locale, 'deleteAccount'),
                   body: t(locale, 'confirmDeleteAccount'),
                   danger: true,
-                  action: { type: 'account/delete', id: account.id }
+                  command: { type: 'workspace', action: { type: 'account/delete', id: account.id } }
                 })
               }
             }}

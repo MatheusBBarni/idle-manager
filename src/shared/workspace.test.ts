@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { applyAction, emptySnapshot, accountsForTab, visibleTabs } from './workspace'
+import { applyAction, emptySnapshot, accountsForTab, lastArchivedTab, parseSnapshot, snapshotFromImport, visibleTabs } from './workspace'
 
 function withTab() {
   let state = emptySnapshot()
@@ -80,5 +80,56 @@ describe('workspace', () => {
     state = applyAction(state, { type: 'account/create', tabId: 'tab-other', id: 'acc-b' })
     expect(accountsForTab(state, 'tab-gengar').map((account) => account.id)).toEqual(['acc-a'])
     expect(accountsForTab(state, 'tab-other').map((account) => account.id)).toEqual(['acc-b'])
+  })
+
+  it('parses snapshots by validating tab and account records', () => {
+    const parsed = parseSnapshot({
+      version: 1,
+      tabs: [
+        { id: 'tab-1', name: 'Gengar', baseUrl: 'https://gengar.com.br', layout: 'grid', accountOrder: ['acc-1'], archived: false },
+        { id: 99, name: 'bad' }
+      ],
+      accounts: {
+        'acc-1': {
+          id: 'acc-1',
+          tabId: 'tab-1',
+          name: 'Main',
+          color: '#FF6B35',
+          url: 'https://gengar.com.br'
+        },
+        'nope': { id: 'mismatch', tabId: 'tab-1', name: 'X', color: '#000', url: 'https://x.com' }
+      },
+      activeTabId: 'tab-1'
+    })
+    expect(parsed.tabs.map((tab) => tab.id)).toEqual(['tab-1'])
+    expect(Object.keys(parsed.accounts)).toEqual(['acc-1'])
+    expect(parsed.accounts['acc-1']?.status).toBe('closed')
+  })
+
+  it('rejects junk snapshots and closes imported sessions', () => {
+    expect(parseSnapshot(null).tabs).toEqual([])
+    const imported = snapshotFromImport({
+      version: 1,
+      tabs: [{ id: 'tab-1', name: 'Gengar', baseUrl: 'https://gengar.com.br', accountOrder: ['acc-1'] }],
+      accounts: {
+        'acc-1': {
+          id: 'acc-1',
+          tabId: 'tab-1',
+          name: 'Main',
+          color: '#FF6B35',
+          url: 'https://gengar.com.br',
+          status: 'running'
+        }
+      }
+    })
+    expect(imported.accounts['acc-1']?.status).toBe('closed')
+  })
+
+  it('reopens the last archived tab', () => {
+    let state = withTab()
+    state = applyAction(state, { type: 'tab/close', id: 'tab-gengar' })
+    expect(lastArchivedTab(state)?.id).toBe('tab-gengar')
+    state = applyAction(state, { type: 'tab/reopen', id: 'tab-gengar' })
+    expect(visibleTabs(state)[0]?.id).toBe('tab-gengar')
   })
 })

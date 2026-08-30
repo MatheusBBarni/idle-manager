@@ -3,7 +3,7 @@ import { Button, Input, Label, Modal, TextField } from '@heroui/react'
 import { t } from '@shared/i18n'
 import { isValidHttpUrl } from '@shared/urls'
 import { tabById } from '@shared/workspace'
-import { dispatch, useAppStore } from '../store'
+import { dispatch, runDialogCommand, useAppStore } from '../store'
 
 export function Dialogs() {
   const dialog = useAppStore((state) => state.dialog)
@@ -28,14 +28,7 @@ export function Dialogs() {
             <Button
               variant={dialog.danger ? 'danger' : 'primary'}
               onPress={() => {
-                void (async () => {
-                  if (dialog.action.type === 'clear-session') {
-                    await window.opsource.clearSession(dialog.action.accountId)
-                  } else {
-                    await dispatch(dialog.action)
-                  }
-                  close()
-                })()
+                void runDialogCommand(dialog.command).then(close)
               }}
             >
               {t(locale, 'confirm')}

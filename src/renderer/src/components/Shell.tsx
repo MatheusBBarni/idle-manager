@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { t } from '@shared/i18n'
-import { activeAccount, visibleTabs } from '@shared/workspace'
+import { activeAccount, lastArchivedTab, visibleTabs } from '@shared/workspace'
 import { dispatch, useAppStore } from '../store'
 import { Chrome } from './Chrome'
 import { Dialogs } from './Dialogs'
@@ -41,6 +41,13 @@ export function Shell() {
       const tab = visibleTabs(snapshot).find((item) => item.id === snapshot.activeTabId)
       if (event.key === 't') {
         event.preventDefault()
+        if (event.shiftKey) {
+          const closed = lastArchivedTab(snapshot)
+          if (closed) {
+            void dispatch({ type: 'tab/reopen', id: closed.id })
+          }
+          return
+        }
         useAppStore.getState().setDialog({ id: 'tab-create' })
       }
       if (event.key.toLowerCase() === 'b') {

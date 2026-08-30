@@ -74,7 +74,8 @@ const en = {
   urlPlaceholder: 'https://gengar.com.br/',
   duplicateNamesHint: 'Names may repeat. Isolation uses the hidden account id.',
   collapseSidebar: 'Collapse sidebar',
-  expandSidebar: 'Expand sidebar'
+  expandSidebar: 'Expand sidebar',
+  recentlyClosed: 'Recently closed'
 } as const
 
 const pt: Record<keyof typeof en, string> = {
@@ -151,7 +152,8 @@ const pt: Record<keyof typeof en, string> = {
   urlPlaceholder: 'https://gengar.com.br/',
   duplicateNamesHint: 'Nomes podem repetir. O isolamento usa o id interno da conta.',
   collapseSidebar: 'Recolher painel',
-  expandSidebar: 'Expandir painel'
+  expandSidebar: 'Expandir painel',
+  recentlyClosed: 'Fechadas recentemente'
 }
 
 const dictionaries = { en, pt }
