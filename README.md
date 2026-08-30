@@ -71,7 +71,10 @@ Reopen from the history control next to **+**, or `Cmd/Ctrl+Shift+T`.
 | `pnpm verify:isolation` | Prove two persist partitions do not share cookies or `localStorage` |
 | `pnpm build` | Production bundle into `out/` |
 | `pnpm pack` | Unpackaged app via electron-builder |
-| `pnpm dist` | Installer (NSIS / dmg / AppImage) |
+| `pnpm dist` | Installer for the current OS (NSIS / dmg / AppImage) |
+| `pnpm dist:win` | Windows NSIS installer |
+| `pnpm dist:mac` | macOS DMG (Intel + Apple Silicon) |
+| `pnpm dist:linux` | Linux AppImage |
 
 ```bash
 pnpm verify:isolation
@@ -138,8 +141,30 @@ Passwords typed into a game stay in that account’s partition.
 > [!WARNING]
 > Idle manager does not automate gameplay, inject cheats, spoof fingerprints, or share one cookie jar as a “swap user” hack.
 
+## Releasing
+
+Push a version tag that matches `package.json`:
+
+```bash
+# bump "version" in package.json first
+git tag v0.1.0
+git push origin v0.1.0
+```
+
+GitHub Actions then builds unsigned installers and attaches them to a [GitHub Release](https://github.com/MatheusBBarni/idle-manager/releases):
+
+| Asset | Platform |
+| --- | --- |
+| `idle-manager-*-win-x64.exe` | Windows NSIS |
+| `idle-manager-*-mac-arm64.dmg` / `idle-manager-*-mac-x64.dmg` | macOS |
+| `idle-manager-*-linux-x64.AppImage` | Linux |
+| `SHA256SUMS.txt` | Checksums for the installers |
+
+The tag must already contain these workflow files (merge to `main` first, then tag).
+Windows SmartScreen and macOS Gatekeeper will warn because the builds are not code-signed.
+
 ## Platform
 
-Windows is the MVP target (NSIS via `pnpm dist`).
-macOS and Linux use the same isolation primitive and are supported in development.
+Windows is the primary packaging target (NSIS).
+macOS (DMG) and Linux (AppImage) ship on the same GitHub Release.
 There is no mobile build.
