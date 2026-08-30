@@ -6,7 +6,7 @@ Canonical execution order. Numeric IDs are the run order. Parallelizable tasks s
 |---|---|---|---|---|---|---|
 | task_01 | Ship the keyboard account loop | US-01 | backend | high | [] | completed |
 | task_02 | Show loop binds in Settings and README | US-06 | frontend | medium | [task_01] | completed |
-| task_03 | Ship PT+EN keyboard docs pages | F-09 | frontend | high | [task_01] | pending |
+| task_03 | Ship PT+EN keyboard docs pages | F-09 | frontend | high | [task_01] | completed |
 
 ## Execution order
 

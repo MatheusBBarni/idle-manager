@@ -15,6 +15,7 @@ const { lang } = Astro.props
 const copy = landing[lang]
 const enHref = getRelativeLocaleUrl('en')
 const ptHref = getRelativeLocaleUrl('pt')
+const keyboardHref = getRelativeLocaleUrl(lang, 'keyboard')
 const canonical = new URL(Astro.url.pathname, Astro.site)
 const enUrl = new URL(getRelativeLocaleUrl('en'), Astro.site)
 const ptUrl = new URL(getRelativeLocaleUrl('pt'), Astro.site)
@@ -65,6 +66,9 @@ const downloadCopyJson = JSON.stringify({
         <a href="#faq">{copy.faq}</a>
       </nav>
       <div class="chrome-end">
+        <nav aria-label={copy.keyboard}>
+          <a href={keyboardHref}>{copy.keyboard}</a>
+        </nav>
         <nav aria-label={copy.localeNav}>
           <a href={enHref} hreflang="en" lang="en" aria-current={lang === 'en' ? 'page' : undefined}
             >English</a

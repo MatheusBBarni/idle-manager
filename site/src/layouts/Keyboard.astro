@@ -1,0 +1,253 @@
+---
+import { getRelativeLocaleUrl } from 'astro:i18n'
+import { keyboard, type Locale } from '../content/keyboard'
+import '@fontsource/oxanium/700.css'
+import '@fontsource/figtree/400.css'
+import '@fontsource/figtree/500.css'
+import '@fontsource/ibm-plex-mono/400.css'
+
+interface Props {
+  lang: Locale
+}
+
+const { lang } = Astro.props
+const copy = keyboard[lang]
+const homeHref = getRelativeLocaleUrl(lang)
+const enHref = getRelativeLocaleUrl('en', 'keyboard')
+const ptHref = getRelativeLocaleUrl('pt', 'keyboard')
+const canonical = new URL(Astro.url.pathname, Astro.site)
+const enUrl = new URL(enHref, Astro.site)
+const ptUrl = new URL(ptHref, Astro.site)
+---
+
+<!doctype html>
+<html lang={lang === 'pt' ? 'pt-BR' : 'en'}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={copy.description} />
+    <meta name="theme-color" content="#141414" />
+    <link rel="canonical" href={canonical.href} />
+    <link rel="alternate" hreflang="en" href={enUrl.href} />
+    <link rel="alternate" hreflang="pt-BR" href={ptUrl.href} />
+    <link rel="alternate" hreflang="x-default" href={enUrl.href} />
+    <title>{copy.title}</title>
+    <link rel="icon" href={`${import.meta.env.BASE_URL}icon.png`} type="image/png" />
+  </head>
+  <body>
+    <a class="skip" href="#shortcuts">{copy.skip}</a>
+    <header class="chrome">
+      <p class="mark">
+        <a href={homeHref}>
+          <img src={`${import.meta.env.BASE_URL}icon.png`} width="32" height="32" alt="" />
+          {copy.home}
+        </a>
+      </p>
+      <nav aria-label={copy.localeNav}>
+        <a href={enHref} hreflang="en" lang="en" aria-current={lang === 'en' ? 'page' : undefined}
+          >English</a
+        >
+        <a href={ptHref} hreflang="pt-BR" lang="pt-BR" aria-current={lang === 'pt' ? 'page' : undefined}
+          >Português</a
+        >
+      </nav>
+    </header>
+    <main>
+      <section id="shortcuts" class="doc">
+        <h1>{copy.heading}</h1>
+        <p class="lead">{copy.lead}</p>
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">{copy.shortcutCol}</th>
+              <th scope="col">{copy.actionCol}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {copy.binds.map((bind) => (
+              <tr>
+                <td><kbd>{bind.keys}</kbd></td>
+                <td>{bind.action}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <p class="home">
+          <a href={homeHref}>{copy.home}</a>
+        </p>
+      </section>
+    </main>
+  </body>
+</html>
+
+<style is:global>
+  :root {
+    --ink: #141414;
+    --ink-lift: #1c1c1c;
+    --hairline: #2c2c2c;
+    --paper: #eceae4;
+    --mute: #9a9a9a;
+    --signal: #0066ff;
+    --seal: #3a3a3a;
+    --shell: 80rem;
+    --gutter: 1.5rem;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    color-scheme: dark;
+  }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: var(--ink);
+    color: var(--paper);
+    font-family: Figtree, "Segoe UI", sans-serif;
+    font-size: 1.125rem;
+    line-height: 1.55;
+  }
+
+  a {
+    color: var(--paper);
+  }
+
+  a:focus-visible,
+  .skip:focus-visible {
+    outline: 2px solid var(--signal);
+    outline-offset: 3px;
+  }
+
+  .skip {
+    position: absolute;
+    left: 1rem;
+    top: 0.75rem;
+    z-index: 2;
+    padding: 0.4rem 0.7rem;
+    background: var(--ink-lift);
+    color: var(--paper);
+    text-decoration: none;
+    transform: translateY(-200%);
+  }
+
+  .skip:focus {
+    transform: none;
+  }
+
+  .chrome {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    width: 100%;
+    padding: 1rem max(var(--gutter), calc((100% - var(--shell)) / 2 + var(--gutter)));
+    border-bottom: 1px solid var(--hairline);
+  }
+
+  .mark {
+    margin: 0;
+    font-family: Oxanium, Figtree, sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .mark a {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    text-decoration: none;
+  }
+
+  .mark img {
+    display: block;
+    border-radius: 6px;
+  }
+
+  .chrome nav {
+    display: flex;
+    gap: 1.25rem;
+  }
+
+  .chrome nav a {
+    font-size: 0.95rem;
+    text-underline-offset: 0.28em;
+  }
+
+  .chrome nav a[aria-current='page'] {
+    color: var(--signal);
+    text-decoration: none;
+  }
+
+  main {
+    width: min(var(--shell), 100%);
+    margin-inline: auto;
+    padding-inline: var(--gutter);
+  }
+
+  .doc {
+    padding: 3.5rem 0 4rem;
+    max-width: 42rem;
+  }
+
+  h1 {
+    margin: 0 0 1rem;
+    font-family: Oxanium, Figtree, sans-serif;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+    font-size: clamp(2rem, 5vw, 3rem);
+  }
+
+  .lead {
+    margin: 0 0 1.75rem;
+    color: var(--mute);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  th,
+  td {
+    text-align: left;
+    padding: 0.85rem 0.75rem;
+    border-bottom: 1px solid var(--hairline);
+    vertical-align: baseline;
+  }
+
+  th {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--mute);
+    font-weight: 400;
+  }
+
+  kbd {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 0.92rem;
+  }
+
+  .home {
+    margin: 2rem 0 0;
+  }
+
+  .home a {
+    font-weight: 500;
+    text-underline-offset: 0.28em;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * {
+      animation: none !important;
+      transition: none !important;
+    }
+  }
+</style>

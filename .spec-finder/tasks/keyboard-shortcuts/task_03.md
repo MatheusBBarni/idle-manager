@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 title: Ship PT+EN keyboard docs pages
 type: frontend
 complexity: high
