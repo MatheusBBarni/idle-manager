@@ -1,7 +1,7 @@
 {
   "name": "idle-manager",
   "productName": "Idle manager",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Desktop shell for many isolated idle-game accounts in one window",
   "private": true,
   "type": "module",
