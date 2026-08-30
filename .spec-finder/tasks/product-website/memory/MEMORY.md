@@ -2,7 +2,7 @@
 
 ## Current State
 
-- Packet `product-website` task_01–task_05 implemented in `site/` plus root `LICENSE`; task_06 still pending.
+- Packet `product-website` task_01–task_06 implemented in `site/`, root `LICENSE`, and `.github/workflows/deploy.yml`.
 
 ## Shared Decisions
 
@@ -13,6 +13,7 @@
 - Astro i18n: `defaultLocale: 'en'`, `locales: ['en','pt']`, `prefixDefaultLocale: true`. Root `/idle-manager/` → `/idle-manager/en/` via `src/pages/index.astro` `Astro.redirect(getRelativeLocaleUrl('en'))` (`redirectToDefaultLocale: false` to avoid dual-owner `/` warning). Locale switch is `getRelativeLocaleUrl` `<a>` links.
 - Privacy/source live in locale pages (`#privacy`, `#source`); chrome nav links are in `Landing.astro`. Source href is `https://github.com/MatheusBBarni/idle-manager`. Root `LICENSE` is MIT.
 - Download + SmartScreen live in `Landing.astro` (`#download`, default href `/releases/latest`). Probe is `site/src/lib/probeWindowsDownload.ts` (one unauthenticated GET, then `selectWindowsDownload`). Built HTML inlines the script; no CSP.
+- Pages deploy is `.github/workflows/deploy.yml` (`withastro/action@v6` `path: site` + `actions/deploy-pages@v5`). Electron `ci.yml` / `release.yml` are separate. No secret for the Releases GET.
 
 ## Shared Learnings
 
@@ -23,9 +24,9 @@
 
 ## Open Risks
 
-- Enabling GitHub Pages in repo Settings is outside git (task_06 rollout).
+- Enabling GitHub Pages in repo Settings is outside git (rollout). Until then the public URL may 404 even if the workflow exists.
 - Keyboard pass was HTML-inspected only (no browser in this run).
 
 ## Handoffs
 
-- task_06: Pages workflow; Settings enablement is rollout. Keep the inlined Download probe script in built HTML.
+- After merge: GitHub repo Settings → Pages → Source = GitHub Actions. Keep the inlined Download probe script in built HTML.

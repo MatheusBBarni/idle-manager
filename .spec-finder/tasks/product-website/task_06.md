@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 title: Publish the site with GitHub Pages Actions
 type: infra
 complexity: medium
