@@ -1,10 +1,20 @@
 import { defineConfig } from 'astro/config'
 
 // Project GitHub Pages: origin is the user site, base is the repo name.
-// English lives at /idle-manager/en/ via src/pages/en/index.astro (PT + root redirect are later tasks).
+// Locales are prefixed (`/en/`, `/pt/`); `/` redirects to `/en/` (ADR-003).
 export default defineConfig({
   site: 'https://matheusbarni.github.io',
   base: '/idle-manager',
   trailingSlash: 'always',
-  output: 'static'
+  output: 'static',
+  i18n: {
+    defaultLocale: 'en',
+    locales: ['en', 'pt'],
+    routing: {
+      prefixDefaultLocale: true,
+      // Index redirect is `src/pages/index.astro` via Astro.redirect so static
+      // build does not warn about two owners of `/`.
+      redirectToDefaultLocale: false
+    }
+  }
 })

@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 title: Ship the Portuguese landing and locale links
 type: frontend
 complexity: medium
@@ -66,10 +66,10 @@ A player can read the same isolation claims in Portuguese at `/pt/` and switch l
 
 ## Subtasks
 
-- [ ] 03.1 Enable Astro i18n so `en` and `pt` are prefixed and `/` goes to `/en/`.
-- [ ] 03.2 Ship Portuguese isolation-vs-bot copy matching English claims.
-- [ ] 03.3 Add locale links on both landings using `base`-prefixed hrefs.
-- [ ] 03.4 Rebuild and confirm `/en/`, `/pt/`, and root redirect in output.
+- [x] 03.1 Enable Astro i18n so `en` and `pt` are prefixed and `/` goes to `/en/`.
+- [x] 03.2 Ship Portuguese isolation-vs-bot copy matching English claims.
+- [x] 03.3 Add locale links on both landings using `base`-prefixed hrefs.
+- [x] 03.4 Rebuild and confirm `/en/`, `/pt/`, and root redirect in output.
 
 ## Implementation Details
 
@@ -107,12 +107,12 @@ Follow TechSpec Contracts (Public URLs), Architecture (i18n routes), Sequencing 
 
 ### Integration Tests
 
-- [ ] Build output contains Portuguese and English indexes under `base`.
-- [ ] Root path redirects or rewrites to `/en/` as configured.
+- [x] Build output contains Portuguese and English indexes under `base`.
+- [x] Root path redirects or rewrites to `/en/` as configured.
 
 ### Platform or Manual Evidence
 
-- [ ] Follow locale links in build HTML hrefs (prefixed). If no browser, cite emitted HTML and continue.
+- [x] Follow locale links in build HTML hrefs (prefixed). If no browser, cite emitted HTML and continue.
 
 ### Verification Commands
 

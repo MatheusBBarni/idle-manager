@@ -1,16 +1,35 @@
 ---
+import { getRelativeLocaleUrl } from 'astro:i18n'
 import '@fontsource/oxanium/700.css'
 import '@fontsource/figtree/400.css'
 import '@fontsource/figtree/500.css'
 import '@fontsource/ibm-plex-mono/400.css'
 
 interface Props {
-  lang?: string
+  lang: 'en' | 'pt'
   title: string
   description: string
 }
 
-const { lang = 'en', title, description } = Astro.props
+const { lang, title, description } = Astro.props
+const enHref = getRelativeLocaleUrl('en')
+const ptHref = getRelativeLocaleUrl('pt')
+const copy =
+  lang === 'pt'
+    ? {
+        skip: 'Ir para a afirmação de isolamento',
+        pageNav: 'Nesta página',
+        isolation: 'Isolamento',
+        notBot: 'O que não é',
+        localeNav: 'Idioma'
+      }
+    : {
+        skip: 'Skip to isolation claim',
+        pageNav: 'On this page',
+        isolation: 'Isolation',
+        notBot: 'What it is not',
+        localeNav: 'Language'
+      }
 ---
 
 <!doctype html>
@@ -23,15 +42,23 @@ const { lang = 'en', title, description } = Astro.props
     <link rel="icon" href={`${import.meta.env.BASE_URL}icon.png`} type="image/png" />
   </head>
   <body>
-    <a class="skip" href="#isolation">Skip to isolation claim</a>
+    <a class="skip" href="#isolation">{copy.skip}</a>
     <header class="chrome">
       <p class="mark">
         <img src={`${import.meta.env.BASE_URL}icon.png`} width="32" height="32" alt="" />
         Idle manager
       </p>
-      <nav aria-label="On this page">
-        <a href="#isolation">Isolation</a>
-        <a href="#not-a-bot">What it is not</a>
+      <nav aria-label={copy.pageNav}>
+        <a href="#isolation">{copy.isolation}</a>
+        <a href="#not-a-bot">{copy.notBot}</a>
+      </nav>
+      <nav aria-label={copy.localeNav}>
+        <a href={enHref} hreflang="en" lang="en" aria-current={lang === 'en' ? 'page' : undefined}
+          >English</a
+        >
+        <a href={ptHref} hreflang="pt" lang="pt" aria-current={lang === 'pt' ? 'page' : undefined}
+          >Português</a
+        >
       </nav>
     </header>
     <main>
@@ -121,14 +148,19 @@ const { lang = 'en', title, description } = Astro.props
     border-radius: 6px;
   }
 
-  nav[aria-label="On this page"] {
+  .chrome nav {
     display: flex;
     gap: 1.25rem;
   }
 
-  nav[aria-label="On this page"] a {
+  .chrome nav a {
     font-size: 0.95rem;
     text-underline-offset: 0.28em;
+  }
+
+  .chrome nav a[aria-current='page'] {
+    color: var(--signal);
+    text-decoration: none;
   }
 
   main {
