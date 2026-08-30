@@ -39,7 +39,19 @@ type LandingCopy = {
   finalLead: string
   download: string
   downloadAction: string
+  downloadActions: {
+    windows: string
+    macos: string
+    linux: string
+    other: string
+  }
   smartScreen: string
+  downloadWarnings: {
+    windows: string
+    macos: string
+    linux: string
+    other: string
+  }
   privacy: string
   privacyParagraphs: string[]
   source: string
@@ -68,7 +80,7 @@ export const landing = {
     trustItems: [
       'Sessions stay on this PC',
       'MIT-licensed source',
-      'Windows installer',
+      'Windows, macOS, and Linux',
       'Not a bot or anti-detect browser'
     ],
     screenshotAlt:
@@ -153,28 +165,42 @@ export const landing = {
       },
       {
         q: 'Does anything leave my PC?',
-        a: 'Game sessions stay on this device. This public page is hosted on GitHub Pages, which may log visitor IPs for security. The page may GET GitHub’s Releases API to find the Windows installer. There are no extra tracking pixels.'
+        a: 'Game sessions stay on this device. This public page is hosted on GitHub Pages, which may log visitor IPs for security. The page may GET GitHub’s Releases API to find an installer. There are no extra tracking pixels.'
       },
       {
         q: 'Can I download for macOS or Linux?',
-        a: 'Windows is the installer on this page. Source is on GitHub if you want to build for another OS.'
+        a: 'Yes. This page offers the installer for the computer you are on — Windows, macOS, or Linux. Unsigned builds may trigger an OS warning. Every file is also on GitHub Releases.'
       },
       {
         q: 'Is it free?',
         a: 'Yes. Idle manager is MIT-licensed. You can read the source before you install.'
       }
     ],
-    finalHeadline: 'Install the Windows shell.',
+    finalHeadline: 'Install the desktop shell.',
     finalLead: 'One visit. Isolated jars. No bot.',
     download: 'Download',
     downloadAction: 'Download for Windows',
+    downloadActions: {
+      windows: 'Download for Windows',
+      macos: 'Download for macOS',
+      linux: 'Download for Linux',
+      other: 'View downloads'
+    },
     smartScreen:
       'Windows may warn that this file is unsigned or from an unknown publisher (Microsoft SmartScreen). That is expected. This page does not claim a known publisher.',
+    downloadWarnings: {
+      windows:
+        'Windows may warn that this file is unsigned or from an unknown publisher (Microsoft SmartScreen). That is expected. This page does not claim a known publisher.',
+      macos:
+        'macOS may warn that this file is from an unidentified developer (Gatekeeper). That is expected. This page does not claim a signed app.',
+      linux: 'This AppImage is unsigned. That is expected.',
+      other: 'Installers for Windows, macOS, and Linux are on GitHub Releases.'
+    },
     privacy: 'Privacy',
     privacyParagraphs: [
       'Game sessions stay on this device. Account cookie jars are local Chromium partitions and are not sent to a server.',
       'This public page is hosted on GitHub Pages. The host may log visitor IPs for security.',
-      'This page may GET GitHub’s Releases API at api.github.com to look up a Windows installer. There are no extra tracking pixels.'
+      'This page may GET GitHub’s Releases API at api.github.com to look up an installer. There are no extra tracking pixels.'
     ],
     source: 'Source',
     sourceLead: 'Idle manager is MIT-licensed.',
@@ -200,7 +226,7 @@ export const landing = {
     trustItems: [
       'Sessões ficam neste PC',
       'Código sob licença MIT',
-      'Instalador para Windows',
+      'Windows, macOS e Linux',
       'Não é bot nem navegador anti-detect'
     ],
     screenshotAlt:
@@ -285,28 +311,42 @@ export const landing = {
       },
       {
         q: 'Alguma coisa sai do meu PC?',
-        a: 'As sessões de jogo ficam neste dispositivo. Esta página pública é hospedada no GitHub Pages, que pode registrar IPs de visitantes por segurança. A página pode fazer GET na API de Releases do GitHub para localizar o instalador Windows. Não há pixels de rastreamento extras.'
+        a: 'As sessões de jogo ficam neste dispositivo. Esta página pública é hospedada no GitHub Pages, que pode registrar IPs de visitantes por segurança. A página pode fazer GET na API de Releases do GitHub para localizar um instalador. Não há pixels de rastreamento extras.'
       },
       {
         q: 'Posso baixar para macOS ou Linux?',
-        a: 'O instalador nesta página é para Windows. O código-fonte está no GitHub se você quiser compilá-lo para outro sistema.'
+        a: 'Sim. Esta página oferece o instalador do computador em que você está — Windows, macOS ou Linux. Builds sem assinatura podem gerar um aviso do sistema. Todos os arquivos também estão no GitHub Releases.'
       },
       {
         q: 'É de graça?',
         a: 'Sim. Idle manager é licenciado sob MIT. Você pode ler o código-fonte antes de instalar.'
       }
     ],
-    finalHeadline: 'Instale o shell no Windows.',
+    finalHeadline: 'Instale o shell no computador.',
     finalLead: 'Uma visita. Jars isolados. Sem bot.',
     download: 'Baixar',
     downloadAction: 'Baixar para Windows',
+    downloadActions: {
+      windows: 'Baixar para Windows',
+      macos: 'Baixar para macOS',
+      linux: 'Baixar para Linux',
+      other: 'Ver downloads'
+    },
     smartScreen:
       'O Windows pode avisar que este arquivo não está assinado ou é de um editor desconhecido (Microsoft SmartScreen). Isso é esperado. Esta página não afirma um editor conhecido.',
+    downloadWarnings: {
+      windows:
+        'O Windows pode avisar que este arquivo não está assinado ou é de um editor desconhecido (Microsoft SmartScreen). Isso é esperado. Esta página não afirma um editor conhecido.',
+      macos:
+        'O macOS pode avisar que este arquivo é de um desenvolvedor não identificado (Gatekeeper). Isso é esperado. Esta página não afirma um app assinado.',
+      linux: 'Este AppImage não está assinado. Isso é esperado.',
+      other: 'Os instaladores para Windows, macOS e Linux estão no GitHub Releases.'
+    },
     privacy: 'Privacidade',
     privacyParagraphs: [
       'As sessões de jogo ficam neste dispositivo. Os cookie jars das contas são partições Chromium locais e não são enviados a um servidor.',
       'Esta página pública é hospedada no GitHub Pages, que pode registrar IPs de visitantes por segurança.',
-      'Esta página pode fazer GET na API de Releases do GitHub em api.github.com para localizar um instalador Windows. Não há pixels de rastreamento extras.'
+      'Esta página pode fazer GET na API de Releases do GitHub em api.github.com para localizar um instalador. Não há pixels de rastreamento extras.'
     ],
     source: 'Código-fonte',
     sourceLead: 'Idle manager é licenciado sob MIT.',
