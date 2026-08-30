@@ -2,7 +2,7 @@
 
 ## Current State
 
-- Packet `keyboard-shortcuts` task_01 completed. task_02–task_03 pending.
+- Packet `keyboard-shortcuts` task_01 and task_02 completed. task_03 pending.
 - 2026-08-30: operator overrode landing **section** → PT+EN keyboard **docs pages** (ADR-004). PRD, TechSpec, and tasks rewritten.
 
 ## Shared Decisions

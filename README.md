@@ -130,6 +130,10 @@ Modifier is `Cmd` on macOS and `Ctrl` elsewhere.
 | `Mod+=` / `Mod+-` / `Mod+0` | Zoom in, out, reset |
 | `Mod+Tab` | Next tab |
 | `Mod+1…9` | Activate account in the current tab |
+| `Mod+Shift+N` | Create account (default name) |
+| `Mod+Shift+[` | Previous account |
+| `Mod+Shift+]` | Next account |
+| `Mod+Enter` | Start targeted account |
 
 The URL bar navigates **only** the active account, not every panel in the tab.
 

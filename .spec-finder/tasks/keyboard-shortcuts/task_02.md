@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 title: Show loop binds in Settings and README
 type: frontend
 complexity: medium

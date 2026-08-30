@@ -84,7 +84,20 @@ const en = {
   runningCount: 'running',
   localePt: 'Português',
   localeEn: 'English',
-  urlBar: 'Address'
+  urlBar: 'Address',
+  shortcuts: 'Keyboard shortcuts',
+  shortcutCreate: 'Create account',
+  shortcutPrev: 'Previous account',
+  shortcutNext: 'Next account',
+  shortcutStart: 'Start targeted account',
+  shortcutCreateMac: '⌘⇧N',
+  shortcutCreateWin: 'Ctrl+Shift+N',
+  shortcutPrevMac: '⌘⇧[',
+  shortcutPrevWin: 'Ctrl+Shift+[',
+  shortcutNextMac: '⌘⇧]',
+  shortcutNextWin: 'Ctrl+Shift+]',
+  shortcutStartMac: '⌘↩',
+  shortcutStartWin: 'Ctrl+Enter'
 } as const
 
 const pt: Record<keyof typeof en, string> = {
@@ -172,7 +185,20 @@ const pt: Record<keyof typeof en, string> = {
   runningCount: 'em execução',
   localePt: 'Português',
   localeEn: 'English',
-  urlBar: 'Endereço'
+  urlBar: 'Endereço',
+  shortcuts: 'Atalhos de teclado',
+  shortcutCreate: 'Criar conta',
+  shortcutPrev: 'Conta anterior',
+  shortcutNext: 'Próxima conta',
+  shortcutStart: 'Iniciar a conta em foco',
+  shortcutCreateMac: '⌘⇧N',
+  shortcutCreateWin: 'Ctrl+Shift+N',
+  shortcutPrevMac: '⌘⇧[',
+  shortcutPrevWin: 'Ctrl+Shift+[',
+  shortcutNextMac: '⌘⇧]',
+  shortcutNextWin: 'Ctrl+Shift+]',
+  shortcutStartMac: '⌘↩',
+  shortcutStartWin: 'Ctrl+Enter'
 }
 
 const dictionaries = { en, pt }

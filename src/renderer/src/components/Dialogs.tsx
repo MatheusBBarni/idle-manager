@@ -239,9 +239,18 @@ function AccountModal({ onClose }: { onClose: () => void }) {
   )
 }
 
+const SHORTCUT_ROWS = [
+  { label: 'shortcutCreate', mac: 'shortcutCreateMac', win: 'shortcutCreateWin' },
+  { label: 'shortcutPrev', mac: 'shortcutPrevMac', win: 'shortcutPrevWin' },
+  { label: 'shortcutNext', mac: 'shortcutNextMac', win: 'shortcutNextWin' },
+  { label: 'shortcutStart', mac: 'shortcutStartMac', win: 'shortcutStartWin' }
+] as const
+
 function SettingsModal({ onClose }: { onClose: () => void }) {
   const snapshot = useAppStore((state) => state.snapshot)
+  const platform = useAppStore((state) => state.platform)
   const locale = snapshot.locale
+  const mac = platform === 'darwin'
   return (
     <ShellModal
       title={t(locale, 'settings')}
@@ -300,6 +309,17 @@ function SettingsModal({ onClose }: { onClose: () => void }) {
           />
           {t(locale, 'launchAtStartup')}
         </label>
+        <div>
+          <p className="mb-2 text-sm">{t(locale, 'shortcuts')}</p>
+          <ul className="flex flex-col gap-1.5 text-sm text-muted">
+            {SHORTCUT_ROWS.map((row) => (
+              <li key={row.label} className="flex items-baseline justify-between gap-3">
+                <span>{t(locale, row.label)}</span>
+                <kbd className="font-mono text-xs text-foreground">{t(locale, mac ? row.mac : row.win)}</kbd>
+              </li>
+            ))}
+          </ul>
+        </div>
         <div className="flex gap-2">
           <Button size="sm" variant="secondary" onPress={() => void window.opsource.exportWorkspace()}>
             {t(locale, 'exportWorkspace')}
