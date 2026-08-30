@@ -2,7 +2,7 @@
 
 ## Current State
 
-- Packet `product-website` task_01–task_03 implemented in `site/`; task_04–task_06 still pending.
+- Packet `product-website` task_01–task_04 implemented in `site/` plus root `LICENSE`; task_05–task_06 still pending.
 
 ## Shared Decisions
 
@@ -11,6 +11,7 @@
 - `site/` is a nested pnpm workspace (own `pnpm-workspace.yaml` + lockfile), not a member of the Electron root workspace, so `pnpm --dir site` stays isolated.
 - Picker allowlist: `https:` on `github.com`, `githubusercontent.com`, or `*.githubusercontent.com` (covers ADR-004 `objects.githubusercontent.com` and TechSpec `release-assets.githubusercontent.com`).
 - Astro i18n: `defaultLocale: 'en'`, `locales: ['en','pt']`, `prefixDefaultLocale: true`. Root `/idle-manager/` → `/idle-manager/en/` via `src/pages/index.astro` `Astro.redirect(getRelativeLocaleUrl('en'))` (`redirectToDefaultLocale: false` to avoid dual-owner `/` warning). Locale switch is `getRelativeLocaleUrl` `<a>` links.
+- Privacy/source live in locale pages (`#privacy`, `#source`); chrome nav links are in `Landing.astro`. Source href is `https://github.com/MatheusBBarni/idle-manager`. Root `LICENSE` is MIT.
 
 ## Shared Learnings
 
@@ -26,5 +27,5 @@
 
 ## Handoffs
 
-- task_04: privacy copy, MIT LICENSE, GitHub source on both locales; no extra pixels.
-- task_05: import `selectWindowsDownload`; do not change picker rules; wire browser GET there.
+- task_05: import `selectWindowsDownload`; do not change picker rules; wire browser GET; add Download + SmartScreen next to source region; keep API GET already disclosed in privacy copy.
+- task_06: Pages workflow; Settings enablement is rollout.

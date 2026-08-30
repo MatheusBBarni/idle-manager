@@ -21,6 +21,8 @@ const copy =
         pageNav: 'Nesta página',
         isolation: 'Isolamento',
         notBot: 'O que não é',
+        privacy: 'Privacidade',
+        source: 'Código-fonte',
         localeNav: 'Idioma'
       }
     : {
@@ -28,6 +30,8 @@ const copy =
         pageNav: 'On this page',
         isolation: 'Isolation',
         notBot: 'What it is not',
+        privacy: 'Privacy',
+        source: 'Source',
         localeNav: 'Language'
       }
 ---
@@ -51,6 +55,8 @@ const copy =
       <nav aria-label={copy.pageNav}>
         <a href="#isolation">{copy.isolation}</a>
         <a href="#not-a-bot">{copy.notBot}</a>
+        <a href="#privacy">{copy.privacy}</a>
+        <a href="#source">{copy.source}</a>
       </nav>
       <nav aria-label={copy.localeNav}>
         <a href={enHref} hreflang="en" lang="en" aria-current={lang === 'en' ? 'page' : undefined}
@@ -243,6 +249,19 @@ const copy =
 
   .not-bot li + li {
     margin-top: 0.45rem;
+  }
+
+  .legal {
+    max-width: 42rem;
+    padding-top: 2.5rem;
+  }
+
+  .legal p {
+    margin: 0 0 1rem;
+  }
+
+  .legal p:last-child {
+    margin-bottom: 0;
   }
 
   @media (prefers-reduced-motion: reduce) {

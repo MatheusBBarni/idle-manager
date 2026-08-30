@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 title: Ship privacy copy, MIT LICENSE, and source link
 type: frontend
 complexity: medium
@@ -66,10 +66,10 @@ A player can read privacy that separates app-local sessions from site host IP lo
 
 ## Subtasks
 
-- [ ] 04.1 Add MIT `LICENSE` at repo root if missing.
-- [ ] 04.2 Add PT and EN privacy text (app vs host IP vs GitHub API).
-- [ ] 04.3 Add source link to `https://github.com/MatheusBBarni/idle-manager` on both locales.
-- [ ] 04.4 Rebuild and confirm no tracker snippets in emitted HTML.
+- [x] 04.1 Add MIT `LICENSE` at repo root if missing.
+- [x] 04.2 Add PT and EN privacy text (app vs host IP vs GitHub API).
+- [x] 04.3 Add source link to `https://github.com/MatheusBBarni/idle-manager` on both locales.
+- [x] 04.4 Rebuild and confirm no tracker snippets in emitted HTML.
 
 ## Implementation Details
 
