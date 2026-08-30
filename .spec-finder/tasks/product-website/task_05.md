@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 title: Wire Download probe and SmartScreen warning
 type: frontend
 complexity: medium

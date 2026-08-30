@@ -21,6 +21,10 @@ const copy =
         pageNav: 'Nesta página',
         isolation: 'Isolamento',
         notBot: 'O que não é',
+        download: 'Baixar',
+        downloadAction: 'Baixar para Windows',
+        smartScreen:
+          'O Windows pode avisar que este arquivo não está assinado ou é de um editor desconhecido (Microsoft SmartScreen). Isso é esperado. Esta página não afirma um editor conhecido.',
         privacy: 'Privacidade',
         source: 'Código-fonte',
         localeNav: 'Idioma'
@@ -30,6 +34,10 @@ const copy =
         pageNav: 'On this page',
         isolation: 'Isolation',
         notBot: 'What it is not',
+        download: 'Download',
+        downloadAction: 'Download for Windows',
+        smartScreen:
+          'Windows may warn that this file is unsigned or from an unknown publisher (Microsoft SmartScreen). That is expected. This page does not claim a known publisher.',
         privacy: 'Privacy',
         source: 'Source',
         localeNav: 'Language'
@@ -55,6 +63,7 @@ const copy =
       <nav aria-label={copy.pageNav}>
         <a href="#isolation">{copy.isolation}</a>
         <a href="#not-a-bot">{copy.notBot}</a>
+        <a href="#download">{copy.download}</a>
         <a href="#privacy">{copy.privacy}</a>
         <a href="#source">{copy.source}</a>
       </nav>
@@ -69,7 +78,27 @@ const copy =
     </header>
     <main>
       <slot />
+      <section id="download" class="download">
+        <h2>{copy.download}</h2>
+        <p>
+          <a
+            class="download-action"
+            id="download-link"
+            href="https://github.com/MatheusBBarni/idle-manager/releases/latest"
+            >{copy.downloadAction}</a
+          >
+        </p>
+        <p class="smartscreen">{copy.smartScreen}</p>
+      </section>
     </main>
+    <script>
+      import { probeWindowsDownload } from '../lib/probeWindowsDownload'
+
+      const link = document.getElementById('download-link')
+      if (link instanceof HTMLAnchorElement) {
+        void probeWindowsDownload(link)
+      }
+    </script>
   </body>
 </html>
 
@@ -262,6 +291,33 @@ const copy =
 
   .legal p:last-child {
     margin-bottom: 0;
+  }
+
+  .download {
+    max-width: 42rem;
+    padding-top: 2.5rem;
+  }
+
+  .download-action {
+    display: inline-block;
+    padding: 0.7rem 1.15rem;
+    background: var(--signal);
+    color: #fff;
+    text-decoration: none;
+    font-weight: 500;
+    border-radius: 2px;
+  }
+
+  .download-action:focus-visible {
+    outline: 2px solid var(--paper);
+    outline-offset: 3px;
+  }
+
+  .smartscreen {
+    margin: 1rem 0 0;
+    max-width: 42rem;
+    color: var(--mute);
+    font-size: 1rem;
   }
 
   @media (prefers-reduced-motion: reduce) {
