@@ -5,7 +5,7 @@
   "reasoning": "auto",
   "speed": "normal",
   "permissions": "prompt",
-  "auto_commit": false,
+  "auto_commit": true,
   "setup": {
     "status": "configured",
     "scope": "local",
