@@ -18,27 +18,27 @@ export type UpdateEvent =
   | { type: 'reset' }
 
 export function reduceUpdateStatus(current: UpdateStatus, event: UpdateEvent): UpdateStatus {
-  if (event.type === 'error' || event.type === 'not-available' || event.type === 'reset') {
-    return { phase: 'idle' }
-  }
-
-  if (event.type === 'later') {
-    if (current.phase === 'ready') {
-      return { phase: 'later', version: current.version }
-    }
-    return current
-  }
-
-  if (event.type === 'downloaded') {
-    if (current.phase === 'later' && current.version === event.version) {
+  switch (event.type) {
+    case 'error':
+    case 'not-available':
+    case 'reset':
+      return { phase: 'idle' }
+    case 'later':
+      if (current.phase === 'ready') {
+        return { phase: 'later', version: current.version }
+      }
       return current
-    }
-    return { phase: 'ready', version: event.version }
+    case 'downloaded':
+      if (current.phase === 'later' && current.version === event.version) {
+        return current
+      }
+      return { phase: 'ready', version: event.version }
+    case 'checking':
+    case 'available':
+    case 'progress':
+      if (current.phase === 'idle' || current.phase === 'getting') {
+        return { phase: 'getting' }
+      }
+      return current
   }
-
-  if (current.phase === 'idle' || current.phase === 'getting') {
-    return { phase: 'getting' }
-  }
-
-  return current
 }

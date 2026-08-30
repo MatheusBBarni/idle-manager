@@ -6,38 +6,36 @@ import {
   type UpdateStatus
 } from '@shared/updateStatus'
 
-export type UpdaterHost = {
-  isPackaged: boolean
-  platform: NodeJS.Platform
-  send: (status: UpdateStatus) => void
-  persist: () => Promise<void>
-}
-
 function getAutoUpdater(): AppUpdater {
   // electron-updater is CJS; destructure from the default export for ESM (electron-builder#7976).
   const { autoUpdater } = electronUpdater
   return autoUpdater
 }
 
-let host: UpdaterHost | null = null
 let status: UpdateStatus = { phase: 'idle' }
-let wired = false
+let send: ((next: UpdateStatus) => void) | null = null
+let persist: (() => Promise<void>) | null = null
 
 function emit(event: UpdateEvent): void {
   status = reduceUpdateStatus(status, event)
-  host?.send(status)
+  send?.(status)
 }
 
-export function registerUpdater(next: UpdaterHost): void {
-  host = next
-  if (wired) {
+export function startUpdater(options: {
+  isPackaged: boolean
+  platform: NodeJS.Platform
+  send: (next: UpdateStatus) => void
+  persist: () => Promise<void>
+}): void {
+  send = options.send
+  persist = options.persist
+  if (!options.isPackaged || options.platform !== 'win32') {
     return
   }
-  wired = true
+
   const updater = getAutoUpdater()
   updater.autoDownload = true
   updater.autoInstallOnAppQuit = false
-
   updater.on('checking-for-update', () => {
     console.log('updater checking')
     emit({ type: 'checking' })
@@ -58,19 +56,12 @@ export function registerUpdater(next: UpdaterHost): void {
     console.error('updater error', error)
     emit({ type: 'error' })
   })
-}
 
-export function startUpdater(): void {
-  if (!host?.isPackaged || host.platform !== 'win32') {
-    return
-  }
   console.log('updater start')
-  void getAutoUpdater()
-    .checkForUpdates()
-    .catch((error: unknown) => {
-      console.error('updater check failed', error)
-      emit({ type: 'error' })
-    })
+  void updater.checkForUpdates().catch((error: unknown) => {
+    console.error('updater check failed', error)
+    emit({ type: 'error' })
+  })
 }
 
 export async function handleUpdateCommand(command: UpdateCommand): Promise<void> {
@@ -84,8 +75,11 @@ export async function handleUpdateCommand(command: UpdateCommand): Promise<void>
     emit({ type: 'later' })
     return
   }
+  if (!persist) {
+    return
+  }
   try {
-    await host?.persist()
+    await persist()
     getAutoUpdater().quitAndInstall()
   } catch (error) {
     console.error('updater apply failed', error)

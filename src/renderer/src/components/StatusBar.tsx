@@ -1,7 +1,6 @@
 import { Button } from '@heroui/react'
 import { formatBytes, formatCpu, formatUptime, t, type MessageKey } from '@shared/i18n'
 import type { LayoutMode } from '@shared/types'
-import type { UpdateCommand } from '@shared/updateStatus'
 import { activeAccount, visibleTabs } from '@shared/workspace'
 import { useAppStore } from '../store'
 
@@ -11,10 +10,6 @@ const layoutLabel: Record<LayoutMode, MessageKey> = {
   columns: 'layoutColumns',
   rows: 'layoutRows',
   free: 'layoutFree'
-}
-
-function sendUpdateCommand(command: UpdateCommand): void {
-  void window.opsource.updateCommand(command).catch(() => undefined)
 }
 
 export function StatusBar() {
@@ -61,7 +56,7 @@ export function StatusBar() {
             size="sm"
             variant="secondary"
             className="h-6 min-h-0 px-2 text-xs text-signal"
-            onPress={() => sendUpdateCommand('apply')}
+            onPress={() => void window.opsource.updateCommand('apply')}
           >
             {t(locale, 'updateApply')}
           </Button>
@@ -69,7 +64,7 @@ export function StatusBar() {
             size="sm"
             variant="ghost"
             className="h-6 min-h-0 px-2 text-xs"
-            onPress={() => sendUpdateCommand('later')}
+            onPress={() => void window.opsource.updateCommand('later')}
           >
             {t(locale, 'updateLater')}
           </Button>
