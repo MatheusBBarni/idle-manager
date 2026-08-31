@@ -1,6 +1,17 @@
 import { describe, expect, it } from 'vitest'
 import { keyboardCreateActions } from './accountLoop'
-import { applyAction, emptySnapshot, accountsForTab, lastArchivedTab, parseSnapshot, snapshotFromImport, visibleTabs } from './workspace'
+import {
+  applyAction,
+  emptySnapshot,
+  accountsForTab,
+  exportGameList,
+  gameListImportActions,
+  lastArchivedTab,
+  parseGameList,
+  parseSnapshot,
+  snapshotFromImport,
+  visibleTabs
+} from './workspace'
 
 function withTab() {
   let state = emptySnapshot()
@@ -149,5 +160,131 @@ describe('workspace', () => {
     expect(lastArchivedTab(state)?.id).toBe('tab-gengar')
     state = applyAction(state, { type: 'tab/reopen', id: 'tab-gengar' })
     expect(visibleTabs(state)[0]?.id).toBe('tab-gengar')
+  })
+})
+
+function applyAll(state: ReturnType<typeof emptySnapshot>, actions: ReturnType<typeof gameListImportActions>) {
+  return actions.reduce((next, action) => applyAction(next, action), state)
+}
+
+describe('game list pack', () => {
+  it('exports only in-bar name+URL rows and omits account keys', () => {
+    let state = emptySnapshot()
+    state = applyAction(state, {
+      type: 'tab/create',
+      id: 'tab-a',
+      name: 'Alpha',
+      baseUrl: 'https://alpha.example'
+    })
+    state = applyAction(state, { type: 'account/create', tabId: 'tab-a', id: 'acc-a', name: 'Jar A' })
+    state = applyAction(state, {
+      type: 'tab/create',
+      id: 'tab-b',
+      name: 'Beta',
+      baseUrl: 'https://beta.example'
+    })
+    state = applyAction(state, { type: 'account/create', tabId: 'tab-b', id: 'acc-b', name: 'Jar B' })
+    state = applyAction(state, {
+      type: 'tab/create',
+      id: 'tab-arch',
+      name: 'Archived',
+      baseUrl: 'https://arch.example'
+    })
+    state = applyAction(state, { type: 'account/create', tabId: 'tab-arch', id: 'acc-arch', name: 'Jar Arch' })
+    state = applyAction(state, { type: 'tab/close', id: 'tab-arch' })
+
+    const pack = exportGameList(state)
+    expect(pack.kind).toBe('game-list')
+    expect(pack.version).toBe(1)
+    expect(pack.tabs).toEqual([
+      { name: 'Alpha', baseUrl: 'https://alpha.example' },
+      { name: 'Beta', baseUrl: 'https://beta.example' }
+    ])
+    expect(JSON.stringify(pack)).not.toMatch(/account/i)
+  })
+
+  it('parses only valid game-list documents and rejects workspace-shaped or junk input', () => {
+    const validRow = { name: 'Alpha', baseUrl: 'https://alpha.example' }
+    expect(
+      parseGameList({ version: 1, tabs: [validRow], accounts: {} })
+    ).toEqual([])
+    expect(parseGameList({ version: 1, tabs: [validRow] })).toEqual([])
+    expect(
+      parseGameList({ version: 1, kind: 'game-list', tabs: [validRow], accounts: {} })
+    ).toEqual([])
+    expect(
+      parseGameList({ version: 1, kind: 'game-list', tabs: [validRow], accounts: [] })
+    ).toEqual([])
+    expect(parseGameList(null)).toEqual([])
+    expect(parseGameList([])).toEqual([])
+    expect(parseGameList({ version: 1, kind: 'game-list', tabs: [] })).toEqual([])
+  })
+
+  it('skips javascript: and empty URLs while keeping http(s) rows', () => {
+    expect(
+      parseGameList({
+        version: 1,
+        kind: 'game-list',
+        tabs: [
+          { name: 'xss', baseUrl: 'javascript:alert(1)' },
+          { name: 'blank', baseUrl: '' },
+          { name: 'ok', baseUrl: 'https://ok.example' }
+        ]
+      })
+    ).toEqual([{ name: 'ok', baseUrl: 'https://ok.example' }])
+  })
+
+  it('adds pack tabs without accounts and restores prior in-bar active', () => {
+    let state = withTab()
+    state = applyAction(state, { type: 'account/create', tabId: 'tab-gengar', id: 'acc-a', name: 'Main' })
+    const accountKeys = Object.keys(state.accounts)
+    const priorActive = state.activeTabId
+    const priorTabCount = state.tabs.length
+
+    state = applyAll(
+      state,
+      gameListImportActions(state, [
+        { name: 'Pack One', baseUrl: 'https://one.example' },
+        { name: 'Pack Two', baseUrl: 'https://two.example' }
+      ])
+    )
+
+    expect(state.tabs).toHaveLength(priorTabCount + 2)
+    expect(Object.keys(state.accounts)).toEqual(accountKeys)
+    expect(state.activeTabId).toBe(priorActive)
+    expect(state.tabs.filter((tab) => tab.archived)).toHaveLength(0)
+  })
+
+  it('leaves the created tab active when no in-bar active tab existed', () => {
+    const state = applyAll(
+      emptySnapshot(),
+      gameListImportActions(emptySnapshot(), [{ name: 'Solo', baseUrl: 'https://solo.example' }])
+    )
+    expect(state.tabs).toHaveLength(1)
+    expect(state.activeTabId).toBe(state.tabs[0]?.id)
+    expect(Object.keys(state.accounts)).toEqual([])
+  })
+
+  it('duplicates name/URL tabs with new ids on re-apply and still creates no accounts', () => {
+    const pack = [{ name: 'Dup', baseUrl: 'https://dup.example' }]
+    let state = withTab()
+    state = applyAction(state, { type: 'account/create', tabId: 'tab-gengar', id: 'acc-a' })
+    const accountKeys = Object.keys(state.accounts)
+    state = applyAll(state, gameListImportActions(state, pack))
+    state = applyAll(state, gameListImportActions(state, pack))
+    const dups = state.tabs.filter((tab) => tab.name === 'Dup' && tab.baseUrl === 'https://dup.example')
+    expect(dups).toHaveLength(2)
+    expect(new Set(dups.map((tab) => tab.id)).size).toBe(2)
+    expect(Object.keys(state.accounts)).toEqual(accountKeys)
+  })
+
+  it('emits no actions for an empty pack so apply mutates nothing', () => {
+    const state = withTab()
+    expect(gameListImportActions(state, [])).toEqual([])
+    expect(applyAll(state, gameListImportActions(state, parseGameList({
+      version: 1,
+      kind: 'game-list',
+      tabs: []
+    })))).toBe(state)
   })
 })

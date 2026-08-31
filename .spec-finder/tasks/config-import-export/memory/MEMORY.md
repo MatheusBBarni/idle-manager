@@ -2,8 +2,8 @@
 
 ## Current State
 
-- Packet `config-import-export` tasks generated; task_01 and task_02 pending.
-- Graph: task_01 pack contract → task_02 Settings IPC. No spikes.
+- task_01 pack helpers implemented in `src/shared/workspace.ts` and covered by `workspace.test.ts`.
+- task_02 Settings IPC still pending.
 
 ## Shared Decisions
 
@@ -11,6 +11,8 @@
 - README/site, workspace-import confirm, empty-bar CTA, and `verify:isolation` have no task.
 
 ## Shared Learnings
+
+- `parseGameList` treats any own-property `accounts` (including `[]`) as a wrong document and returns `[]`.
 
 ## Open Risks
 

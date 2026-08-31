@@ -12,7 +12,7 @@ import {
   type WindowBounds,
   type WorkspaceSnapshot
 } from './types'
-import { hostnameOf, normalizeUrl } from './urls'
+import { hostnameOf, isValidHttpUrl, normalizeUrl } from './urls'
 
 export type WorkspaceAction =
   | { type: 'tab/create'; name: string; baseUrl: string; id?: string }
@@ -534,6 +534,64 @@ export function exportMetadata(snapshot: WorkspaceSnapshot): WorkspaceExport {
     locale: snapshot.locale,
     theme: snapshot.theme
   }
+}
+
+export type GameListTab = { name: string; baseUrl: string }
+
+export type GameListExport = {
+  version: 1
+  kind: 'game-list'
+  tabs: GameListTab[]
+}
+
+export function exportGameList(snapshot: WorkspaceSnapshot): GameListExport {
+  return {
+    version: 1,
+    kind: 'game-list',
+    tabs: visibleTabs(snapshot).map((tab) => ({ name: tab.name, baseUrl: tab.baseUrl }))
+  }
+}
+
+export function parseGameList(raw: unknown): GameListTab[] {
+  if (
+    !isRecord(raw) ||
+    raw.version !== 1 ||
+    raw.kind !== 'game-list' ||
+    !Array.isArray(raw.tabs) ||
+    Object.hasOwn(raw, 'accounts')
+  ) {
+    return []
+  }
+  const tabs: GameListTab[] = []
+  for (const row of raw.tabs) {
+    if (!isRecord(row) || typeof row.name !== 'string' || typeof row.baseUrl !== 'string') {
+      continue
+    }
+    if (!isValidHttpUrl(row.baseUrl)) {
+      continue
+    }
+    tabs.push({ name: row.name, baseUrl: row.baseUrl })
+  }
+  return tabs
+}
+
+export function gameListImportActions(
+  snapshot: WorkspaceSnapshot,
+  tabs: GameListTab[]
+): WorkspaceAction[] {
+  if (tabs.length === 0) {
+    return []
+  }
+  const actions: WorkspaceAction[] = tabs.map((tab) => ({
+    type: 'tab/create',
+    name: tab.name,
+    baseUrl: tab.baseUrl
+  }))
+  const prior = tabById(snapshot, snapshot.activeTabId)
+  if (prior && !prior.archived) {
+    actions.push({ type: 'tab/activate', id: prior.id })
+  }
+  return actions
 }
 
 export function snapshotFromImport(raw: unknown): WorkspaceSnapshot {

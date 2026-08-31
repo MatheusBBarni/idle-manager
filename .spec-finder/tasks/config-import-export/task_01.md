@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 title: Prove the games-only pack contract
 type: backend
 complexity: medium
@@ -76,11 +76,11 @@ An operator’s in-bar games become a games-only pack (name + URL, no jars) that
 
 ## Subtasks
 
-- [ ] 01.1 Export in-bar name+URL packs with no account or archived rows, covered by unit tests.
-- [ ] 01.2 Parse only valid game-list documents; skip bad URLs; reject workspace-shaped and junk input as empty.
-- [ ] 01.3 Build import actions that add tabs, create no jars, restore prior in-bar active, and duplicate on re-apply.
-- [ ] 01.4 Leave workspace snapshot parse/export and `applyAction` create rules unchanged.
-- [ ] 01.5 Run focused Vitest and `pnpm typecheck` to terminal exit.
+- [x] 01.1 Export in-bar name+URL packs with no account or archived rows, covered by unit tests.
+- [x] 01.2 Parse only valid game-list documents; skip bad URLs; reject workspace-shaped and junk input as empty.
+- [x] 01.3 Build import actions that add tabs, create no jars, restore prior in-bar active, and duplicate on re-apply.
+- [x] 01.4 Leave workspace snapshot parse/export and `applyAction` create rules unchanged.
+- [x] 01.5 Run focused Vitest and `pnpm typecheck` to terminal exit.
 
 ## Implementation Details
 
@@ -113,12 +113,12 @@ Follow TechSpec Contracts (Public interfaces, parse/export rules, `gameListImpor
 
 ### Unit Tests
 
-- [ ] Given two in-bar tabs and one archived with accounts, when `exportGameList`, then `tabs` has two `{ name, baseUrl }` rows, `kind` is game-list, and JSON has no account keys.
-- [ ] Given workspace-shaped raw (`version: 1`, `tabs`, `accounts: {}`), missing `kind`, `accounts` own-property on a game-list-shaped object, `null`, or `[]`, when `parseGameList`, then `[]`.
-- [ ] Given a valid pack row with `javascript:` or empty `baseUrl` plus one http(s) row, when `parseGameList`, then only the http(s) row remains.
-- [ ] Given a snapshot with in-bar `activeTabId` and one account, when `gameListImportActions` + `applyAction` for two pack tabs, then tab count grows by 2, account keys unchanged, `activeTabId` restored.
-- [ ] Given no in-bar active tab, when those actions apply one tab, then `activeTabId` is the created tab.
-- [ ] Given the same pack applied twice, then duplicate names/URLs exist with distinct ids and no new accounts.
+- [x] Given two in-bar tabs and one archived with accounts, when `exportGameList`, then `tabs` has two `{ name, baseUrl }` rows, `kind` is game-list, and JSON has no account keys.
+- [x] Given workspace-shaped raw (`version: 1`, `tabs`, `accounts: {}`), missing `kind`, `accounts` own-property on a game-list-shaped object, `null`, or `[]`, when `parseGameList`, then `[]`.
+- [x] Given a valid pack row with `javascript:` or empty `baseUrl` plus one http(s) row, when `parseGameList`, then only the http(s) row remains.
+- [x] Given a snapshot with in-bar `activeTabId` and one account, when `gameListImportActions` + `applyAction` for two pack tabs, then tab count grows by 2, account keys unchanged, `activeTabId` restored.
+- [x] Given no in-bar active tab, when those actions apply one tab, then `activeTabId` is the created tab.
+- [x] Given the same pack applied twice, then duplicate names/URLs exist with distinct ids and no new accounts.
 
 ### Integration Tests
 
