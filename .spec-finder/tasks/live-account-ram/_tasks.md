@@ -5,7 +5,7 @@ Canonical execution order. Numeric IDs are the run order. Parallelizable tasks s
 | ID | Title | Primary slice | Type | Complexity | Dependencies | Status |
 |---|---|---|---|---|---|---|
 | task_01 | Journal Windows don't-paint knobs | F-01 | spike | medium | [] | completed |
-| task_02 | Don't-paint running views that passed the spike | US-01 | backend | medium | [task_01] | pending |
+| task_02 | Don't-paint running views that passed the spike | US-01 | backend | medium | [task_01] | completed |
 
 ## Execution order
 

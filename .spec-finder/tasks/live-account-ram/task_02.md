@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 title: Don't-paint running views that passed the spike
 type: backend
 complexity: medium
@@ -81,11 +81,11 @@ A multi-account operator can leave 3–6 accounts running while using other apps
 
 ## Subtasks
 
-- [ ] 02.1 Apply task_01 journal: ship knob 1, knob 2, both, or neither (neither = no paint-policy diff)
-- [ ] 02.2 If knob 1 passed, off-stage / overlay / tiny-bounds running views don't-paint while contents live
-- [ ] 02.3 If knob 2 passed, minimized/hidden chrome don't-paint and restore/show re-paints on-stage views
-- [ ] 02.4 Confirm close, crash restart, pop-out, partitions, and chrome UI are unchanged
-- [ ] 02.5 Run focused tests plus `pnpm test`, `pnpm typecheck`, and `pnpm verify:isolation`
+- [x] 02.1 Apply task_01 journal: ship knob 1, knob 2, both, or neither (neither = no paint-policy diff)
+- [x] 02.2 If knob 1 passed, off-stage / overlay / tiny-bounds running views don't-paint while contents live
+- [x] 02.3 If knob 2 passed, minimized/hidden chrome don't-paint and restore/show re-paints on-stage views
+- [x] 02.4 Confirm close, crash restart, pop-out, partitions, and chrome UI are unchanged
+- [x] 02.5 Run focused tests plus `pnpm test`, `pnpm typecheck`, and `pnpm verify:isolation`
 
 ## Implementation Details
 
