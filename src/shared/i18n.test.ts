@@ -41,6 +41,19 @@ describe('i18n', () => {
     expect(t('pt', 'shortcutStart')).not.toMatch(/start/i)
   })
 
+  it('keeps game-list labels distinct from workspace strings in EN and PT', () => {
+    for (const locale of ['en', 'pt'] as const) {
+      expect(t(locale, 'exportGameList').length).toBeGreaterThan(0)
+      expect(t(locale, 'importGameList').length).toBeGreaterThan(0)
+      expect(t(locale, 'exportGameList')).not.toBe(t(locale, 'exportWorkspace'))
+      expect(t(locale, 'importGameList')).not.toBe(t(locale, 'importWorkspace'))
+    }
+    expect(t('pt', 'exportGameList')).not.toBe(t('en', 'exportGameList'))
+    expect(t('pt', 'importGameList')).not.toBe(t('en', 'importGameList'))
+    expect(t('pt', 'exportGameList')).not.toMatch(/export game list/i)
+    expect(t('pt', 'importGameList')).not.toMatch(/import game list/i)
+  })
+
   it('has getting, apply, and later copy in both locales', () => {
     for (const key of ['updateGetting', 'updateApply', 'updateLater'] as const) {
       expect(t('en', key).length).toBeGreaterThan(0)

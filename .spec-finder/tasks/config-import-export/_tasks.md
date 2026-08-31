@@ -5,7 +5,7 @@ Canonical execution order. Numeric IDs are the run order. Parallelizable tasks s
 | ID | Title | Primary slice | Type | Complexity | Dependencies | Status |
 |---|---|---|---|---|---|---|
 | task_01 | Prove the games-only pack contract | F-02 | backend | medium | [] | completed |
-| task_02 | Ship Settings game-list export and import | US-02 | frontend | high | [task_01] | pending |
+| task_02 | Ship Settings game-list export and import | US-02 | frontend | high | [task_01] | completed |
 
 ## Execution order
 

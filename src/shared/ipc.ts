@@ -21,6 +21,8 @@ export type OpsourceAPI = {
   windowControl: (command: WindowCommand) => Promise<boolean>
   exportWorkspace: () => Promise<boolean>
   importWorkspace: () => Promise<boolean>
+  exportGameList: () => Promise<boolean>
+  importGameList: () => Promise<boolean>
   getVersion: () => Promise<string>
   getPlatform: () => Promise<NodeJS.Platform>
   onState: (handler: (snapshot: WorkspaceSnapshot) => void) => () => void

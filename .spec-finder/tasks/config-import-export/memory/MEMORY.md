@@ -2,8 +2,8 @@
 
 ## Current State
 
-- task_01 pack helpers implemented in `src/shared/workspace.ts` and covered by `workspace.test.ts`.
-- task_02 Settings IPC still pending.
+- task_01 pack helpers are in `src/shared/workspace.ts`.
+- task_02 wired Settings IPC (`ops:exportGames` / `ops:importGames`) through `commitAll` of those helpers.
 
 ## Shared Decisions
 
@@ -13,12 +13,13 @@
 ## Shared Learnings
 
 - `parseGameList` treats any own-property `accounts` (including `[]`) as a wrong document and returns `[]`.
+- Game-list import must `commitAll` create+restore; assigning `snapshotFromImport` would wipe.
 
 ## Open Risks
 
-- G-01 real handoff is dogfood, not CI (task_02 report must record GUI gap if the app cannot run).
+- G-01 real handoff is dogfood, not CI. This environment did not run the Electron GUI.
 - Wrong-click Import workspace still wipes (ADR-001 accepted).
 
 ## Handoffs
 
-- task_02 must call `exportGameList` / `parseGameList` / `gameListImportActions` from task_01 and `commitAll`; never assign `snapshotFromImport` on the game-list path.
+- Leftover `idle-manager-games.json` files are inert if handlers are removed; workspace `exportMetadata` v1 remains valid.

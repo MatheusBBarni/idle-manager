@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 title: Ship Settings game-list export and import
 type: frontend
 complexity: high
@@ -87,11 +87,11 @@ A friend can import a game list from Settings and see those games with no jars f
 
 ## Subtasks
 
-- [ ] 02.1 Expose game-list export/import on the preload API without changing workspace IPC.
-- [ ] 02.2 Save and open a pack from main using task_01 helpers and `commitAll`; fail closed without replacing the snapshot.
-- [ ] 02.3 Add Settings Export/Import game list next to workspace actions, with distinct PT/EN labels.
-- [ ] 02.4 Prove i18n keys differ from workspace strings; leave workspace handlers untouched.
-- [ ] 02.5 Run `pnpm test && pnpm typecheck` to terminal exit; record dogfood/GUI gap if the handoff cannot run here.
+- [x] 02.1 Expose game-list export/import on the preload API without changing workspace IPC.
+- [x] 02.2 Save and open a pack from main using task_01 helpers and `commitAll`; fail closed without replacing the snapshot.
+- [x] 02.3 Add Settings Export/Import game list next to workspace actions, with distinct PT/EN labels.
+- [x] 02.4 Prove i18n keys differ from workspace strings; leave workspace handlers untouched.
+- [x] 02.5 Run `pnpm test && pnpm typecheck` to terminal exit; record dogfood/GUI gap if the handoff cannot run here.
 
 ## Implementation Details
 
@@ -129,7 +129,7 @@ Follow TechSpec Contracts (OpsourceAPI, IPC names, dialog options, Errors), Arch
 
 ### Unit Tests
 
-- [ ] Given EN and PT, when reading the new keys, then they are non-empty, not equal to `exportWorkspace` / `importWorkspace`, and PT game-list import/export are not leftover English (`i18n.test.ts`).
+- [x] Given EN and PT, when reading the new keys, then they are non-empty, not equal to `exportWorkspace` / `importWorkspace`, and PT game-list import/export are not leftover English (`i18n.test.ts`).
 
 ### Integration Tests
 

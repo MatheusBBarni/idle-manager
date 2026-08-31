@@ -329,6 +329,14 @@ function SettingsModal({ onClose }: { onClose: () => void }) {
             {t(locale, 'importWorkspace')}
           </Button>
         </div>
+        <div className="flex gap-2">
+          <Button size="sm" variant="secondary" onPress={() => void window.opsource.exportGameList()}>
+            {t(locale, 'exportGameList')}
+          </Button>
+          <Button size="sm" variant="secondary" onPress={() => void window.opsource.importGameList()}>
+            {t(locale, 'importGameList')}
+          </Button>
+        </div>
       </div>
     </ShellModal>
   )

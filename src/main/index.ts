@@ -7,7 +7,7 @@ import type { NavCommand, WindowCommand } from '@shared/ipc'
 import type { UpdateCommand } from '@shared/updateStatus'
 import type { StageReport, WorkspaceSnapshot } from '@shared/types'
 import { normalizeUrl } from '@shared/urls'
-import { accountIdsToWipe, applyAction, emptySnapshot, exportMetadata, snapshotFromImport, type WorkspaceAction } from '@shared/workspace'
+import { accountIdsToWipe, applyAction, emptySnapshot, exportGameList, exportMetadata, gameListImportActions, parseGameList, snapshotFromImport, type WorkspaceAction } from '@shared/workspace'
 import { attachAccountLoop, bindAccountLoop } from './accountLoop'
 import { verifyIsolation } from './isolationVerify'
 import { collectMetrics } from './metrics'
@@ -234,6 +234,49 @@ function registerIpc(): void {
     broadcast()
     scheduleSave()
     return true
+  })
+  ipcMain.handle('ops:exportGames', async () => {
+    if (!mainWindow) {
+      return false
+    }
+    try {
+      const result = await dialog.showSaveDialog(mainWindow, {
+        title: 'Export game list',
+        defaultPath: 'idle-manager-games.json',
+        filters: [{ name: 'JSON', extensions: ['json'] }]
+      })
+      if (result.canceled || !result.filePath) {
+        return false
+      }
+      await writeFile(result.filePath, JSON.stringify(exportGameList(snapshot)), 'utf8')
+      return true
+    } catch {
+      return false
+    }
+  })
+  ipcMain.handle('ops:importGames', async () => {
+    if (!mainWindow) {
+      return false
+    }
+    try {
+      const result = await dialog.showOpenDialog(mainWindow, {
+        title: 'Import game list',
+        filters: [{ name: 'JSON', extensions: ['json'] }],
+        properties: ['openFile']
+      })
+      const file = result.filePaths[0]
+      if (result.canceled || !file) {
+        return false
+      }
+      const tabs = parseGameList(JSON.parse(await readFile(file, 'utf8')))
+      if (tabs.length === 0) {
+        return false
+      }
+      commitAll(gameListImportActions(snapshot, tabs))
+      return true
+    } catch {
+      return false
+    }
   })
   ipcMain.handle('ops:version', () => app.getVersion())
   ipcMain.handle('ops:platform', () => process.platform)
