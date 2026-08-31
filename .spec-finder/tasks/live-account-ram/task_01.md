@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 title: Journal Windows don't-paint knobs
 type: spike
 complexity: medium
@@ -73,11 +73,11 @@ An operator on a shared Windows PC needs to know whether detaching unpainted run
 
 ## Subtasks
 
-- [ ] 01.1 Capture same-session baseline: ≥3 running accounts, at least one off-stage, Task Manager working set, fixture interval, `visibilityState`
-- [ ] 01.2 Measure knob 1 (off-stage detach, contents alive) against the criterion
-- [ ] 01.3 Measure knob 2 (chrome minimized/hidden detach) against the criterion
-- [ ] 01.4 Write per-knob pass/fail plus environment limitations into memory and the final report
-- [ ] 01.5 Confirm production `src/` and package scripts are unchanged; run the repository test gate
+- [x] 01.1 Capture same-session baseline: ≥3 running accounts, at least one off-stage, Task Manager working set, fixture interval, `visibilityState`
+- [x] 01.2 Measure knob 1 (off-stage detach, contents alive) against the criterion
+- [x] 01.3 Measure knob 2 (chrome minimized/hidden detach) against the criterion
+- [x] 01.4 Write per-knob pass/fail plus environment limitations into memory and the final report
+- [x] 01.5 Confirm production `src/` and package scripts are unchanged; run the repository test gate
 
 ## Implementation Details
 
