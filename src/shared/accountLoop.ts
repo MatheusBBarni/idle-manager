@@ -1,15 +1,7 @@
-import {
-  LOOP_COMMANDS,
-  SHORTCUT_DEFAULTS,
-  displayShortcut,
-  type ShortcutCommand
-} from './shortcuts'
+import { LOOP_COMMANDS, SHORTCUT_DEFAULTS, displayShortcut, type LoopCommand } from './shortcuts'
 import type { WorkspaceAction } from './workspace'
 
-export type AccountLoopCommand = Extract<
-  ShortcutCommand,
-  'account-create' | 'account-prev' | 'account-next' | 'account-start'
->
+export type AccountLoopCommand = LoopCommand
 
 export const ACCOUNT_LOOP_SHORTCUTS = LOOP_COMMANDS.map((command) => ({
   command,

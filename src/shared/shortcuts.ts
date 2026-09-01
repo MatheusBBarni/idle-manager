@@ -73,8 +73,12 @@ export const CHROME_COMMANDS = [
   'account-slot'
 ] as const satisfies readonly ShortcutCommand[]
 
+export type LoopCommand = (typeof LOOP_COMMANDS)[number]
+export type ChromeCommand = (typeof CHROME_COMMANDS)[number]
+
 const COMMAND_SET = new Set<string>(SHORTCUT_COMMANDS)
 const LOOP_SET = new Set<string>(LOOP_COMMANDS)
+const CAPTURE_MODIFIER_KEYS = new Set(['Control', 'Shift', 'Alt', 'Meta', 'OS'])
 
 export const SHORTCUT_DEFAULTS: ShortcutMap = {
   'tab-new': { key: 't', shift: false, alt: false },
@@ -99,14 +103,28 @@ export function isShortcutCommand(value: unknown): value is ShortcutCommand {
   return typeof value === 'string' && COMMAND_SET.has(value)
 }
 
+export function isLoopCommand(command: ShortcutCommand | null): command is LoopCommand {
+  return command !== null && LOOP_SET.has(command)
+}
+
+export function isChromeCommand(command: ShortcutCommand | null): command is ChromeCommand {
+  return command !== null && !LOOP_SET.has(command)
+}
+
 export function cloneShortcutMap(map: ShortcutMap): ShortcutMap {
-  return Object.fromEntries(
-    SHORTCUT_COMMANDS.map((command) => [command, { ...map[command] }])
-  ) as ShortcutMap
+  const next: ShortcutMap = { ...SHORTCUT_DEFAULTS }
+  for (const command of SHORTCUT_COMMANDS) {
+    next[command] = { ...map[command] }
+  }
+  return next
 }
 
 export function chordIdentity(chord: ShortcutChord): string {
   return `${chord.alt ? '1' : '0'}|${chord.shift ? '1' : '0'}|${chord.key.toLowerCase()}`
+}
+
+export function chordsEqual(a: ShortcutChord, b: ShortcutChord): boolean {
+  return chordIdentity(a) === chordIdentity(b)
 }
 
 export function parseShortcutChord(value: unknown): ShortcutChord | null {
@@ -159,20 +177,22 @@ export function shortcutConflict(
 }
 
 export function normalizeShortcutMap(raw: unknown): ShortcutMap {
-  const accepted: Partial<ShortcutMap> = {}
+  const next = cloneShortcutMap(SHORTCUT_DEFAULTS)
   if (!isRecord(raw)) {
-    return cloneShortcutMap(SHORTCUT_DEFAULTS)
+    return next
   }
+  const seen: Partial<ShortcutMap> = {}
   for (const command of SHORTCUT_COMMANDS) {
     const parsed = parseShortcutChord(raw[command])
     const canonical = parsed ? canonicalizeShortcutChord(command, parsed) : null
-    if (canonical && !shortcutConflict(accepted, command, canonical)) {
-      accepted[command] = canonical
+    if (canonical && !shortcutConflict(seen, command, canonical)) {
+      seen[command] = canonical
+      next[command] = canonical
     } else {
-      accepted[command] = { ...SHORTCUT_DEFAULTS[command] }
+      seen[command] = next[command]
     }
   }
-  return accepted as ShortcutMap
+  return next
 }
 
 export function matchShortcut(
@@ -217,21 +237,51 @@ export function displayShortcutLabel(
   platform: 'darwin' | 'win'
 ): string {
   const shown = displayShortcut(chord, platform)
-  if (command !== 'account-slot') {
-    return shown
-  }
-  return shown.endsWith('1') ? `${shown.slice(0, -1)}1…9` : shown
+  return command === 'account-slot' ? `${shown}…9` : shown
 }
 
 export function commandScope(command: ShortcutCommand): ShortcutScope {
-  return LOOP_SET.has(command) ? 'loop' : 'chrome'
+  return isLoopCommand(command) ? 'loop' : 'chrome'
+}
+
+export function fromDomKeyboardEvent(event: {
+  key: string
+  ctrlKey: boolean
+  metaKey: boolean
+  shiftKey: boolean
+  altKey: boolean
+  repeat: boolean
+}): ShortcutKeyInput {
+  return {
+    type: 'keyDown',
+    key: event.key,
+    control: event.ctrlKey,
+    meta: event.metaKey,
+    shift: event.shiftKey,
+    alt: event.altKey,
+    isAutoRepeat: event.repeat
+  }
+}
+
+export function chordFromCapture(
+  command: ShortcutCommand,
+  input: { key: string; shift: boolean; alt: boolean; control: boolean; meta: boolean }
+): ShortcutChord | null {
+  if (!(input.meta || input.control) || CAPTURE_MODIFIER_KEYS.has(input.key) || input.key.trim() === '') {
+    return null
+  }
+  return canonicalizeShortcutChord(command, {
+    key: input.key,
+    shift: input.shift,
+    alt: input.alt
+  })
 }
 
 function occupyingIdentities(command: ShortcutCommand, chord: ShortcutChord): Set<string> {
   if (command === 'account-slot') {
     return new Set(
-      ['1', '2', '3', '4', '5', '6', '7', '8', '9'].map(
-        (digit) => `${chord.alt ? '1' : '0'}|${chord.shift ? '1' : '0'}|${digit}`
+      ['1', '2', '3', '4', '5', '6', '7', '8', '9'].map((digit) =>
+        chordIdentity({ key: digit, shift: chord.shift, alt: chord.alt })
       )
     )
   }

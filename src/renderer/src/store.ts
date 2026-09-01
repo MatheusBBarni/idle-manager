@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import type { ShortcutCommand } from '@shared/shortcuts'
 import type { MetricsPayload, NavigationState, WorkspaceSnapshot } from '@shared/types'
 import type { UpdateStatus } from '@shared/updateStatus'
 import { activeAccount, emptySnapshot, type WorkspaceAction } from '@shared/workspace'
@@ -33,7 +34,7 @@ type AppStore = {
   version: string
   fps: number
   sidebarCollapsed: boolean
-  shortcutCapturing: boolean
+  shortcutCapturing: ShortcutCommand | null
   updateStatus: UpdateStatus
   setSnapshot: (snapshot: WorkspaceSnapshot) => void
   setMetrics: (metrics: MetricsPayload) => void
@@ -45,7 +46,7 @@ type AppStore = {
   setMeta: (meta: { platform: NodeJS.Platform; version: string }) => void
   setFps: (fps: number) => void
   setSidebarCollapsed: (value: boolean) => void
-  setShortcutCapturing: (value: boolean) => void
+  setShortcutCapturing: (value: ShortcutCommand | null) => void
 }
 
 export const useAppStore = create<AppStore>((set) => ({
@@ -59,7 +60,7 @@ export const useAppStore = create<AppStore>((set) => ({
   version: '0.1.0',
   fps: 0,
   sidebarCollapsed: false,
-  shortcutCapturing: false,
+  shortcutCapturing: null,
   updateStatus: { phase: 'idle' },
   setSnapshot: (snapshot) => set({ snapshot }),
   setMetrics: (metrics) => set({ metrics }),

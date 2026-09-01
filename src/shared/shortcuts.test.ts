@@ -3,7 +3,9 @@ import {
   CHROME_COMMANDS,
   LOOP_COMMANDS,
   SHORTCUT_DEFAULTS,
+  chordFromCapture,
   chordIdentity,
+  chordsEqual,
   cloneShortcutMap,
   displayShortcut,
   displayShortcutLabel,
@@ -218,5 +220,45 @@ describe('cloneShortcutMap', () => {
     const cloned = cloneShortcutMap(SHORTCUT_DEFAULTS)
     cloned['tab-new'].key = 'z'
     expect(SHORTCUT_DEFAULTS['tab-new'].key).toBe('t')
+  })
+})
+
+describe('chordFromCapture', () => {
+  it('requires a platform mod and a real key, then canonicalizes slot digits', () => {
+    expect(
+      chordFromCapture('tab-new', { key: 'q', shift: true, alt: false, control: false, meta: false })
+    ).toBeNull()
+    expect(
+      chordFromCapture('tab-new', {
+        key: 'Control',
+        shift: false,
+        alt: false,
+        control: true,
+        meta: false
+      })
+    ).toBeNull()
+    expect(
+      chordFromCapture('tab-new', { key: 'q', shift: true, alt: false, control: true, meta: false })
+    ).toEqual({ key: 'q', shift: true, alt: false })
+    expect(
+      chordFromCapture('account-slot', {
+        key: '7',
+        shift: true,
+        alt: false,
+        control: true,
+        meta: false
+      })
+    ).toEqual({ key: '1', shift: true, alt: false })
+  })
+})
+
+describe('chordsEqual', () => {
+  it('treats case-folded keys as the same chord', () => {
+    expect(chordsEqual({ key: 'N', shift: true, alt: false }, { key: 'n', shift: true, alt: false })).toBe(
+      true
+    )
+    expect(chordsEqual({ key: 'n', shift: true, alt: false }, { key: 'n', shift: false, alt: false })).toBe(
+      false
+    )
   })
 })

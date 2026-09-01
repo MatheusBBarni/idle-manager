@@ -1,7 +1,7 @@
 import type { WebContents } from 'electron'
 import { keyboardCreateActions, nextAccountId, type AccountLoopCommand } from '@shared/accountLoop'
 import { newId } from '@shared/ids'
-import { matchShortcut } from '@shared/shortcuts'
+import { isLoopCommand, matchShortcut } from '@shared/shortcuts'
 import type { WorkspaceSnapshot } from '@shared/types'
 import { activeAccount, tabById, type WorkspaceAction } from '@shared/workspace'
 
@@ -73,12 +73,7 @@ export function attachAccountLoop(contents: WebContents, source: LoopSource): vo
       snapshot.shortcuts,
       'loop'
     )
-    if (
-      command !== 'account-create' &&
-      command !== 'account-prev' &&
-      command !== 'account-next' &&
-      command !== 'account-start'
-    ) {
+    if (!isLoopCommand(command)) {
       return
     }
     const actions = actionsForCommand(command, snapshot)
