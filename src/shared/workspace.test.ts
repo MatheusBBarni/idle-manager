@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { keyboardCreateActions } from './accountLoop'
+import { SHORTCUT_DEFAULTS } from './shortcuts'
 import type { WorkspaceSnapshot } from './types'
 import {
   accountIdsToWipe,
@@ -7,6 +8,7 @@ import {
   emptySnapshot,
   accountsForTab,
   exportGameList,
+  exportMetadata,
   gameListImportActions,
   lastArchivedTab,
   parseGameList,
@@ -395,5 +397,79 @@ describe('chrome locale allowlist', () => {
     let en = applyAction(withTab(), { type: 'prefs/locale', locale: 'en' })
     en = applyAction(en, { type: 'account/create', tabId: 'tab-gengar', id: 'acc-en' })
     expect(en.accounts['acc-en']?.name).toBe('Account 1')
+  })
+})
+
+describe('shortcut map persistence', () => {
+  it('puts shipped defaults on empty snapshots and v1 files without shortcuts', () => {
+    expect(emptySnapshot().version).toBe(1)
+    expect(emptySnapshot().shortcuts).toEqual(SHORTCUT_DEFAULTS)
+    expect(parseSnapshot({ version: 1, tabs: [], accounts: {} }).shortcuts).toEqual(SHORTCUT_DEFAULTS)
+  })
+
+  it('sets one unused legal chord and keeps the rest of the map', () => {
+    const before = emptySnapshot()
+    const next = applyAction(before, {
+      type: 'prefs/shortcut',
+      command: 'tab-new',
+      chord: { key: 'q', shift: true, alt: false }
+    })
+    expect(next.shortcuts['tab-new']).toEqual({ key: 'q', shift: true, alt: false })
+    expect(next.shortcuts['sidebar-toggle']).toEqual(SHORTCUT_DEFAULTS['sidebar-toggle'])
+    expect(next.version).toBe(1)
+  })
+
+  it('no-ops duplicate and illegal chords without changing the snapshot', () => {
+    const state = emptySnapshot()
+    expect(
+      applyAction(state, {
+        type: 'prefs/shortcut',
+        command: 'tab-new',
+        chord: { key: 'b', shift: false, alt: false }
+      })
+    ).toBe(state)
+    expect(
+      applyAction(state, {
+        type: 'prefs/shortcut',
+        command: 'tab-new',
+        chord: { key: '1', shift: false, alt: false }
+      })
+    ).toBe(state)
+    expect(
+      applyAction(state, {
+        type: 'prefs/shortcut',
+        command: 'tab-new',
+        chord: { key: '', shift: false, alt: false }
+      })
+    ).toBe(state)
+  })
+
+  it('resets a remapped command to the shipped default while still storing it', () => {
+    let state = emptySnapshot()
+    state = applyAction(state, {
+      type: 'prefs/shortcut',
+      command: 'account-create',
+      chord: { key: 'q', shift: true, alt: false }
+    })
+    expect(state.shortcuts['account-create']).toEqual({ key: 'q', shift: true, alt: false })
+    state = applyAction(state, { type: 'prefs/shortcut', command: 'account-create', chord: null })
+    expect(state.shortcuts['account-create']).toEqual(SHORTCUT_DEFAULTS['account-create'])
+    expect(state.shortcuts['account-create']).toEqual({ key: 'n', shift: true, alt: false })
+  })
+
+  it('exports the full map on workspace metadata and omits it from game-list packs', () => {
+    let state = emptySnapshot()
+    state = applyAction(state, {
+      type: 'prefs/shortcut',
+      command: 'tab-new',
+      chord: { key: 'q', shift: true, alt: false }
+    })
+    const meta = exportMetadata(state)
+    expect(meta.version).toBe(1)
+    expect(meta.shortcuts['tab-new']).toEqual({ key: 'q', shift: true, alt: false })
+    expect(meta.shortcuts['account-start']).toEqual(SHORTCUT_DEFAULTS['account-start'])
+    const pack = exportGameList(state)
+    expect(pack).not.toHaveProperty('shortcuts')
+    expect(JSON.stringify(pack)).not.toMatch(/shortcuts/)
   })
 })

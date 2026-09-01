@@ -1,3 +1,5 @@
+import type { ShortcutMap } from './shortcuts'
+
 export type LayoutMode = 'grid' | 'single' | 'columns' | 'rows' | 'free'
 export type AccountStatus = 'running' | 'closed'
 export const LOCALES = ['pt', 'en', 'es', 'zh-Hans'] as const
@@ -65,6 +67,7 @@ export type WorkspaceSnapshot = {
   theme: ThemeName
   windowBounds: WindowBounds | null
   launchAtStartup: boolean
+  shortcuts: ShortcutMap
 }
 
 export type AccountMetrics = {

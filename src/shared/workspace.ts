@@ -13,6 +13,18 @@ import {
   type WindowBounds,
   type WorkspaceSnapshot
 } from './types'
+import {
+  canonicalizeShortcutChord,
+  cloneShortcutMap,
+  isShortcutCommand,
+  normalizeShortcutMap,
+  parseShortcutChord,
+  SHORTCUT_DEFAULTS,
+  shortcutConflict,
+  type ShortcutChord,
+  type ShortcutCommand,
+  type ShortcutMap
+} from './shortcuts'
 import { hostnameOf, isValidHttpUrl, normalizeUrl } from './urls'
 
 export type WorkspaceAction =
@@ -47,6 +59,7 @@ export type WorkspaceAction =
   | { type: 'prefs/locale'; locale: Locale }
   | { type: 'prefs/theme'; theme: ThemeName }
   | { type: 'prefs/launchAtStartup'; value: boolean }
+  | { type: 'prefs/shortcut'; command: ShortcutCommand; chord: ShortcutChord | null }
   | { type: 'window/bounds'; bounds: WindowBounds }
 
 export type WorkspaceExport = {
@@ -55,6 +68,7 @@ export type WorkspaceExport = {
   accounts: Record<string, Pick<Account, 'id' | 'tabId' | 'name' | 'color' | 'url' | 'homeUrl'>>
   locale: Locale
   theme: ThemeName
+  shortcuts: ShortcutMap
 }
 
 export function emptySnapshot(): WorkspaceSnapshot {
@@ -66,7 +80,8 @@ export function emptySnapshot(): WorkspaceSnapshot {
     locale: 'pt',
     theme: 'dark',
     windowBounds: null,
-    launchAtStartup: false
+    launchAtStartup: false,
+    shortcuts: cloneShortcutMap(SHORTCUT_DEFAULTS)
   }
 }
 
@@ -194,6 +209,37 @@ function seedFreeBounds(snapshot: WorkspaceSnapshot, tab: GameTab): WorkspaceSna
     }
   })
   return next
+}
+
+function applyShortcutPref(
+  snapshot: WorkspaceSnapshot,
+  command: ShortcutCommand,
+  chord: ShortcutChord | null
+): WorkspaceSnapshot {
+  if (!isShortcutCommand(command)) {
+    return snapshot
+  }
+  if (chord === null) {
+    return {
+      ...snapshot,
+      shortcuts: {
+        ...snapshot.shortcuts,
+        [command]: { ...SHORTCUT_DEFAULTS[command] }
+      }
+    }
+  }
+  const parsed = parseShortcutChord(chord)
+  const canonical = parsed ? canonicalizeShortcutChord(command, parsed) : null
+  if (!canonical || shortcutConflict(snapshot.shortcuts, command, canonical)) {
+    return snapshot
+  }
+  return {
+    ...snapshot,
+    shortcuts: {
+      ...snapshot.shortcuts,
+      [command]: canonical
+    }
+  }
 }
 
 export function applyAction(snapshot: WorkspaceSnapshot, action: WorkspaceAction): WorkspaceSnapshot {
@@ -382,6 +428,8 @@ export function applyAction(snapshot: WorkspaceSnapshot, action: WorkspaceAction
       return { ...snapshot, theme: action.theme }
     case 'prefs/launchAtStartup':
       return { ...snapshot, launchAtStartup: action.value }
+    case 'prefs/shortcut':
+      return applyShortcutPref(snapshot, action.command, action.chord)
     case 'window/bounds':
       return { ...snapshot, windowBounds: action.bounds }
     default:
@@ -530,7 +578,8 @@ export function parseSnapshot(raw: unknown): WorkspaceSnapshot {
     locale: isLocale(raw.locale) ? raw.locale : 'pt',
     theme: raw.theme === 'light' ? 'light' : 'dark',
     windowBounds: asWindowBounds(raw.windowBounds),
-    launchAtStartup: raw.launchAtStartup === true
+    launchAtStartup: raw.launchAtStartup === true,
+    shortcuts: normalizeShortcutMap(raw.shortcuts)
   }
 }
 
@@ -559,7 +608,8 @@ export function exportMetadata(snapshot: WorkspaceSnapshot): WorkspaceExport {
       ])
     ),
     locale: snapshot.locale,
-    theme: snapshot.theme
+    theme: snapshot.theme,
+    shortcuts: cloneShortcutMap(snapshot.shortcuts)
   }
 }
 

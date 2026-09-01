@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 title: Persist the full shortcut map
 type: backend
 complexity: high
@@ -78,11 +78,11 @@ A workspace that has never opened Shortcuts still has every documented command o
 
 ## Subtasks
 
-- [ ] 01.1 Ship the shared catalog, defaults, identity, matcher, and normalize helpers with unit tests.
-- [ ] 01.2 Put a full shortcut map on snapshot v1 parse, empty snapshot, and workspace export.
-- [ ] 01.3 Apply `prefs/shortcut` set/reset with duplicate and illegal no-ops.
-- [ ] 01.4 Keep game-list documents bind-free and leave live key listeners frozen.
-- [ ] 01.5 Run focused Vitest and `pnpm typecheck` to terminal exit.
+- [x] 01.1 Ship the shared catalog, defaults, identity, matcher, and normalize helpers with unit tests.
+- [x] 01.2 Put a full shortcut map on snapshot v1 parse, empty snapshot, and workspace export.
+- [x] 01.3 Apply `prefs/shortcut` set/reset with duplicate and illegal no-ops.
+- [x] 01.4 Keep game-list documents bind-free and leave live key listeners frozen.
+- [x] 01.5 Run focused Vitest and `pnpm typecheck` to terminal exit.
 
 ## Implementation Details
 
@@ -121,14 +121,14 @@ Follow TechSpec Contracts (Public interfaces, matcher rules, conflict occupancy 
 
 ### Unit Tests
 
-- [ ] Given `matchShortcut` defaults and `loop` scope, when each loop default chord is pressed with mod, then that loop command; chrome defaults in `loop` scope → `null`.
-- [ ] Given no platform mod, keyUp, or repeat, when matched, then `null`.
-- [ ] Given `account-slot` default, when keys `1`–`9` with the stored shift/alt, then `account-slot`; given another command at `Ctrl+1`, then `shortcutConflict` reports occupancy.
-- [ ] Given `tab-next` default, when shift is inverted, then still `tab-next` (previous-tab family, not a catalog row).
-- [ ] Given raw without `shortcuts`, when `normalizeShortcutMap` / `parseSnapshot`, then `SHORTCUT_DEFAULTS`.
-- [ ] Given two commands with the same identity, when normalized, then the later catalog command falls back to its default.
-- [ ] Given `prefs/shortcut` legal unused chord, when applied, then only that command changes; duplicate or no-mod chord → snapshot unchanged; `chord: null` → shipped default stored.
-- [ ] Given a remapped snapshot, when `exportMetadata`, then `shortcuts` is present; `exportGameList` has no such field.
+- [x] Given `matchShortcut` defaults and `loop` scope, when each loop default chord is pressed with mod, then that loop command; chrome defaults in `loop` scope → `null`.
+- [x] Given no platform mod, keyUp, or repeat, when matched, then `null`.
+- [x] Given `account-slot` default, when keys `1`–`9` with the stored shift/alt, then `account-slot`; given another command at `Ctrl+1`, then `shortcutConflict` reports occupancy.
+- [x] Given `tab-next` default, when shift is inverted, then still `tab-next` (previous-tab family, not a catalog row).
+- [x] Given raw without `shortcuts`, when `normalizeShortcutMap` / `parseSnapshot`, then `SHORTCUT_DEFAULTS`.
+- [x] Given two commands with the same identity, when normalized, then the later catalog command falls back to its default.
+- [x] Given `prefs/shortcut` legal unused chord, when applied, then only that command changes; duplicate or no-mod chord → snapshot unchanged; `chord: null` → shipped default stored.
+- [x] Given a remapped snapshot, when `exportMetadata`, then `shortcuts` is present; `exportGameList` has no such field.
 
 ### Integration Tests
 
