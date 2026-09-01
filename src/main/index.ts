@@ -46,7 +46,6 @@ const preloadPath = fileURLToPath(new URL('../preload/index.cjs', import.meta.ur
 let mainWindow: BrowserWindow | null = null
 let snapshot: WorkspaceSnapshot = emptySnapshot()
 let saveTimer: NodeJS.Timeout | null = null
-let fps = 0
 
 function scheduleSave(): void {
   if (saveTimer) {
@@ -284,9 +283,6 @@ function registerIpc(): void {
   ipcMain.handle('ops:version', () => app.getVersion())
   ipcMain.handle('ops:platform', () => process.platform)
   ipcMain.handle('ops:updateCommand', (_event, command: UpdateCommand) => handleUpdateCommand(command))
-  ipcMain.on('ops:fps', (_event, value: number) => {
-    fps = Number.isFinite(value) ? value : 0
-  })
 }
 
 app.whenReady().then(async () => {
@@ -357,7 +353,7 @@ app.whenReady().then(async () => {
     if (!mainWindow || mainWindow.isDestroyed()) {
       return
     }
-    const payload = collectMetrics(liveViews(), fps)
+    const payload = collectMetrics(liveViews())
     mainWindow.webContents.send('ops:metrics', payload)
   }, 1000)
 })

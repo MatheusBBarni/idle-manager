@@ -6,8 +6,7 @@ import type { AccountMetrics, MetricsPayload } from '@shared/types'
 const startedAt = Date.now()
 
 export function collectMetrics(
-  views: Map<string, { view: WebContentsView; lastActivityAt: number | null }>,
-  _fps?: number
+  views: Map<string, { view: WebContentsView; lastActivityAt: number | null }>
 ): MetricsPayload {
   const appMetrics = app.getAppMetrics()
   const byPid = new Map(appMetrics.map((item) => [item.pid, item]))

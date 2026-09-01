@@ -31,7 +31,6 @@ export type OpsourceAPI = {
   onUpdate: (handler: (status: UpdateStatus) => void) => () => void
   /** No-op unless main status is `ready`; main enforces this. */
   updateCommand: (command: UpdateCommand) => Promise<void>
-  reportFps: (fps: number) => void
 }
 
 declare global {

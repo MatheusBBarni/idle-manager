@@ -11,6 +11,12 @@ export type AggregateMetricTotals = {
   gpuMemoryBytes: number | null
 }
 
+export function hasGpuMetrics(
+  totals: Pick<AggregateMetricTotals, 'gpuCpu' | 'gpuMemoryBytes'>
+): totals is { gpuCpu: number; gpuMemoryBytes: number } {
+  return totals.gpuCpu != null && totals.gpuMemoryBytes != null
+}
+
 export function summarizeAppMetrics(rows: readonly AppMetricRow[]): AggregateMetricTotals {
   let cpu = 0
   let memoryBytes = 0

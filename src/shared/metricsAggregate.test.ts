@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { summarizeAppMetrics, type AppMetricRow } from './metricsAggregate'
+import { hasGpuMetrics, summarizeAppMetrics, type AppMetricRow } from './metricsAggregate'
 
 function row(type: string, percentCPUUsage: number, workingSetSize: number): AppMetricRow {
   return { type, cpu: { percentCPUUsage }, memory: { workingSetSize } }
@@ -26,5 +26,13 @@ describe('summarizeAppMetrics', () => {
     expect(totals.gpuMemoryBytes).toBeNull()
     expect(totals.gpuCpu).not.toBe(0)
     expect(totals.gpuMemoryBytes).not.toBe(0)
+    expect(hasGpuMetrics(totals)).toBe(false)
+  })
+
+  it('treats GPU as present only when both gpu fields are numbers', () => {
+    expect(hasGpuMetrics({ gpuCpu: 1, gpuMemoryBytes: 2 })).toBe(true)
+    expect(hasGpuMetrics({ gpuCpu: 0, gpuMemoryBytes: 0 })).toBe(true)
+    expect(hasGpuMetrics({ gpuCpu: null, gpuMemoryBytes: 1 })).toBe(false)
+    expect(hasGpuMetrics({ gpuCpu: 1, gpuMemoryBytes: null })).toBe(false)
   })
 })

@@ -40,10 +40,7 @@ const api: OpsourceAPI = {
     ipcRenderer.on('ops:update', listen)
     return () => ipcRenderer.removeListener('ops:update', listen)
   },
-  updateCommand: (command: UpdateCommand) => ipcRenderer.invoke('ops:updateCommand', command),
-  reportFps: (value: number) => {
-    ipcRenderer.send('ops:fps', value)
-  }
+  updateCommand: (command: UpdateCommand) => ipcRenderer.invoke('ops:updateCommand', command)
 }
 
 contextBridge.exposeInMainWorld('opsource', api)
