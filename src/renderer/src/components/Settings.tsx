@@ -214,12 +214,12 @@ function ShortcutsSettings() {
             <li key={command} className="flex items-center gap-2 rounded-md px-1 py-1">
               <button
                 type="button"
-                className={`flex min-w-0 flex-1 items-baseline justify-between gap-3 text-left text-sm ${
+                className={`flex min-w-0 flex-1 items-center gap-3 text-left text-sm ${
                   active ? 'text-foreground' : 'text-muted'
                 }`}
                 onClick={() => setCapturing(command)}
               >
-                <span className="flex min-w-0 flex-col">
+                <span className="flex min-w-0 flex-1 flex-col">
                   <span className="text-foreground">{t(locale, SHORTCUT_LABELS[command])}</span>
                   <span className="text-xs">
                     {t(
@@ -228,12 +228,10 @@ function ShortcutsSettings() {
                     )}
                   </span>
                 </span>
-                <kbd className="shrink-0 font-mono text-xs text-foreground">
-                  {active
-                    ? t(locale, 'shortcutPressChord')
-                    : displayShortcutLabel(command, chord, displayPlatform)}
-                </kbd>
               </button>
+              <kbd className="shrink-0 font-mono text-xs leading-none text-foreground">
+                {displayShortcutLabel(command, chord, displayPlatform)}
+              </kbd>
               <Button
                 size="sm"
                 variant="secondary"
