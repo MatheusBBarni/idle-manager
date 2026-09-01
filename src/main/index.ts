@@ -148,6 +148,39 @@ function persistBounds(): void {
   commit({ type: 'window/bounds', bounds })
 }
 
+const JSON_FILE_FILTER = [{ name: 'JSON', extensions: ['json'] }]
+
+async function chooseJsonSavePath(title: string, defaultPath: string): Promise<string | null> {
+  if (!mainWindow) {
+    return null
+  }
+  const result = await dialog.showSaveDialog(mainWindow, {
+    title,
+    defaultPath,
+    filters: JSON_FILE_FILTER
+  })
+  if (result.canceled || !result.filePath) {
+    return null
+  }
+  return result.filePath
+}
+
+async function chooseJsonOpenPath(title: string): Promise<string | null> {
+  if (!mainWindow) {
+    return null
+  }
+  const result = await dialog.showOpenDialog(mainWindow, {
+    title,
+    filters: JSON_FILE_FILTER,
+    properties: ['openFile']
+  })
+  const file = result.filePaths[0]
+  if (result.canceled || !file) {
+    return null
+  }
+  return file
+}
+
 function registerIpc(): void {
   ipcMain.handle('ops:getState', () => snapshot)
   ipcMain.handle('ops:dispatch', (_event, action: WorkspaceAction) => commit(action))
@@ -202,31 +235,16 @@ function registerIpc(): void {
     return mainWindow.isMaximized()
   })
   ipcMain.handle('ops:export', async () => {
-    if (!mainWindow) {
+    const filePath = await chooseJsonSavePath('Export workspace', 'idle-manager-workspace.json')
+    if (!filePath) {
       return false
     }
-    const result = await dialog.showSaveDialog(mainWindow, {
-      title: 'Export workspace',
-      defaultPath: 'idle-manager-workspace.json',
-      filters: [{ name: 'JSON', extensions: ['json'] }]
-    })
-    if (result.canceled || !result.filePath) {
-      return false
-    }
-    await writeFile(result.filePath, JSON.stringify(exportMetadata(snapshot), null, 2), 'utf8')
+    await writeFile(filePath, JSON.stringify(exportMetadata(snapshot), null, 2), 'utf8')
     return true
   })
   ipcMain.handle('ops:import', async () => {
-    if (!mainWindow) {
-      return false
-    }
-    const result = await dialog.showOpenDialog(mainWindow, {
-      title: 'Import workspace',
-      filters: [{ name: 'JSON', extensions: ['json'] }],
-      properties: ['openFile']
-    })
-    const file = result.filePaths[0]
-    if (result.canceled || !file) {
+    const file = await chooseJsonOpenPath('Import workspace')
+    if (!file) {
       return false
     }
     snapshot = snapshotFromImport(JSON.parse(await readFile(file, 'utf8')))
@@ -236,36 +254,21 @@ function registerIpc(): void {
     return true
   })
   ipcMain.handle('ops:exportGames', async () => {
-    if (!mainWindow) {
-      return false
-    }
     try {
-      const result = await dialog.showSaveDialog(mainWindow, {
-        title: 'Export game list',
-        defaultPath: 'idle-manager-games.json',
-        filters: [{ name: 'JSON', extensions: ['json'] }]
-      })
-      if (result.canceled || !result.filePath) {
+      const filePath = await chooseJsonSavePath('Export game list', 'idle-manager-games.json')
+      if (!filePath) {
         return false
       }
-      await writeFile(result.filePath, JSON.stringify(exportGameList(snapshot)), 'utf8')
+      await writeFile(filePath, JSON.stringify(exportGameList(snapshot)), 'utf8')
       return true
     } catch {
       return false
     }
   })
   ipcMain.handle('ops:importGames', async () => {
-    if (!mainWindow) {
-      return false
-    }
     try {
-      const result = await dialog.showOpenDialog(mainWindow, {
-        title: 'Import game list',
-        filters: [{ name: 'JSON', extensions: ['json'] }],
-        properties: ['openFile']
-      })
-      const file = result.filePaths[0]
-      if (result.canceled || !file) {
+      const file = await chooseJsonOpenPath('Import game list')
+      if (!file) {
         return false
       }
       const tabs = parseGameList(JSON.parse(await readFile(file, 'utf8')))

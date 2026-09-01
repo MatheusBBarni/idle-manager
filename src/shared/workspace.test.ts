@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { keyboardCreateActions } from './accountLoop'
+import type { WorkspaceSnapshot } from './types'
 import {
   applyAction,
   emptySnapshot,
@@ -10,7 +11,8 @@ import {
   parseGameList,
   parseSnapshot,
   snapshotFromImport,
-  visibleTabs
+  visibleTabs,
+  type WorkspaceAction
 } from './workspace'
 
 function withTab() {
@@ -163,7 +165,7 @@ describe('workspace', () => {
   })
 })
 
-function applyAll(state: ReturnType<typeof emptySnapshot>, actions: ReturnType<typeof gameListImportActions>) {
+function applyAll(state: WorkspaceSnapshot, actions: WorkspaceAction[]): WorkspaceSnapshot {
   return actions.reduce((next, action) => applyAction(next, action), state)
 }
 

@@ -388,12 +388,32 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value)
 }
 
+function isGameListDocument(raw: unknown): raw is { version: 1; kind: 'game-list'; tabs: unknown[] } {
+  return (
+    isRecord(raw) &&
+    raw.version === 1 &&
+    raw.kind === 'game-list' &&
+    Array.isArray(raw.tabs) &&
+    !Object.hasOwn(raw, 'accounts')
+  )
+}
+
 function asFinite(value: unknown): number | null {
   return typeof value === 'number' && Number.isFinite(value) ? value : null
 }
 
 function asString(value: unknown): string | null {
   return typeof value === 'string' && value.length > 0 ? value : null
+}
+
+function asGameListTab(value: unknown): GameListTab | null {
+  if (!isRecord(value) || typeof value.name !== 'string' || typeof value.baseUrl !== 'string') {
+    return null
+  }
+  if (!isValidHttpUrl(value.baseUrl)) {
+    return null
+  }
+  return { name: value.name, baseUrl: value.baseUrl }
 }
 
 function asTab(value: unknown): GameTab | null {
@@ -553,26 +573,10 @@ export function exportGameList(snapshot: WorkspaceSnapshot): GameListExport {
 }
 
 export function parseGameList(raw: unknown): GameListTab[] {
-  if (
-    !isRecord(raw) ||
-    raw.version !== 1 ||
-    raw.kind !== 'game-list' ||
-    !Array.isArray(raw.tabs) ||
-    Object.hasOwn(raw, 'accounts')
-  ) {
+  if (!isGameListDocument(raw)) {
     return []
   }
-  const tabs: GameListTab[] = []
-  for (const row of raw.tabs) {
-    if (!isRecord(row) || typeof row.name !== 'string' || typeof row.baseUrl !== 'string') {
-      continue
-    }
-    if (!isValidHttpUrl(row.baseUrl)) {
-      continue
-    }
-    tabs.push({ name: row.name, baseUrl: row.baseUrl })
-  }
-  return tabs
+  return raw.tabs.map(asGameListTab).filter((tab): tab is GameListTab => tab !== null)
 }
 
 export function gameListImportActions(

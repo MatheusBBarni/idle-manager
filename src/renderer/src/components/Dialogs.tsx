@@ -321,15 +321,13 @@ function SettingsModal({ onClose }: { onClose: () => void }) {
             ))}
           </ul>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <Button size="sm" variant="secondary" onPress={() => void window.opsource.exportWorkspace()}>
             {t(locale, 'exportWorkspace')}
           </Button>
           <Button size="sm" variant="secondary" onPress={() => void window.opsource.importWorkspace()}>
             {t(locale, 'importWorkspace')}
           </Button>
-        </div>
-        <div className="flex gap-2">
           <Button size="sm" variant="secondary" onPress={() => void window.opsource.exportGameList()}>
             {t(locale, 'exportGameList')}
           </Button>
