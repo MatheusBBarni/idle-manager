@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { chromeAriaLocale, chromeHtmlLang, MESSAGE_KEYS, t, type MessageKey } from './i18n'
+import { LOCALES } from './types'
 
 const shared = new Set<MessageKey>([
   'appName',
@@ -259,64 +260,30 @@ describe('i18n', () => {
     }
   })
 
-  it('translates every key that is not a shared brand or unit label', () => {
-    for (const key of MESSAGE_KEYS) {
-      expect(t('en', key).length).toBeGreaterThan(0)
-      expect(t('pt', key).length).toBeGreaterThan(0)
-      if (shared.has(key)) {
-        continue
+  it('has a complete dictionary for every locale; non-shared keys differ from English', () => {
+    for (const locale of LOCALES) {
+      for (const key of MESSAGE_KEYS) {
+        expect(t(locale, key).length).toBeGreaterThan(0)
+        if (locale === 'en' || shared.has(key)) {
+          continue
+        }
+        expect(t(locale, key), `${locale}:${key}`).not.toBe(t('en', key))
       }
-      expect(t('pt', key), key).not.toBe(t('en', key))
     }
   })
 
-  it('has a complete Spanish dictionary that differs from English except shared labels', () => {
-    for (const key of MESSAGE_KEYS) {
-      expect(t('es', key).length).toBeGreaterThan(0)
-      if (shared.has(key)) {
-        continue
-      }
-      expect(t('es', key), key).not.toBe(t('en', key))
-    }
-  })
-
-  it('uses Spanish confirm copy distinct from English and Portuguese', () => {
+  it('uses distinct confirm copy in every locale', () => {
     for (const key of ['confirmDeleteAccount', 'confirmClearSession', 'confirmDeleteTab'] as const) {
-      expect(t('es', key)).not.toBe(t('en', key))
-      expect(t('es', key)).not.toBe(t('pt', key))
+      const values = LOCALES.map((locale) => t(locale, key))
+      expect(new Set(values).size, key).toBe(LOCALES.length)
     }
   })
 
-  it('names Spanish Español in every current dictionary', () => {
-    expect(t('en', 'localeEs')).toBe('Español')
-    expect(t('pt', 'localeEs')).toBe('Español')
-    expect(t('es', 'localeEs')).toBe('Español')
-    expect(t('zh-Hans', 'localeEs')).toBe('Español')
-  })
-
-  it('has a complete Simplified Chinese dictionary that differs from English except shared labels', () => {
-    for (const key of MESSAGE_KEYS) {
-      expect(t('zh-Hans', key).length).toBeGreaterThan(0)
-      if (shared.has(key)) {
-        continue
-      }
-      expect(t('zh-Hans', key), key).not.toBe(t('en', key))
+  it('self-names Español and 简体中文 in every dictionary', () => {
+    for (const locale of LOCALES) {
+      expect(t(locale, 'localeEs')).toBe('Español')
+      expect(t(locale, 'localeZhHans')).toBe('简体中文')
     }
-  })
-
-  it('uses Simplified Chinese confirm copy distinct from English, Portuguese, and Spanish', () => {
-    for (const key of ['confirmDeleteAccount', 'confirmClearSession', 'confirmDeleteTab'] as const) {
-      expect(t('zh-Hans', key)).not.toBe(t('en', key))
-      expect(t('zh-Hans', key)).not.toBe(t('pt', key))
-      expect(t('zh-Hans', key)).not.toBe(t('es', key))
-    }
-  })
-
-  it('names Simplified Chinese 简体中文 in every dictionary', () => {
-    expect(t('en', 'localeZhHans')).toBe('简体中文')
-    expect(t('pt', 'localeZhHans')).toBe('简体中文')
-    expect(t('es', 'localeZhHans')).toBe('简体中文')
-    expect(t('zh-Hans', 'localeZhHans')).toBe('简体中文')
   })
 
   it('keeps existing Portuguese and English strings except localeEs', () => {

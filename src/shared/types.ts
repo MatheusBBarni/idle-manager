@@ -4,8 +4,10 @@ export const LOCALES = ['pt', 'en', 'es', 'zh-Hans'] as const
 export type Locale = (typeof LOCALES)[number]
 export type ThemeName = 'dark' | 'light'
 
+const LOCALE_SET = new Set<string>(LOCALES)
+
 export function isLocale(value: unknown): value is Locale {
-  return typeof value === 'string' && (LOCALES as readonly string[]).includes(value)
+  return typeof value === 'string' && LOCALE_SET.has(value)
 }
 
 export type Rect = {

@@ -125,18 +125,15 @@ function nextColor(existing: Account[]): string {
   return ACCOUNT_COLORS.find((color) => !used.has(color)) ?? ACCOUNT_COLORS[existing.length % ACCOUNT_COLORS.length]
 }
 
+const ACCOUNT_NAME_PREFIX = {
+  pt: 'Conta',
+  en: 'Account',
+  es: 'Cuenta',
+  'zh-Hans': '账号'
+} as const satisfies Record<Locale, string>
+
 function nextAccountName(existing: Account[], locale: Locale): string {
-  const n = existing.length + 1
-  if (locale === 'pt') {
-    return `Conta ${n}`
-  }
-  if (locale === 'es') {
-    return `Cuenta ${n}`
-  }
-  if (locale === 'zh-Hans') {
-    return `账号 ${n}`
-  }
-  return `Account ${n}`
+  return `${ACCOUNT_NAME_PREFIX[locale]} ${existing.length + 1}`
 }
 
 function replaceTab(snapshot: WorkspaceSnapshot, tabId: string, patch: Partial<GameTab>): WorkspaceSnapshot {

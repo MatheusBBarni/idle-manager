@@ -399,39 +399,35 @@ const zhHans: Record<keyof typeof en, string> = {
   updateLater: '稍后'
 }
 
-const dictionaries: Record<Locale, Record<MessageKey, string>> = { en, pt, es, 'zh-Hans': zhHans }
-
 export type MessageKey = keyof typeof en
 export const MESSAGE_KEYS = Object.keys(en) as MessageKey[]
+
+const dictionaries: Record<Locale, Record<MessageKey, string>> = { en, pt, es, 'zh-Hans': zhHans }
+
+export const LOCALE_NAME_KEY = {
+  pt: 'localePt',
+  en: 'localeEn',
+  es: 'localeEs',
+  'zh-Hans': 'localeZhHans'
+} as const satisfies Record<Locale, MessageKey>
+
+const CHROME_DOC_LANG = {
+  pt: { html: 'pt-BR', aria: 'pt-BR' },
+  en: { html: 'en', aria: 'en-US' },
+  es: { html: 'es', aria: 'es' },
+  'zh-Hans': { html: 'zh-Hans', aria: 'zh-Hans' }
+} as const satisfies Record<Locale, { html: string; aria: string }>
 
 export function t(locale: Locale, key: MessageKey): string {
   return dictionaries[locale][key]
 }
 
 export function chromeHtmlLang(locale: Locale): string {
-  if (locale === 'pt') {
-    return 'pt-BR'
-  }
-  if (locale === 'es') {
-    return 'es'
-  }
-  if (locale === 'zh-Hans') {
-    return 'zh-Hans'
-  }
-  return 'en'
+  return CHROME_DOC_LANG[locale].html
 }
 
 export function chromeAriaLocale(locale: Locale): string {
-  if (locale === 'pt') {
-    return 'pt-BR'
-  }
-  if (locale === 'es') {
-    return 'es'
-  }
-  if (locale === 'zh-Hans') {
-    return 'zh-Hans'
-  }
-  return 'en-US'
+  return CHROME_DOC_LANG[locale].aria
 }
 
 export function formatAge(from: number | null, now: number): string {

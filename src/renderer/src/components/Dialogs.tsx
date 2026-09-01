@@ -1,7 +1,8 @@
 import { useState, type ReactNode } from 'react'
 import { Button, Input, Label, Modal, TextField } from '@heroui/react'
 import { ACCOUNT_LOOP_SHORTCUTS } from '@shared/accountLoop'
-import { t } from '@shared/i18n'
+import { LOCALE_NAME_KEY, t } from '@shared/i18n'
+import { LOCALES } from '@shared/types'
 import { isValidHttpUrl } from '@shared/urls'
 import { tabById } from '@shared/workspace'
 import { dispatch, runDialogCommand, useAppStore } from '../store'
@@ -265,34 +266,16 @@ function SettingsModal({ onClose }: { onClose: () => void }) {
         <div>
           <p className="mb-2 text-sm">{t(locale, 'language')}</p>
           <div className="flex flex-wrap gap-2">
-            <Button
-              size="sm"
-              variant={locale === 'pt' ? 'primary' : 'secondary'}
-              onPress={() => void dispatch({ type: 'prefs/locale', locale: 'pt' })}
-            >
-              {t(locale, 'localePt')}
-            </Button>
-            <Button
-              size="sm"
-              variant={locale === 'en' ? 'primary' : 'secondary'}
-              onPress={() => void dispatch({ type: 'prefs/locale', locale: 'en' })}
-            >
-              {t(locale, 'localeEn')}
-            </Button>
-            <Button
-              size="sm"
-              variant={locale === 'es' ? 'primary' : 'secondary'}
-              onPress={() => void dispatch({ type: 'prefs/locale', locale: 'es' })}
-            >
-              {t(locale, 'localeEs')}
-            </Button>
-            <Button
-              size="sm"
-              variant={locale === 'zh-Hans' ? 'primary' : 'secondary'}
-              onPress={() => void dispatch({ type: 'prefs/locale', locale: 'zh-Hans' })}
-            >
-              {t(locale, 'localeZhHans')}
-            </Button>
+            {LOCALES.map((code) => (
+              <Button
+                key={code}
+                size="sm"
+                variant={locale === code ? 'primary' : 'secondary'}
+                onPress={() => void dispatch({ type: 'prefs/locale', locale: code })}
+              >
+                {t(locale, LOCALE_NAME_KEY[code])}
+              </Button>
+            ))}
           </div>
         </div>
         <div>
