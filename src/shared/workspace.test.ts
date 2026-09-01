@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { keyboardCreateActions } from './accountLoop'
 import type { WorkspaceSnapshot } from './types'
 import {
+  accountIdsToWipe,
   applyAction,
   emptySnapshot,
   accountsForTab,
@@ -288,5 +289,86 @@ describe('game list pack', () => {
       kind: 'game-list',
       tabs: []
     })))).toBe(state)
+  })
+})
+
+function diskJson(locale: unknown) {
+  return {
+    version: 1,
+    tabs: [],
+    accounts: {},
+    locale
+  }
+}
+
+describe('chrome locale allowlist', () => {
+  it('parses Spanish locale from disk JSON', () => {
+    expect(parseSnapshot(diskJson('es')).locale).toBe('es')
+  })
+
+  it('keeps English locale from disk JSON', () => {
+    expect(parseSnapshot(diskJson('en')).locale).toBe('en')
+  })
+
+  it('maps unknown disk locales including zh-Hans and es-419 to Portuguese', () => {
+    expect(parseSnapshot(diskJson('zh')).locale).toBe('pt')
+    expect(parseSnapshot(diskJson('zh-Hans')).locale).toBe('pt')
+    expect(parseSnapshot(diskJson('es-419')).locale).toBe('pt')
+    expect(parseSnapshot({ version: 1, tabs: [], accounts: {} }).locale).toBe('pt')
+  })
+
+  it('patches only locale for Spanish and does not wipe sessions', () => {
+    let state = withTab()
+    state = applyAction(state, {
+      type: 'account/create',
+      tabId: 'tab-gengar',
+      id: 'acc-run',
+      name: 'Keep Run'
+    })
+    state = applyAction(state, {
+      type: 'account/create',
+      tabId: 'tab-gengar',
+      id: 'acc-closed',
+      name: 'Keep Closed'
+    })
+    state = applyAction(state, { type: 'account/setStatus', id: 'acc-run', status: 'running' })
+    const before = state
+    const next = applyAction(state, { type: 'prefs/locale', locale: 'es' })
+    expect(next.locale).toBe('es')
+    expect(next.accounts['acc-run']?.status).toBe('running')
+    expect(next.accounts['acc-closed']?.status).toBe('closed')
+    expect(next.accounts['acc-run']?.name).toBe('Keep Run')
+    expect(next.accounts['acc-closed']?.name).toBe('Keep Closed')
+    expect(next.tabs).toEqual(before.tabs)
+    expect(next.accounts).toEqual(before.accounts)
+    expect(accountIdsToWipe(before, { type: 'prefs/locale', locale: 'es' })).toEqual([])
+  })
+
+  it('no-ops invalid locale dispatch including zh-Hans', () => {
+    const state = withTab()
+    const junk = { type: 'prefs/locale', locale: 'nope' } as unknown as WorkspaceAction
+    const hans = { type: 'prefs/locale', locale: 'zh-Hans' } as unknown as WorkspaceAction
+    expect(applyAction(state, junk)).toEqual(state)
+    expect(applyAction(state, hans)).toEqual(state)
+    expect(applyAction(state, junk)).toBe(state)
+  })
+
+  it('names a nameless third account Cuenta 3 when Spanish is selected', () => {
+    let state = withTab()
+    state = applyAction(state, { type: 'prefs/locale', locale: 'es' })
+    state = applyAction(state, { type: 'account/create', tabId: 'tab-gengar', id: 'acc-1', name: 'A' })
+    state = applyAction(state, { type: 'account/create', tabId: 'tab-gengar', id: 'acc-2', name: 'B' })
+    state = applyAction(state, { type: 'account/create', tabId: 'tab-gengar', id: 'acc-3' })
+    expect(state.accounts['acc-3']?.name).toBe('Cuenta 3')
+  })
+
+  it('keeps Conta and Account default names for Portuguese and English', () => {
+    let pt = withTab()
+    pt = applyAction(pt, { type: 'account/create', tabId: 'tab-gengar', id: 'acc-pt' })
+    expect(pt.accounts['acc-pt']?.name).toBe('Conta 1')
+
+    let en = applyAction(withTab(), { type: 'prefs/locale', locale: 'en' })
+    en = applyAction(en, { type: 'account/create', tabId: 'tab-gengar', id: 'acc-en' })
+    expect(en.accounts['acc-en']?.name).toBe('Account 1')
   })
 })

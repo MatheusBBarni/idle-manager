@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 title: Ship Spanish chrome the operator can pick and keep
 type: frontend
 complexity: high
@@ -91,12 +91,12 @@ It gives up Simplified Chinese (`zh-Hans`), site copy, and the AGENTS.md four-di
 
 ## Subtasks
 
-- [ ] 01.1 Operator-visible Spanish locale exists on the snapshot allowlist and survives parse.
-- [ ] 01.2 Invalid locale dispatch leaves chrome language unchanged; session status and typed names stay put.
-- [ ] 01.3 Every chrome string, including confirms and empty states, has Spanish copy; PT/EN values stay.
-- [ ] 01.4 Nameless new accounts get `Cuenta n` when Spanish is selected.
-- [ ] 01.5 Settings offers Español; document language maps follow TechSpec for pt/en/es; Chrome uses `Locale`.
-- [ ] 01.6 Focused Vitest and repository gates pass.
+- [x] 01.1 Operator-visible Spanish locale exists on the snapshot allowlist and survives parse.
+- [x] 01.2 Invalid locale dispatch leaves chrome language unchanged; session status and typed names stay put.
+- [x] 01.3 Every chrome string, including confirms and empty states, has Spanish copy; PT/EN values stay.
+- [x] 01.4 Nameless new accounts get `Cuenta n` when Spanish is selected.
+- [x] 01.5 Settings offers Español; document language maps follow TechSpec for pt/en/es; Chrome uses `Locale`.
+- [x] 01.6 Focused Vitest and repository gates pass.
 
 ## Implementation Details
 
@@ -135,23 +135,23 @@ Do not paste those signatures here.
 
 ### Unit Tests
 
-- [ ] Given disk JSON `locale: 'es'`, when `parseSnapshot`, then `locale` is `'es'`.
-- [ ] Given disk JSON `locale` `'zh'`, `'zh-Hans'`, `'es-419'`, or missing, when `parseSnapshot`, then `locale` is `'pt'`.
-- [ ] Given `locale: 'en'`, when `parseSnapshot`, then `locale` is `'en'`.
-- [ ] Given `prefs/locale` `'es'`, when `applyAction`, then only `snapshot.locale` changes; account status and names unchanged; `accountIdsToWipe` is `[]`.
-- [ ] Given `prefs/locale` with `'zh-Hans'` or `'nope'`, when `applyAction`, then snapshot equals input.
-- [ ] Given Spanish locale and two existing accounts, when create without name, then name is `Cuenta 3`.
-- [ ] Given every `MessageKey`, when `t('es', key)`, then non-empty; keys not in the shared set differ from `t('en', key)`; confirm keys differ from pt/en.
-- [ ] Given existing PT/EN keys except `localeEs`, when compared to pre-change values, then they match.
-- [ ] Given `'pt' | 'en' | 'es'`, when `chromeHtmlLang` / `chromeAriaLocale`, then TechSpec tables hold (`pt` -> `pt-BR` / `pt-BR`, `en` -> `en` / `en-US`, `es` -> `es` / `es`).
+- [x] Given disk JSON `locale: 'es'`, when `parseSnapshot`, then `locale` is `'es'`.
+- [x] Given disk JSON `locale` `'zh'`, `'zh-Hans'`, `'es-419'`, or missing, when `parseSnapshot`, then `locale` is `'pt'`.
+- [x] Given `locale: 'en'`, when `parseSnapshot`, then `locale` is `'en'`.
+- [x] Given `prefs/locale` `'es'`, when `applyAction`, then only `snapshot.locale` changes; account status and names unchanged; `accountIdsToWipe` is `[]`.
+- [x] Given `prefs/locale` with `'zh-Hans'` or `'nope'`, when `applyAction`, then snapshot equals input.
+- [x] Given Spanish locale and two existing accounts, when create without name, then name is `Cuenta 3`.
+- [x] Given every `MessageKey`, when `t('es', key)`, then non-empty; keys not in the shared set differ from `t('en', key)`; confirm keys differ from pt/en.
+- [x] Given existing PT/EN keys except `localeEs`, when compared to pre-change values, then they match.
+- [x] Given `'pt' | 'en' | 'es'`, when `chromeHtmlLang` / `chromeAriaLocale`, then TechSpec tables hold (`pt` -> `pt-BR` / `pt-BR`, `en` -> `en` / `en-US`, `es` -> `es` / `es`).
 
 ### Integration Tests
 
-- [ ] Not applicable. Vitest is `src/shared` only (`AGENTS.md`). Renderer wiring is typecheck plus the PRD checklist.
+- [x] Not applicable. Vitest is `src/shared` only (`AGENTS.md`). Renderer wiring is typecheck plus the PRD checklist.
 
 ### Platform or Manual Evidence
 
-- [ ] PRD G-01/G-04 checklist on a real window if Electron can run; if the environment cannot launch the app, document that limitation and continue with the automated gate.
+- [x] PRD G-01/G-04 checklist on a real window if Electron can run; if the environment cannot launch the app, document that limitation and continue with the automated gate.
 
 ### Verification Commands
 

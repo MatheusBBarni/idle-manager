@@ -264,7 +264,7 @@ function SettingsModal({ onClose }: { onClose: () => void }) {
       <div className="flex flex-col gap-4">
         <div>
           <p className="mb-2 text-sm">{t(locale, 'language')}</p>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             <Button
               size="sm"
               variant={locale === 'pt' ? 'primary' : 'secondary'}
@@ -278,6 +278,13 @@ function SettingsModal({ onClose }: { onClose: () => void }) {
               onPress={() => void dispatch({ type: 'prefs/locale', locale: 'en' })}
             >
               {t(locale, 'localeEn')}
+            </Button>
+            <Button
+              size="sm"
+              variant={locale === 'es' ? 'primary' : 'secondary'}
+              onPress={() => void dispatch({ type: 'prefs/locale', locale: 'es' })}
+            >
+              {t(locale, 'localeEs')}
             </Button>
           </div>
         </div>

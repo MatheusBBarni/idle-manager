@@ -7,6 +7,7 @@ import {
   type FractionRect,
   type GameTab,
   type LayoutMode,
+  isLocale,
   type Locale,
   type ThemeName,
   type WindowBounds,
@@ -126,7 +127,13 @@ function nextColor(existing: Account[]): string {
 
 function nextAccountName(existing: Account[], locale: Locale): string {
   const n = existing.length + 1
-  return locale === 'pt' ? `Conta ${n}` : `Account ${n}`
+  if (locale === 'pt') {
+    return `Conta ${n}`
+  }
+  if (locale === 'es') {
+    return `Cuenta ${n}`
+  }
+  return `Account ${n}`
 }
 
 function replaceTab(snapshot: WorkspaceSnapshot, tabId: string, patch: Partial<GameTab>): WorkspaceSnapshot {
@@ -370,7 +377,7 @@ export function applyAction(snapshot: WorkspaceSnapshot, action: WorkspaceAction
       }
     }
     case 'prefs/locale':
-      return { ...snapshot, locale: action.locale }
+      return isLocale(action.locale) ? { ...snapshot, locale: action.locale } : snapshot
     case 'prefs/theme':
       return { ...snapshot, theme: action.theme }
     case 'prefs/launchAtStartup':
@@ -520,7 +527,7 @@ export function parseSnapshot(raw: unknown): WorkspaceSnapshot {
     activeTabId: activeTabId && tabs.some((tab) => tab.id === activeTabId && !tab.archived)
       ? activeTabId
       : firstVisibleId(tabs),
-    locale: raw.locale === 'en' ? 'en' : 'pt',
+    locale: isLocale(raw.locale) ? raw.locale : 'pt',
     theme: raw.theme === 'light' ? 'light' : 'dark',
     windowBounds: asWindowBounds(raw.windowBounds),
     launchAtStartup: raw.launchAtStartup === true

@@ -86,6 +86,7 @@ const en = {
   runningCount: 'running',
   localePt: 'Português',
   localeEn: 'English',
+  localeEs: 'Español',
   urlBar: 'Address',
   shortcuts: 'Keyboard shortcuts',
   shortcutCreate: 'Create account',
@@ -184,6 +185,7 @@ const pt: Record<keyof typeof en, string> = {
   runningCount: 'em execução',
   localePt: 'Português',
   localeEn: 'English',
+  localeEs: 'Español',
   urlBar: 'Endereço',
   shortcuts: 'Atalhos de teclado',
   shortcutCreate: 'Criar conta',
@@ -195,13 +197,132 @@ const pt: Record<keyof typeof en, string> = {
   updateLater: 'Depois'
 }
 
-const dictionaries = { en, pt }
+const es: Record<keyof typeof en, string> = {
+  appName: 'Idle manager',
+  newTab: 'Nueva pestaña',
+  closeTab: 'Cerrar pestaña',
+  reopenTab: 'Reabrir pestaña',
+  renameTab: 'Renombrar pestaña',
+  deleteTab: 'Eliminar pestaña',
+  deleteTabWipe: 'Eliminar pestaña y borrar cuentas',
+  addAccount: 'Añadir cuenta',
+  startAccount: 'Iniciar',
+  stopAccount: 'Cerrar panel',
+  startAll: 'Iniciar todas',
+  renameAccount: 'Renombrar',
+  recolor: 'Color de cuenta',
+  deleteAccount: 'Eliminar cuenta',
+  clearSession: 'Borrar sesión',
+  popOut: 'Abrir en otra ventana',
+  popIn: 'Volver a la ventana',
+  mute: 'Silenciar',
+  unmute: 'Activar sonido',
+  reload: 'Recargar',
+  reloadAll: 'Recargar todas',
+  back: 'Atrás',
+  forward: 'Adelante',
+  home: 'Inicio',
+  zoomIn: 'Acercar',
+  zoomOut: 'Alejar',
+  zoomReset: 'Restablecer zoom',
+  layout: 'Layout',
+  layoutGrid: 'Cuadrícula automática',
+  layoutSingle: 'Panel único',
+  layoutColumns: 'Columnas',
+  layoutRows: 'Filas',
+  layoutFree: 'Libre',
+  settings: 'Ajustes',
+  language: 'Idioma',
+  theme: 'Tema',
+  themeDark: 'Oscuro',
+  themeLight: 'Claro',
+  launchAtStartup: 'Iniciar con el sistema',
+  importWorkspace: 'Importar espacio de trabajo',
+  exportWorkspace: 'Exportar espacio de trabajo',
+  importGameList: 'Importar lista de juegos',
+  exportGameList: 'Exportar lista de juegos',
+  createTabTitle: 'Nueva pestaña de juego',
+  createTabName: 'Nombre de la pestaña',
+  createTabUrl: 'URL base',
+  createAccountTitle: 'Nueva cuenta',
+  createAccountName: 'Nombre para mostrar',
+  cancel: 'Cancelar',
+  create: 'Crear',
+  save: 'Guardar',
+  confirm: 'Confirmar',
+  online: 'Online',
+  closed: 'Cerrada',
+  emptyTitle: 'Añade un juego',
+  emptyBody: 'Crea una pestaña con la URL del juego y luego inicia cuentas aisladas en ella.',
+  emptyCta: 'Crear pestaña',
+  noRunning: 'Ningún panel en ejecución',
+  noRunningBody: 'Inicia una cuenta para cargar su sesión aislada aquí.',
+  poppedOut: 'En otra ventana',
+  statusReady: 'Listo',
+  cpu: 'CPU',
+  ram: 'RAM',
+  fps: 'FPS',
+  uptime: 'Tiempo',
+  version: 'v',
+  help: 'Ayuda',
+  search: 'Buscar',
+  confirmDeleteAccount:
+    '¿Eliminar esta cuenta y borrar su sesión aislada? Solo se quitarán las cookies de inicio de sesión y los datos del sitio de esta cuenta.',
+  confirmClearSession:
+    '¿Borrar cookies, caché y datos del sitio de esta cuenta? El panel permanece, pero el sitio verá una sesión cerrada.',
+  confirmDeleteTab:
+    '¿Quitar esta pestaña de la barra? Las sesiones de las cuentas permanecen en el disco a menos que también las borres.',
+  archived: 'Pestañas cerradas',
+  urlPlaceholder: 'https://gengar.com.br/',
+  duplicateNamesHint: 'Los nombres pueden repetirse. El aislamiento usa el ID interno de la cuenta.',
+  collapseSidebar: 'Contraer barra lateral',
+  expandSidebar: 'Expandir barra lateral',
+  recentlyClosed: 'Cerradas recientemente',
+  minimize: 'Minimizar',
+  maximize: 'Maximizar',
+  closeWindow: 'Cerrar',
+  runningCount: 'en ejecución',
+  localePt: 'Português',
+  localeEn: 'English',
+  localeEs: 'Español',
+  urlBar: 'Dirección',
+  shortcuts: 'Atajos de teclado',
+  shortcutCreate: 'Crear cuenta',
+  shortcutPrev: 'Cuenta anterior',
+  shortcutNext: 'Cuenta siguiente',
+  shortcutStart: 'Iniciar la cuenta en foco',
+  updateGetting: 'Obteniendo actualización',
+  updateApply: 'Aplicar',
+  updateLater: 'Después'
+}
+
+const dictionaries: Record<Locale, Record<MessageKey, string>> = { en, pt, es }
 
 export type MessageKey = keyof typeof en
 export const MESSAGE_KEYS = Object.keys(en) as MessageKey[]
 
 export function t(locale: Locale, key: MessageKey): string {
   return dictionaries[locale][key]
+}
+
+export function chromeHtmlLang(locale: Locale): string {
+  if (locale === 'pt') {
+    return 'pt-BR'
+  }
+  if (locale === 'es') {
+    return 'es'
+  }
+  return 'en'
+}
+
+export function chromeAriaLocale(locale: Locale): string {
+  if (locale === 'pt') {
+    return 'pt-BR'
+  }
+  if (locale === 'es') {
+    return 'es'
+  }
+  return 'en-US'
 }
 
 export function formatAge(from: number | null, now: number): string {

@@ -1,7 +1,12 @@
 export type LayoutMode = 'grid' | 'single' | 'columns' | 'rows' | 'free'
 export type AccountStatus = 'running' | 'closed'
-export type Locale = 'pt' | 'en'
+export const LOCALES = ['pt', 'en', 'es'] as const
+export type Locale = (typeof LOCALES)[number]
 export type ThemeName = 'dark' | 'light'
+
+export function isLocale(value: unknown): value is Locale {
+  return typeof value === 'string' && (LOCALES as readonly string[]).includes(value)
+}
 
 export type Rect = {
   x: number

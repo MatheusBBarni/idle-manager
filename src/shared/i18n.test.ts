@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { MESSAGE_KEYS, t, type MessageKey } from './i18n'
+import { chromeAriaLocale, chromeHtmlLang, MESSAGE_KEYS, t, type MessageKey } from './i18n'
 
 const shared = new Set<MessageKey>([
   'appName',
@@ -11,8 +11,204 @@ const shared = new Set<MessageKey>([
   'layout',
   'urlPlaceholder',
   'localePt',
-  'localeEn'
+  'localeEn',
+  'localeEs'
 ])
+
+const frozenEn: Record<Exclude<MessageKey, 'localeEs'>, string> = {
+  appName: 'Idle manager',
+  newTab: 'New tab',
+  closeTab: 'Close tab',
+  reopenTab: 'Reopen tab',
+  renameTab: 'Rename tab',
+  deleteTab: 'Delete tab',
+  deleteTabWipe: 'Delete tab and wipe accounts',
+  addAccount: 'Add account',
+  startAccount: 'Start',
+  stopAccount: 'Close panel',
+  startAll: 'Start all',
+  renameAccount: 'Rename',
+  recolor: 'Color',
+  deleteAccount: 'Delete account',
+  clearSession: 'Clear session',
+  popOut: 'Pop out',
+  popIn: 'Return to window',
+  mute: 'Mute',
+  unmute: 'Unmute',
+  reload: 'Reload',
+  reloadAll: 'Reload all',
+  back: 'Back',
+  forward: 'Forward',
+  home: 'Home',
+  zoomIn: 'Zoom in',
+  zoomOut: 'Zoom out',
+  zoomReset: 'Reset zoom',
+  layout: 'Layout',
+  layoutGrid: 'Auto grid',
+  layoutSingle: 'Single',
+  layoutColumns: 'Columns',
+  layoutRows: 'Rows',
+  layoutFree: 'Free',
+  settings: 'Settings',
+  language: 'Language',
+  theme: 'Theme',
+  themeDark: 'Dark',
+  themeLight: 'Light',
+  launchAtStartup: 'Launch at startup',
+  importWorkspace: 'Import workspace',
+  exportWorkspace: 'Export workspace',
+  importGameList: 'Import game list',
+  exportGameList: 'Export game list',
+  createTabTitle: 'New game tab',
+  createTabName: 'Tab name',
+  createTabUrl: 'Base URL',
+  createAccountTitle: 'New account',
+  createAccountName: 'Display name',
+  cancel: 'Cancel',
+  create: 'Create',
+  save: 'Save',
+  confirm: 'Confirm',
+  online: 'Online',
+  closed: 'Closed',
+  emptyTitle: 'Add a game',
+  emptyBody: 'Create a tab with the game URL, then start isolated accounts inside it.',
+  emptyCta: 'Create tab',
+  noRunning: 'No running panels',
+  noRunningBody: 'Start an account to load its isolated session here.',
+  poppedOut: 'In another window',
+  statusReady: 'Ready',
+  cpu: 'CPU',
+  ram: 'RAM',
+  fps: 'FPS',
+  uptime: 'Uptime',
+  version: 'v',
+  help: 'Help',
+  search: 'Search',
+  confirmDeleteAccount:
+    "Delete this account and wipe its isolated session? Only this account's login cookies and site data will be removed.",
+  confirmClearSession:
+    'Clear cookies, cache, and site data for this account? The panel stays, but the site will see a logged-out session.',
+  confirmDeleteTab: 'Remove this tab from the bar? Account sessions stay on disk unless you wipe them too.',
+  archived: 'Closed tabs',
+  urlPlaceholder: 'https://gengar.com.br/',
+  duplicateNamesHint: 'Names can repeat. Isolation uses the hidden account ID.',
+  collapseSidebar: 'Collapse sidebar',
+  expandSidebar: 'Expand sidebar',
+  recentlyClosed: 'Recently closed',
+  minimize: 'Minimize',
+  maximize: 'Maximize',
+  closeWindow: 'Close',
+  runningCount: 'running',
+  localePt: 'Português',
+  localeEn: 'English',
+  urlBar: 'Address',
+  shortcuts: 'Keyboard shortcuts',
+  shortcutCreate: 'Create account',
+  shortcutPrev: 'Previous account',
+  shortcutNext: 'Next account',
+  shortcutStart: 'Start targeted account',
+  updateGetting: 'Getting update',
+  updateApply: 'Apply',
+  updateLater: 'Later'
+}
+
+const frozenPt: Record<Exclude<MessageKey, 'localeEs'>, string> = {
+  appName: 'Idle manager',
+  newTab: 'Nova aba',
+  closeTab: 'Fechar aba',
+  reopenTab: 'Reabrir aba',
+  renameTab: 'Renomear aba',
+  deleteTab: 'Excluir aba',
+  deleteTabWipe: 'Excluir aba e apagar contas',
+  addAccount: 'Adicionar conta',
+  startAccount: 'Iniciar',
+  stopAccount: 'Fechar painel',
+  startAll: 'Iniciar todas',
+  renameAccount: 'Renomear',
+  recolor: 'Cor',
+  deleteAccount: 'Excluir conta',
+  clearSession: 'Limpar sessão',
+  popOut: 'Abrir em janela',
+  popIn: 'Voltar à janela',
+  mute: 'Silenciar',
+  unmute: 'Ativar som',
+  reload: 'Recarregar',
+  reloadAll: 'Recarregar todas',
+  back: 'Voltar',
+  forward: 'Avançar',
+  home: 'Início',
+  zoomIn: 'Ampliar',
+  zoomOut: 'Reduzir',
+  zoomReset: 'Redefinir zoom',
+  layout: 'Layout',
+  layoutGrid: 'Grade automática',
+  layoutSingle: 'Painel único',
+  layoutColumns: 'Colunas',
+  layoutRows: 'Linhas',
+  layoutFree: 'Livre',
+  settings: 'Configurações',
+  language: 'Idioma',
+  theme: 'Tema',
+  themeDark: 'Escuro',
+  themeLight: 'Claro',
+  launchAtStartup: 'Iniciar com o sistema',
+  importWorkspace: 'Importar espaço de trabalho',
+  exportWorkspace: 'Exportar espaço de trabalho',
+  importGameList: 'Importar lista de jogos',
+  exportGameList: 'Exportar lista de jogos',
+  createTabTitle: 'Nova aba de jogo',
+  createTabName: 'Nome da aba',
+  createTabUrl: 'URL base',
+  createAccountTitle: 'Nova conta',
+  createAccountName: 'Nome de exibição',
+  cancel: 'Cancelar',
+  create: 'Criar',
+  save: 'Salvar',
+  confirm: 'Confirmar',
+  online: 'Online',
+  closed: 'Fechada',
+  emptyTitle: 'Adicione um jogo',
+  emptyBody: 'Crie uma aba com a URL do jogo e inicie contas isoladas nela.',
+  emptyCta: 'Criar aba',
+  noRunning: 'Nenhum painel em execução',
+  noRunningBody: 'Inicie uma conta para carregar a sessão isolada aqui.',
+  poppedOut: 'Em outra janela',
+  statusReady: 'Pronto',
+  cpu: 'CPU',
+  ram: 'RAM',
+  fps: 'FPS',
+  uptime: 'Tempo',
+  version: 'v',
+  help: 'Ajuda',
+  search: 'Buscar',
+  confirmDeleteAccount:
+    'Excluir esta conta e apagar a sessão isolada? Só os cookies e os dados do site desta conta serão removidos.',
+  confirmClearSession:
+    'Limpar cookies, cache e dados do site desta conta? O painel permanece, mas o site vai tratar como se você tivesse saído.',
+  confirmDeleteTab:
+    'Remover esta aba da barra? As sessões das contas permanecem no disco, a menos que você também as apague.',
+  archived: 'Abas fechadas',
+  urlPlaceholder: 'https://gengar.com.br/',
+  duplicateNamesHint: 'Os nomes podem se repetir. O isolamento usa o ID interno da conta.',
+  collapseSidebar: 'Recolher barra lateral',
+  expandSidebar: 'Expandir barra lateral',
+  recentlyClosed: 'Fechadas recentemente',
+  minimize: 'Minimizar',
+  maximize: 'Maximizar',
+  closeWindow: 'Fechar',
+  runningCount: 'em execução',
+  localePt: 'Português',
+  localeEn: 'English',
+  urlBar: 'Endereço',
+  shortcuts: 'Atalhos de teclado',
+  shortcutCreate: 'Criar conta',
+  shortcutPrev: 'Conta anterior',
+  shortcutNext: 'Próxima conta',
+  shortcutStart: 'Iniciar a conta em foco',
+  updateGetting: 'Baixando atualização',
+  updateApply: 'Aplicar',
+  updateLater: 'Depois'
+}
 
 describe('i18n', () => {
   it('uses natural empty-state copy instead of the floor/piso calque', () => {
@@ -71,5 +267,44 @@ describe('i18n', () => {
       }
       expect(t('pt', key), key).not.toBe(t('en', key))
     }
+  })
+
+  it('has a complete Spanish dictionary that differs from English except shared labels', () => {
+    for (const key of MESSAGE_KEYS) {
+      expect(t('es', key).length).toBeGreaterThan(0)
+      if (shared.has(key)) {
+        continue
+      }
+      expect(t('es', key), key).not.toBe(t('en', key))
+    }
+  })
+
+  it('uses Spanish confirm copy distinct from English and Portuguese', () => {
+    for (const key of ['confirmDeleteAccount', 'confirmClearSession', 'confirmDeleteTab'] as const) {
+      expect(t('es', key)).not.toBe(t('en', key))
+      expect(t('es', key)).not.toBe(t('pt', key))
+    }
+  })
+
+  it('names Spanish Español in every current dictionary', () => {
+    expect(t('en', 'localeEs')).toBe('Español')
+    expect(t('pt', 'localeEs')).toBe('Español')
+    expect(t('es', 'localeEs')).toBe('Español')
+  })
+
+  it('keeps existing Portuguese and English strings except localeEs', () => {
+    for (const key of Object.keys(frozenEn) as Array<keyof typeof frozenEn>) {
+      expect(t('en', key), key).toBe(frozenEn[key])
+      expect(t('pt', key), key).toBe(frozenPt[key])
+    }
+  })
+
+  it('maps chrome html lang and aria locale for pt, en, and es', () => {
+    expect(chromeHtmlLang('pt')).toBe('pt-BR')
+    expect(chromeHtmlLang('en')).toBe('en')
+    expect(chromeHtmlLang('es')).toBe('es')
+    expect(chromeAriaLocale('pt')).toBe('pt-BR')
+    expect(chromeAriaLocale('en')).toBe('en-US')
+    expect(chromeAriaLocale('es')).toBe('es')
   })
 })
