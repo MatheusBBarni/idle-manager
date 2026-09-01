@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 title: Show whole-app cost in chrome
 type: frontend
 complexity: high

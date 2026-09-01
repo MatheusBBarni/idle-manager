@@ -15,7 +15,6 @@ const layoutLabel: Record<LayoutMode, MessageKey> = {
 export function StatusBar() {
   const snapshot = useAppStore((state) => state.snapshot)
   const metrics = useAppStore((state) => state.metrics)
-  const fps = useAppStore((state) => state.fps)
   const version = useAppStore((state) => state.version)
   const updateStatus = useAppStore((state) => state.updateStatus)
   const locale = snapshot.locale
@@ -39,9 +38,12 @@ export function StatusBar() {
       <span>
         {t(locale, 'ram')} {formatBytes(metrics?.aggregate.memoryBytes ?? 0)}
       </span>
-      <span>
-        {t(locale, 'fps')} {metrics?.aggregate.fps || fps}
-      </span>
+      {metrics?.aggregate.gpuCpu != null && metrics.aggregate.gpuMemoryBytes != null ? (
+        <span>
+          {t(locale, 'gpu')} {formatCpu(metrics.aggregate.gpuCpu)}{' '}
+          {formatBytes(metrics.aggregate.gpuMemoryBytes)}
+        </span>
+      ) : null}
       <span>
         {t(locale, 'uptime')} {formatUptime(metrics?.aggregate.uptimeMs ?? 0)}
       </span>

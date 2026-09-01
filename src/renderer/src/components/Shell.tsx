@@ -11,26 +11,6 @@ import { StatusBar } from './StatusBar'
 
 export function Shell() {
   const snapshot = useAppStore((state) => state.snapshot)
-  const setFps = useAppStore((state) => state.setFps)
-
-  useEffect(() => {
-    let frames = 0
-    let last = performance.now()
-    let raf = 0
-    const loop = (now: number) => {
-      frames += 1
-      if (now - last >= 1000) {
-        const next = Math.round((frames * 1000) / (now - last))
-        setFps(next)
-        window.opsource.reportFps(next)
-        frames = 0
-        last = now
-      }
-      raf = requestAnimationFrame(loop)
-    }
-    raf = requestAnimationFrame(loop)
-    return () => cancelAnimationFrame(raf)
-  }, [setFps])
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
