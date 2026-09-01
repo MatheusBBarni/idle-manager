@@ -1,7 +1,7 @@
 ---
 import { getRelativeLocaleUrl } from 'astro:i18n'
 import { landing, type Locale } from '../content/landing'
-import { FALLBACK_DOWNLOAD_HREF, SOURCE_HREF } from '../lib/urls'
+import { FALLBACK_DOWNLOAD_HREF, SOURCE_HREF, TWITTER_HREF } from '../lib/urls'
 import '../styles/chrome.css'
 import '@fontsource/oxanium/700.css'
 import '@fontsource/figtree/400.css'
@@ -43,6 +43,7 @@ const downloadCopyJson = JSON.stringify({
     <meta property="og:image" content={ogImage.href} />
     <meta property="og:image:alt" content={copy.screenshotAlt} />
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@idlemanagerapp" />
     <meta name="twitter:title" content={copy.title} />
     <meta name="twitter:description" content={copy.description} />
     <meta name="twitter:image" content={ogImage.href} />
@@ -217,6 +218,9 @@ const downloadCopyJson = JSON.stringify({
         <p>
           {copy.sourceLead}{' '}
           <a href={SOURCE_HREF}>{copy.sourceLink}</a>.
+        </p>
+        <p>
+          <a href={TWITTER_HREF}>{copy.twitterLink}</a>
         </p>
       </section>
     </footer>
