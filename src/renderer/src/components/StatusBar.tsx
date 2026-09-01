@@ -1,5 +1,7 @@
 import { Button } from '@heroui/react'
 import { formatBytes, formatCpu, formatUptime, t, type MessageKey } from '@shared/i18n'
+import { hasGpuMetrics } from '@shared/metricsAggregate'
+import { RUNNING_START_WARN_AFTER } from '@shared/metricsDisplay'
 import type { LayoutMode } from '@shared/types'
 import { activeAccount, visibleTabs } from '@shared/workspace'
 import { useAppStore } from '../store'
@@ -15,13 +17,14 @@ const layoutLabel: Record<LayoutMode, MessageKey> = {
 export function StatusBar() {
   const snapshot = useAppStore((state) => state.snapshot)
   const metrics = useAppStore((state) => state.metrics)
-  const fps = useAppStore((state) => state.fps)
   const version = useAppStore((state) => state.version)
   const updateStatus = useAppStore((state) => state.updateStatus)
   const locale = snapshot.locale
   const tab = visibleTabs(snapshot).find((item) => item.id === snapshot.activeTabId)
   const account = activeAccount(snapshot)
   const running = Object.values(snapshot.accounts).filter((item) => item.status === 'running').length
+  const warnRunningStart = running > RUNNING_START_WARN_AFTER
+  const aggregate = metrics?.aggregate
 
   return (
     <footer className="flex h-8 items-center gap-3 border-t border-hairline bg-canvas px-4 font-mono text-xs text-muted">
@@ -33,17 +36,20 @@ export function StatusBar() {
       <span>
         {running} {t(locale, 'runningCount')}
       </span>
+      {warnRunningStart ? <span className="text-signal">{t(locale, 'runningStartWarning')}</span> : null}
       <span>
-        {t(locale, 'cpu')} {formatCpu(metrics?.aggregate.cpu ?? 0)}
+        {t(locale, 'cpu')} {formatCpu(aggregate?.cpu ?? 0)}
       </span>
       <span>
-        {t(locale, 'ram')} {formatBytes(metrics?.aggregate.memoryBytes ?? 0)}
+        {t(locale, 'ram')} {formatBytes(aggregate?.memoryBytes ?? 0)}
       </span>
+      {aggregate && hasGpuMetrics(aggregate) ? (
+        <span>
+          {t(locale, 'gpu')} {formatCpu(aggregate.gpuCpu)} {formatBytes(aggregate.gpuMemoryBytes)}
+        </span>
+      ) : null}
       <span>
-        {t(locale, 'fps')} {metrics?.aggregate.fps || fps}
-      </span>
-      <span>
-        {t(locale, 'uptime')} {formatUptime(metrics?.aggregate.uptimeMs ?? 0)}
+        {t(locale, 'uptime')} {formatUptime(aggregate?.uptimeMs ?? 0)}
       </span>
       {updateStatus.phase === 'getting' ? <span>{t(locale, 'updateGetting')}</span> : null}
       {updateStatus.phase === 'ready' ? (

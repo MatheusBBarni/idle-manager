@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 title: Don't-paint knobs that passed
 type: backend
 complexity: medium

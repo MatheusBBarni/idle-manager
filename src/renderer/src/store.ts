@@ -32,7 +32,6 @@ type AppStore = {
   dialog: DialogKind
   platform: NodeJS.Platform
   version: string
-  fps: number
   sidebarCollapsed: boolean
   shortcutCapturing: ShortcutCommand | null
   updateStatus: UpdateStatus
@@ -44,7 +43,6 @@ type AppStore = {
   setUrlFocused: (value: boolean) => void
   setDialog: (dialog: DialogKind) => void
   setMeta: (meta: { platform: NodeJS.Platform; version: string }) => void
-  setFps: (fps: number) => void
   setSidebarCollapsed: (value: boolean) => void
   setShortcutCapturing: (value: ShortcutCommand | null) => void
 }
@@ -58,7 +56,6 @@ export const useAppStore = create<AppStore>((set) => ({
   dialog: { id: 'none' },
   platform: 'darwin',
   version: '0.1.0',
-  fps: 0,
   sidebarCollapsed: false,
   shortcutCapturing: null,
   updateStatus: { phase: 'idle' },
@@ -74,7 +71,6 @@ export const useAppStore = create<AppStore>((set) => ({
   setUrlFocused: (urlFocused) => set({ urlFocused }),
   setDialog: (dialog) => set({ dialog }),
   setMeta: (meta) => set(meta),
-  setFps: (fps) => set({ fps }),
   setSidebarCollapsed: (sidebarCollapsed) => set({ sidebarCollapsed }),
   setShortcutCapturing: (shortcutCapturing) => set({ shortcutCapturing })
 }))

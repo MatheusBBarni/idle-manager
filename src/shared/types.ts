@@ -79,7 +79,9 @@ export type AccountMetrics = {
 export type AggregateMetrics = {
   cpu: number
   memoryBytes: number
-  fps: number
+  gpuCpu: number | null
+  gpuMemoryBytes: number | null
+  fps: number | null
   uptimeMs: number
 }
 
