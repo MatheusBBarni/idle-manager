@@ -1,5 +1,6 @@
 import { Button } from '@heroui/react'
 import { formatBytes, formatCpu, formatUptime, t, type MessageKey } from '@shared/i18n'
+import { shouldWarnRunningStart } from '@shared/metricsDisplay'
 import type { LayoutMode } from '@shared/types'
 import { activeAccount, visibleTabs } from '@shared/workspace'
 import { useAppStore } from '../store'
@@ -21,6 +22,7 @@ export function StatusBar() {
   const tab = visibleTabs(snapshot).find((item) => item.id === snapshot.activeTabId)
   const account = activeAccount(snapshot)
   const running = Object.values(snapshot.accounts).filter((item) => item.status === 'running').length
+  const warnRunningStart = shouldWarnRunningStart(Math.max(0, running - 1))
 
   return (
     <footer className="flex h-8 items-center gap-3 border-t border-hairline bg-canvas px-4 font-mono text-xs text-muted">
@@ -32,6 +34,7 @@ export function StatusBar() {
       <span>
         {running} {t(locale, 'runningCount')}
       </span>
+      {warnRunningStart ? <span className="text-signal">{t(locale, 'runningStartWarning')}</span> : null}
       <span>
         {t(locale, 'cpu')} {formatCpu(metrics?.aggregate.cpu ?? 0)}
       </span>

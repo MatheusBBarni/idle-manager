@@ -2,11 +2,12 @@
 
 ## Current State
 
-task_01 implemented (honest whole-app cost in status). task_02–task_04 pending.
+task_01 and task_02 implemented. task_03–task_04 pending.
 
 ## Shared Decisions
 
 - StatusBar shows process-wide CPU/RAM from all `getAppMetrics()` rows and GPU only when present. No chrome FPS number.
+- 7th-running warning is StatusBar-only, derived from live running count (≥ 7). Starts are never blocked.
 
 ## Shared Learnings
 
@@ -18,5 +19,5 @@ task_01 implemented (honest whole-app cost in status). task_02–task_04 pending
 
 ## Handoffs
 
-- task_02: add 7th-start warning in status/sidebar only; keep GPU/RAM lines; no `overlayOpen`.
-- task_03: chrome totals are whole-app + nullable GPU; journal those next to Task Manager.
+- task_03: chrome totals are whole-app + nullable GPU; journal those next to Task Manager. Do not edit `views.ts` paint policy.
+- task_04: wait for task_03 pass/fail; warning and metrics chrome already ship.

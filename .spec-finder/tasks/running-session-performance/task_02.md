@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 title: Warn on 7th running start
 type: frontend
 complexity: medium
