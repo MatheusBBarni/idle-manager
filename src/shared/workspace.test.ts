@@ -310,9 +310,12 @@ describe('chrome locale allowlist', () => {
     expect(parseSnapshot(diskJson('en')).locale).toBe('en')
   })
 
-  it('maps unknown disk locales including zh-Hans and es-419 to Portuguese', () => {
+  it('parses Simplified Chinese locale from disk JSON', () => {
+    expect(parseSnapshot(diskJson('zh-Hans')).locale).toBe('zh-Hans')
+  })
+
+  it('maps unknown disk locales including zh and es-419 to Portuguese', () => {
     expect(parseSnapshot(diskJson('zh')).locale).toBe('pt')
-    expect(parseSnapshot(diskJson('zh-Hans')).locale).toBe('pt')
     expect(parseSnapshot(diskJson('es-419')).locale).toBe('pt')
     expect(parseSnapshot({ version: 1, tabs: [], accounts: {} }).locale).toBe('pt')
   })
@@ -344,12 +347,25 @@ describe('chrome locale allowlist', () => {
     expect(accountIdsToWipe(before, { type: 'prefs/locale', locale: 'es' })).toEqual([])
   })
 
-  it('no-ops invalid locale dispatch including zh-Hans', () => {
+  it('patches only locale for Simplified Chinese and does not wipe sessions', () => {
+    let state = withTab()
+    state = applyAction(state, {
+      type: 'account/create',
+      tabId: 'tab-gengar',
+      id: 'acc-run',
+      name: 'Keep Run'
+    })
+    const next = applyAction(state, { type: 'prefs/locale', locale: 'zh-Hans' })
+    expect(next.locale).toBe('zh-Hans')
+    expect(next.accounts['acc-run']?.status).toBe('closed')
+    expect(next.accounts['acc-run']?.name).toBe('Keep Run')
+    expect(accountIdsToWipe(state, { type: 'prefs/locale', locale: 'zh-Hans' })).toEqual([])
+  })
+
+  it('no-ops invalid locale dispatch', () => {
     const state = withTab()
     const junk = { type: 'prefs/locale', locale: 'nope' } as unknown as WorkspaceAction
-    const hans = { type: 'prefs/locale', locale: 'zh-Hans' } as unknown as WorkspaceAction
     expect(applyAction(state, junk)).toEqual(state)
-    expect(applyAction(state, hans)).toEqual(state)
     expect(applyAction(state, junk)).toBe(state)
   })
 
@@ -360,6 +376,15 @@ describe('chrome locale allowlist', () => {
     state = applyAction(state, { type: 'account/create', tabId: 'tab-gengar', id: 'acc-2', name: 'B' })
     state = applyAction(state, { type: 'account/create', tabId: 'tab-gengar', id: 'acc-3' })
     expect(state.accounts['acc-3']?.name).toBe('Cuenta 3')
+  })
+
+  it('names a nameless third account 账号 3 when Simplified Chinese is selected', () => {
+    let state = withTab()
+    state = applyAction(state, { type: 'prefs/locale', locale: 'zh-Hans' })
+    state = applyAction(state, { type: 'account/create', tabId: 'tab-gengar', id: 'acc-1', name: 'A' })
+    state = applyAction(state, { type: 'account/create', tabId: 'tab-gengar', id: 'acc-2', name: 'B' })
+    state = applyAction(state, { type: 'account/create', tabId: 'tab-gengar', id: 'acc-3' })
+    expect(state.accounts['acc-3']?.name).toBe('账号 3')
   })
 
   it('keeps Conta and Account default names for Portuguese and English', () => {

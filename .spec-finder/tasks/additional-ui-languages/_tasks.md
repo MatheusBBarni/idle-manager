@@ -5,7 +5,7 @@ Canonical execution order. Numeric IDs are the run order. Parallelizable tasks s
 | ID | Title | Primary slice | Type | Complexity | Dependencies | Status |
 |---|---|---|---|---|---|---|
 | task_01 | Ship Spanish chrome the operator can pick and keep | US-01 | frontend | high | [] | completed |
-| task_02 | Ship Simplified Chinese chrome the operator can pick and keep | US-02 | frontend | high | [task_01] | pending |
+| task_02 | Ship Simplified Chinese chrome the operator can pick and keep | US-02 | frontend | high | [task_01] | completed |
 
 ## Execution order
 

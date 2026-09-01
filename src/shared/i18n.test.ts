@@ -12,10 +12,11 @@ const shared = new Set<MessageKey>([
   'urlPlaceholder',
   'localePt',
   'localeEn',
-  'localeEs'
+  'localeEs',
+  'localeZhHans'
 ])
 
-const frozenEn: Record<Exclude<MessageKey, 'localeEs'>, string> = {
+const frozenEn: Record<Exclude<MessageKey, 'localeEs' | 'localeZhHans'>, string> = {
   appName: 'Idle manager',
   newTab: 'New tab',
   closeTab: 'Close tab',
@@ -112,7 +113,7 @@ const frozenEn: Record<Exclude<MessageKey, 'localeEs'>, string> = {
   updateLater: 'Later'
 }
 
-const frozenPt: Record<Exclude<MessageKey, 'localeEs'>, string> = {
+const frozenPt: Record<Exclude<MessageKey, 'localeEs' | 'localeZhHans'>, string> = {
   appName: 'Idle manager',
   newTab: 'Nova aba',
   closeTab: 'Fechar aba',
@@ -290,6 +291,32 @@ describe('i18n', () => {
     expect(t('en', 'localeEs')).toBe('Español')
     expect(t('pt', 'localeEs')).toBe('Español')
     expect(t('es', 'localeEs')).toBe('Español')
+    expect(t('zh-Hans', 'localeEs')).toBe('Español')
+  })
+
+  it('has a complete Simplified Chinese dictionary that differs from English except shared labels', () => {
+    for (const key of MESSAGE_KEYS) {
+      expect(t('zh-Hans', key).length).toBeGreaterThan(0)
+      if (shared.has(key)) {
+        continue
+      }
+      expect(t('zh-Hans', key), key).not.toBe(t('en', key))
+    }
+  })
+
+  it('uses Simplified Chinese confirm copy distinct from English, Portuguese, and Spanish', () => {
+    for (const key of ['confirmDeleteAccount', 'confirmClearSession', 'confirmDeleteTab'] as const) {
+      expect(t('zh-Hans', key)).not.toBe(t('en', key))
+      expect(t('zh-Hans', key)).not.toBe(t('pt', key))
+      expect(t('zh-Hans', key)).not.toBe(t('es', key))
+    }
+  })
+
+  it('names Simplified Chinese 简体中文 in every dictionary', () => {
+    expect(t('en', 'localeZhHans')).toBe('简体中文')
+    expect(t('pt', 'localeZhHans')).toBe('简体中文')
+    expect(t('es', 'localeZhHans')).toBe('简体中文')
+    expect(t('zh-Hans', 'localeZhHans')).toBe('简体中文')
   })
 
   it('keeps existing Portuguese and English strings except localeEs', () => {
@@ -299,12 +326,14 @@ describe('i18n', () => {
     }
   })
 
-  it('maps chrome html lang and aria locale for pt, en, and es', () => {
+  it('maps chrome html lang and aria locale for pt, en, es, and zh-Hans', () => {
     expect(chromeHtmlLang('pt')).toBe('pt-BR')
     expect(chromeHtmlLang('en')).toBe('en')
     expect(chromeHtmlLang('es')).toBe('es')
+    expect(chromeHtmlLang('zh-Hans')).toBe('zh-Hans')
     expect(chromeAriaLocale('pt')).toBe('pt-BR')
     expect(chromeAriaLocale('en')).toBe('en-US')
     expect(chromeAriaLocale('es')).toBe('es')
+    expect(chromeAriaLocale('zh-Hans')).toBe('zh-Hans')
   })
 })

@@ -2,22 +2,21 @@
 
 ## Current State
 
-- Packet `additional-ui-languages`: task_01 implemented and verified; task_02 pending.
+- Packet `additional-ui-languages`: task_01 completed, task_02 implemented and verified.
 
 ## Shared Decisions
 
 - Graph: task_01 Spanish chrome (US-01), then task_02 Simplified Chinese chrome (US-02).
-- task_01 `Locale` is `'pt' | 'en' | 'es'` so dictionaries typecheck; task_02 adds `'zh-Hans'` to match TechSpec Contracts.
-- AGENTS.md i18n line is owned by task_02.
-- `Chrome.tsx` `RecentlyClosed` locale type is owned by task_01 (now `Locale`).
+- Final `Locale` is `'pt' | 'en' | 'es' | 'zh-Hans'` via `LOCALES` / `isLocale` in `src/shared/types.ts`.
+- AGENTS.md i18n line names all four dictionaries.
+- Settings language row uses `flex-wrap` inside the existing modal.
+- Invalid `prefs/locale` no-ops by returning the input snapshot.
 - No isolation-verify gate unless partitions change (they must not).
-- Invalid `prefs/locale` no-ops by returning the input snapshot; `'zh-Hans'` is invalid until task_02.
 
 ## Shared Learnings
 
-- `LOCALES` / `isLocale` live in `src/shared/types.ts`. Parse and reducer both use `isLocale`.
 - `chromeHtmlLang` / `chromeAriaLocale` live in `src/shared/i18n.ts`; App already consumes them.
-- Settings language row uses `flex-wrap` inside the existing modal.
+- `'zh'` is not Simplified Chinese; only `'zh-Hans'` is allowlisted.
 
 ## Open Risks
 
@@ -25,4 +24,4 @@
 
 ## Handoffs
 
-- task_02: add `'zh-Hans'` to `LOCALES`, complete dictionary + `localeZhHans: '简体中文'`, parse survival, `账号 n`, Settings button, lang maps, AGENTS.md four-dictionary line. Keep `'es'` tests green. Do not change PT/EN/ES strings except adding `localeZhHans`.
+- Packet leaves: no further tasks. Native-read of Spanish and Simplified Chinese confirms remains a PRD open question.

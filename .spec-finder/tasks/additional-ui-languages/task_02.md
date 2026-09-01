@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 title: Ship Simplified Chinese chrome the operator can pick and keep
 type: frontend
 complexity: high
@@ -97,12 +97,12 @@ This slice gives up Traditional Chinese, site copy, and game-document translatio
 
 ## Subtasks
 
-- [ ] 02.1 `'zh-Hans'` is on the allowlist and survives parse; `'zh'` does not.
-- [ ] 02.2 Every chrome string, including confirms and empty states, has Simplified Chinese copy; PT/EN/ES values stay.
-- [ ] 02.3 Nameless new accounts get `账号 n` when Simplified Chinese is selected.
-- [ ] 02.4 Settings offers 简体中文; lang maps include `zh-Hans`; Spanish still selectable.
-- [ ] 02.5 AGENTS.md i18n instruction names all four dictionaries.
-- [ ] 02.6 Focused Vitest and repository gates pass.
+- [x] 02.1 `'zh-Hans'` is on the allowlist and survives parse; `'zh'` does not.
+- [x] 02.2 Every chrome string, including confirms and empty states, has Simplified Chinese copy; PT/EN/ES values stay.
+- [x] 02.3 Nameless new accounts get `账号 n` when Simplified Chinese is selected.
+- [x] 02.4 Settings offers 简体中文; lang maps include `zh-Hans`; Spanish still selectable.
+- [x] 02.5 AGENTS.md i18n instruction names all four dictionaries.
+- [x] 02.6 Focused Vitest and repository gates pass.
 
 ## Implementation Details
 
@@ -144,23 +144,23 @@ Do not paste signatures here.
 
 ### Unit Tests
 
-- [ ] Given disk JSON `locale: 'zh-Hans'`, when `parseSnapshot`, then `locale` is `'zh-Hans'`.
-- [ ] Given disk JSON `locale: 'zh'`, when `parseSnapshot`, then `locale` is `'pt'`.
-- [ ] Given disk JSON `locale: 'es'`, when `parseSnapshot`, then `locale` is `'es'`.
-- [ ] Given `prefs/locale` `'zh-Hans'`, when `applyAction`, then only `snapshot.locale` changes; `accountIdsToWipe` is `[]`.
-- [ ] Given Simplified Chinese and two existing accounts, when create without name, then name is `账号 3`.
-- [ ] Given every `MessageKey`, when `t('zh-Hans', key)`, then non-empty; keys not in the shared set differ from `t('en', key)`; confirm keys differ from en/pt/es.
-- [ ] Given `localeZhHans`, when read from all four dictionaries, then the value is `简体中文`.
-- [ ] Given `'zh-Hans'`, when `chromeHtmlLang` / `chromeAriaLocale`, then both are `'zh-Hans'`.
-- [ ] Given task_01 Spanish cases, when this slice’s tests run, then they still pass.
+- [x] Given disk JSON `locale: 'zh-Hans'`, when `parseSnapshot`, then `locale` is `'zh-Hans'`.
+- [x] Given disk JSON `locale: 'zh'`, when `parseSnapshot`, then `locale` is `'pt'`.
+- [x] Given disk JSON `locale: 'es'`, when `parseSnapshot`, then `locale` is `'es'`.
+- [x] Given `prefs/locale` `'zh-Hans'`, when `applyAction`, then only `snapshot.locale` changes; `accountIdsToWipe` is `[]`.
+- [x] Given Simplified Chinese and two existing accounts, when create without name, then name is `账号 3`.
+- [x] Given every `MessageKey`, when `t('zh-Hans', key)`, then non-empty; keys not in the shared set differ from `t('en', key)`; confirm keys differ from en/pt/es.
+- [x] Given `localeZhHans`, when read from all four dictionaries, then the value is `简体中文`.
+- [x] Given `'zh-Hans'`, when `chromeHtmlLang` / `chromeAriaLocale`, then both are `'zh-Hans'`.
+- [x] Given task_01 Spanish cases, when this slice’s tests run, then they still pass.
 
 ### Integration Tests
 
-- [ ] Not applicable. Vitest is `src/shared` only (`AGENTS.md`).
+- [x] Not applicable. Vitest is `src/shared` only (`AGENTS.md`).
 
 ### Platform or Manual Evidence
 
-- [ ] PRD G-02 checklist on a real window if Electron can run; if the environment cannot launch the app, document that limitation and continue with the automated gate.
+- [x] PRD G-02 checklist on a real window if Electron can run; if the environment cannot launch the app, document that limitation and continue with the automated gate.
 
 ### Verification Commands
 

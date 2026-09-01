@@ -86,7 +86,7 @@ HeroUI v3 is compound components (`Modal.Backdrop`, `Dropdown.Popover`, `onPress
 Theme is Mobbin inverted for dark mode (`data-theme="mobbin-dark"`): ink canvas `#141414`, electric blue `#0066ff` only as a signal.
 No gameplay automation UI.
 
-i18n: add keys to both `en` and `pt` in `src/shared/i18n.ts`.
+i18n: add keys to all four dictionaries (`en`, `pt`, `es`, `zh-Hans`) in `src/shared/i18n.ts`.
 
 ## Tests
 

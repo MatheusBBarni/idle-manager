@@ -133,6 +133,9 @@ function nextAccountName(existing: Account[], locale: Locale): string {
   if (locale === 'es') {
     return `Cuenta ${n}`
   }
+  if (locale === 'zh-Hans') {
+    return `账号 ${n}`
+  }
   return `Account ${n}`
 }
 

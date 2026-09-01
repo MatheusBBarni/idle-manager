@@ -286,6 +286,13 @@ function SettingsModal({ onClose }: { onClose: () => void }) {
             >
               {t(locale, 'localeEs')}
             </Button>
+            <Button
+              size="sm"
+              variant={locale === 'zh-Hans' ? 'primary' : 'secondary'}
+              onPress={() => void dispatch({ type: 'prefs/locale', locale: 'zh-Hans' })}
+            >
+              {t(locale, 'localeZhHans')}
+            </Button>
           </div>
         </div>
         <div>

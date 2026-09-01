@@ -1,6 +1,6 @@
 export type LayoutMode = 'grid' | 'single' | 'columns' | 'rows' | 'free'
 export type AccountStatus = 'running' | 'closed'
-export const LOCALES = ['pt', 'en', 'es'] as const
+export const LOCALES = ['pt', 'en', 'es', 'zh-Hans'] as const
 export type Locale = (typeof LOCALES)[number]
 export type ThemeName = 'dark' | 'light'
 

@@ -87,6 +87,7 @@ const en = {
   localePt: 'Português',
   localeEn: 'English',
   localeEs: 'Español',
+  localeZhHans: '简体中文',
   urlBar: 'Address',
   shortcuts: 'Keyboard shortcuts',
   shortcutCreate: 'Create account',
@@ -186,6 +187,7 @@ const pt: Record<keyof typeof en, string> = {
   localePt: 'Português',
   localeEn: 'English',
   localeEs: 'Español',
+  localeZhHans: '简体中文',
   urlBar: 'Endereço',
   shortcuts: 'Atalhos de teclado',
   shortcutCreate: 'Criar conta',
@@ -285,6 +287,7 @@ const es: Record<keyof typeof en, string> = {
   localePt: 'Português',
   localeEn: 'English',
   localeEs: 'Español',
+  localeZhHans: '简体中文',
   urlBar: 'Dirección',
   shortcuts: 'Atajos de teclado',
   shortcutCreate: 'Crear cuenta',
@@ -296,7 +299,107 @@ const es: Record<keyof typeof en, string> = {
   updateLater: 'Después'
 }
 
-const dictionaries: Record<Locale, Record<MessageKey, string>> = { en, pt, es }
+const zhHans: Record<keyof typeof en, string> = {
+  appName: 'Idle manager',
+  newTab: '新建标签页',
+  closeTab: '关闭标签页',
+  reopenTab: '重新打开标签页',
+  renameTab: '重命名标签页',
+  deleteTab: '删除标签页',
+  deleteTabWipe: '删除标签页并清除账号',
+  addAccount: '添加账号',
+  startAccount: '启动',
+  stopAccount: '关闭面板',
+  startAll: '全部启动',
+  renameAccount: '重命名',
+  recolor: '账号颜色',
+  deleteAccount: '删除账号',
+  clearSession: '清除会话',
+  popOut: '弹出到新窗口',
+  popIn: '返回主窗口',
+  mute: '静音',
+  unmute: '取消静音',
+  reload: '重新加载',
+  reloadAll: '全部重新加载',
+  back: '后退',
+  forward: '前进',
+  home: '主页',
+  zoomIn: '放大',
+  zoomOut: '缩小',
+  zoomReset: '重置缩放',
+  layout: 'Layout',
+  layoutGrid: '自动网格',
+  layoutSingle: '单面板',
+  layoutColumns: '分列',
+  layoutRows: '分行',
+  layoutFree: '自由排列',
+  settings: '设置',
+  language: '语言',
+  theme: '主题',
+  themeDark: '深色',
+  themeLight: '浅色',
+  launchAtStartup: '开机启动',
+  importWorkspace: '导入工作区',
+  exportWorkspace: '导出工作区',
+  importGameList: '导入游戏列表',
+  exportGameList: '导出游戏列表',
+  createTabTitle: '新建游戏标签页',
+  createTabName: '标签页名称',
+  createTabUrl: '基础网址',
+  createAccountTitle: '新建账号',
+  createAccountName: '显示名称',
+  cancel: '取消',
+  create: '创建',
+  save: '保存',
+  confirm: '确认',
+  online: 'Online',
+  closed: '已关闭',
+  emptyTitle: '添加游戏',
+  emptyBody: '用游戏网址创建标签页，然后在其中启动隔离账号。',
+  emptyCta: '创建标签页',
+  noRunning: '没有运行中的面板',
+  noRunningBody: '启动一个账号，在此加载其隔离会话。',
+  poppedOut: '在其他窗口中',
+  statusReady: '就绪',
+  cpu: 'CPU',
+  ram: 'RAM',
+  fps: 'FPS',
+  uptime: '运行时间',
+  version: 'v',
+  help: '帮助',
+  search: '搜索',
+  confirmDeleteAccount:
+    '删除此账号并清除其隔离会话？只会移除此账号的登录 Cookie 和网站数据。',
+  confirmClearSession:
+    '清除此账号的 Cookie、缓存和网站数据？面板会保留，但网站会视为已退出登录。',
+  confirmDeleteTab:
+    '从栏中移除此标签页？账号会话仍保留在磁盘上，除非你也将其清除。',
+  archived: '已关闭的标签页',
+  urlPlaceholder: 'https://gengar.com.br/',
+  duplicateNamesHint: '名称可以重复。隔离使用隐藏的账号 ID。',
+  collapseSidebar: '折叠侧边栏',
+  expandSidebar: '展开侧边栏',
+  recentlyClosed: '最近关闭',
+  minimize: '最小化',
+  maximize: '最大化',
+  closeWindow: '关闭',
+  runningCount: '运行中',
+  localePt: 'Português',
+  localeEn: 'English',
+  localeEs: 'Español',
+  localeZhHans: '简体中文',
+  urlBar: '地址',
+  shortcuts: '键盘快捷键',
+  shortcutCreate: '创建账号',
+  shortcutPrev: '上一个账号',
+  shortcutNext: '下一个账号',
+  shortcutStart: '启动当前账号',
+  updateGetting: '正在获取更新',
+  updateApply: '应用',
+  updateLater: '稍后'
+}
+
+const dictionaries: Record<Locale, Record<MessageKey, string>> = { en, pt, es, 'zh-Hans': zhHans }
 
 export type MessageKey = keyof typeof en
 export const MESSAGE_KEYS = Object.keys(en) as MessageKey[]
@@ -312,6 +415,9 @@ export function chromeHtmlLang(locale: Locale): string {
   if (locale === 'es') {
     return 'es'
   }
+  if (locale === 'zh-Hans') {
+    return 'zh-Hans'
+  }
   return 'en'
 }
 
@@ -321,6 +427,9 @@ export function chromeAriaLocale(locale: Locale): string {
   }
   if (locale === 'es') {
     return 'es'
+  }
+  if (locale === 'zh-Hans') {
+    return 'zh-Hans'
   }
   return 'en-US'
 }
