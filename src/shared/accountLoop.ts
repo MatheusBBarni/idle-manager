@@ -1,45 +1,13 @@
+import { LOOP_COMMANDS, SHORTCUT_DEFAULTS, displayShortcut, type LoopCommand } from './shortcuts'
 import type { WorkspaceAction } from './workspace'
 
-export type AccountLoopCommand = 'account-create' | 'account-prev' | 'account-next' | 'account-start'
+export type AccountLoopCommand = LoopCommand
 
-export type AccountLoopKeyInput = {
-  type: string
-  key: string
-  code: string
-  control: boolean
-  meta: boolean
-  shift: boolean
-  alt: boolean
-  isAutoRepeat: boolean
-}
-
-export const ACCOUNT_LOOP_SHORTCUTS = [
-  { command: 'account-create', mac: '⌘⇧N', win: 'Ctrl+Shift+N' },
-  { command: 'account-prev', mac: '⌘⇧[', win: 'Ctrl+Shift+[' },
-  { command: 'account-next', mac: '⌘⇧]', win: 'Ctrl+Shift+]' },
-  { command: 'account-start', mac: '⌘↩', win: 'Ctrl+Enter' }
-] as const
-
-export function matchAccountLoopChord(input: AccountLoopKeyInput): AccountLoopCommand | null {
-  if (input.type !== 'keyDown' || input.isAutoRepeat || input.alt || !(input.meta || input.control)) {
-    return null
-  }
-
-  if (input.shift && (input.key === 'n' || input.key === 'N')) {
-    return 'account-create'
-  }
-  // Shift+[ / Shift+] report `{` / `}` on common layouts; keep `[` / `]` for layouts that preserve them.
-  if (input.shift && (input.key === '[' || input.key === '{')) {
-    return 'account-prev'
-  }
-  if (input.shift && (input.key === ']' || input.key === '}')) {
-    return 'account-next'
-  }
-  if (!input.shift && input.key === 'Enter') {
-    return 'account-start'
-  }
-  return null
-}
+export const ACCOUNT_LOOP_SHORTCUTS = LOOP_COMMANDS.map((command) => ({
+  command,
+  mac: displayShortcut(SHORTCUT_DEFAULTS[command], 'darwin'),
+  win: displayShortcut(SHORTCUT_DEFAULTS[command], 'win')
+}))
 
 export function nextAccountId(
   accountOrder: string[],

@@ -1,10 +1,11 @@
-import { useState, type ReactNode } from 'react'
-import { Button, Input, Label, Modal, TextField } from '@heroui/react'
-import { ACCOUNT_LOOP_SHORTCUTS } from '@shared/accountLoop'
+import { useState } from 'react'
+import { Button, Input, Label, TextField } from '@heroui/react'
 import { t } from '@shared/i18n'
 import { isValidHttpUrl } from '@shared/urls'
 import { tabById } from '@shared/workspace'
 import { dispatch, runDialogCommand, useAppStore } from '../store'
+import { SettingsModal } from './Settings'
+import { ShellModal } from './ShellModal'
 
 export function Dialogs() {
   const dialog = useAppStore((state) => state.dialog)
@@ -93,35 +94,6 @@ export function Dialogs() {
   }
 
   return null
-}
-
-function ShellModal({
-  title,
-  onClose,
-  children,
-  footer,
-  className = 'sm:max-w-[400px]'
-}: {
-  title: string
-  onClose: () => void
-  children: ReactNode
-  footer: ReactNode
-  className?: string
-}) {
-  return (
-    <Modal.Backdrop isOpen onOpenChange={(open) => !open && onClose()}>
-      <Modal.Container>
-        <Modal.Dialog className={className}>
-          <Modal.CloseTrigger />
-          <Modal.Header>
-            <Modal.Heading>{title}</Modal.Heading>
-          </Modal.Header>
-          <Modal.Body>{children}</Modal.Body>
-          <Modal.Footer>{footer}</Modal.Footer>
-        </Modal.Dialog>
-      </Modal.Container>
-    </Modal.Backdrop>
-  )
 }
 
 function PromptModal({
@@ -236,100 +208,6 @@ function AccountModal({ onClose }: { onClose: () => void }) {
         <Label>{t(locale, 'createAccountName')}</Label>
         <Input />
       </TextField>
-    </ShellModal>
-  )
-}
-
-const SHORTCUT_LABELS = {
-  'account-create': 'shortcutCreate',
-  'account-prev': 'shortcutPrev',
-  'account-next': 'shortcutNext',
-  'account-start': 'shortcutStart'
-} as const
-
-function SettingsModal({ onClose }: { onClose: () => void }) {
-  const snapshot = useAppStore((state) => state.snapshot)
-  const platform = useAppStore((state) => state.platform)
-  const locale = snapshot.locale
-  const mac = platform === 'darwin'
-  return (
-    <ShellModal
-      title={t(locale, 'settings')}
-      onClose={onClose}
-      className="sm:max-w-[440px]"
-      footer={
-        <Button onPress={onClose}>{t(locale, 'save')}</Button>
-      }
-    >
-      <div className="flex flex-col gap-4">
-        <div>
-          <p className="mb-2 text-sm">{t(locale, 'language')}</p>
-          <div className="flex gap-2">
-            <Button
-              size="sm"
-              variant={locale === 'pt' ? 'primary' : 'secondary'}
-              onPress={() => void dispatch({ type: 'prefs/locale', locale: 'pt' })}
-            >
-              {t(locale, 'localePt')}
-            </Button>
-            <Button
-              size="sm"
-              variant={locale === 'en' ? 'primary' : 'secondary'}
-              onPress={() => void dispatch({ type: 'prefs/locale', locale: 'en' })}
-            >
-              {t(locale, 'localeEn')}
-            </Button>
-          </div>
-        </div>
-        <div>
-          <p className="mb-2 text-sm">{t(locale, 'theme')}</p>
-          <div className="flex gap-2">
-            <Button
-              size="sm"
-              variant={snapshot.theme === 'dark' ? 'primary' : 'secondary'}
-              onPress={() => void dispatch({ type: 'prefs/theme', theme: 'dark' })}
-            >
-              {t(locale, 'themeDark')}
-            </Button>
-            <Button
-              size="sm"
-              variant={snapshot.theme === 'light' ? 'primary' : 'secondary'}
-              onPress={() => void dispatch({ type: 'prefs/theme', theme: 'light' })}
-            >
-              {t(locale, 'themeLight')}
-            </Button>
-          </div>
-        </div>
-        <label className="flex items-center gap-2 text-sm">
-          <input
-            type="checkbox"
-            checked={snapshot.launchAtStartup}
-            onChange={(event) =>
-              void dispatch({ type: 'prefs/launchAtStartup', value: event.target.checked })
-            }
-          />
-          {t(locale, 'launchAtStartup')}
-        </label>
-        <div>
-          <p className="mb-2 text-sm">{t(locale, 'shortcuts')}</p>
-          <ul className="flex flex-col gap-1.5 text-sm text-muted">
-            {ACCOUNT_LOOP_SHORTCUTS.map((row) => (
-              <li key={row.command} className="flex items-baseline justify-between gap-3">
-                <span>{t(locale, SHORTCUT_LABELS[row.command])}</span>
-                <kbd className="font-mono text-xs text-foreground">{mac ? row.mac : row.win}</kbd>
-              </li>
-            ))}
-          </ul>
-        </div>
-        <div className="flex gap-2">
-          <Button size="sm" variant="secondary" onPress={() => void window.opsource.exportWorkspace()}>
-            {t(locale, 'exportWorkspace')}
-          </Button>
-          <Button size="sm" variant="secondary" onPress={() => void window.opsource.importWorkspace()}>
-            {t(locale, 'importWorkspace')}
-          </Button>
-        </div>
-      </div>
     </ShellModal>
   )
 }

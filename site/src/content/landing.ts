@@ -58,6 +58,7 @@ type LandingCopy = {
   source: string
   sourceLead: string
   sourceLink: string
+  twitterLink: string
 }
 
 export const landing = {
@@ -206,7 +207,8 @@ export const landing = {
     ],
     source: 'Source',
     sourceLead: 'Idle manager is MIT-licensed.',
-    sourceLink: 'Source on GitHub'
+    sourceLink: 'Source on GitHub',
+    twitterLink: 'Follow on X'
   },
   pt: {
     title: 'Idle manager — rode contas idle isoladas em uma janela',
@@ -353,6 +355,7 @@ export const landing = {
     ],
     source: 'Código-fonte',
     sourceLead: 'Idle manager é licenciado sob MIT.',
-    sourceLink: 'Código-fonte no GitHub'
+    sourceLink: 'Código-fonte no GitHub',
+    twitterLink: 'Siga no X'
   }
 } as const satisfies Record<Locale, LandingCopy>

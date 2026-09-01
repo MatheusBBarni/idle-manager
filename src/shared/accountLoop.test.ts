@@ -1,56 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import {
-  ACCOUNT_LOOP_SHORTCUTS,
-  keyboardCreateActions,
-  matchAccountLoopChord,
-  nextAccountId,
-  type AccountLoopKeyInput
-} from './accountLoop'
-
-function key(partial: Partial<AccountLoopKeyInput> & Pick<AccountLoopKeyInput, 'key'>): AccountLoopKeyInput {
-  return {
-    type: 'keyDown',
-    code: '',
-    control: false,
-    meta: false,
-    shift: false,
-    alt: false,
-    isAutoRepeat: false,
-    ...partial
-  }
-}
-
-describe('matchAccountLoopChord', () => {
-  it('matches Mod+Shift+N as account-create for meta or control', () => {
-    expect(matchAccountLoopChord(key({ key: 'n', meta: true, shift: true }))).toBe('account-create')
-    expect(matchAccountLoopChord(key({ key: 'N', control: true, shift: true }))).toBe('account-create')
-  })
-
-  it('returns null for n without mod, keyUp, repeat, and alt', () => {
-    expect(matchAccountLoopChord(key({ key: 'n' }))).toBeNull()
-    expect(matchAccountLoopChord(key({ key: 'n', meta: true, shift: true, type: 'keyUp' }))).toBeNull()
-    expect(matchAccountLoopChord(key({ key: 'n', meta: true, shift: true, isAutoRepeat: true }))).toBeNull()
-    expect(matchAccountLoopChord(key({ key: 'n', meta: true, shift: true, alt: true }))).toBeNull()
-  })
-
-  it('matches Mod+Shift+[ / ] and shifted { / } as prev/next', () => {
-    expect(matchAccountLoopChord(key({ key: '[', meta: true, shift: true }))).toBe('account-prev')
-    expect(matchAccountLoopChord(key({ key: '{', control: true, shift: true }))).toBe('account-prev')
-    expect(matchAccountLoopChord(key({ key: ']', meta: true, shift: true }))).toBe('account-next')
-    expect(matchAccountLoopChord(key({ key: '}', control: true, shift: true }))).toBe('account-next')
-  })
-
-  it('matches Mod+Enter without shift as account-start', () => {
-    expect(matchAccountLoopChord(key({ key: 'Enter', meta: true }))).toBe('account-start')
-    expect(matchAccountLoopChord(key({ key: 'Enter', control: true }))).toBe('account-start')
-    expect(matchAccountLoopChord(key({ key: 'Enter', meta: true, shift: true }))).toBeNull()
-  })
-
-  it('returns null for non-mod and unmatched keys', () => {
-    expect(matchAccountLoopChord(key({ key: 'Enter' }))).toBeNull()
-    expect(matchAccountLoopChord(key({ key: 't', meta: true }))).toBeNull()
-  })
-})
+import { ACCOUNT_LOOP_SHORTCUTS, keyboardCreateActions, nextAccountId } from './accountLoop'
 
 describe('nextAccountId', () => {
   it('wraps next from the last item and prev from the first', () => {
@@ -70,7 +19,7 @@ describe('nextAccountId', () => {
 })
 
 describe('ACCOUNT_LOOP_SHORTCUTS', () => {
-  it('exposes the four frozen display chords', () => {
+  it('exposes the four frozen display chords from shipped defaults', () => {
     expect(ACCOUNT_LOOP_SHORTCUTS.map((row) => row.win)).toEqual([
       'Ctrl+Shift+N',
       'Ctrl+Shift+[',

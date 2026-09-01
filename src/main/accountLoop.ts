@@ -1,11 +1,7 @@
 import type { WebContents } from 'electron'
-import {
-  keyboardCreateActions,
-  matchAccountLoopChord,
-  nextAccountId,
-  type AccountLoopCommand
-} from '@shared/accountLoop'
+import { keyboardCreateActions, nextAccountId, type AccountLoopCommand } from '@shared/accountLoop'
 import { newId } from '@shared/ids'
+import { isLoopCommand, matchShortcut } from '@shared/shortcuts'
 import type { WorkspaceSnapshot } from '@shared/types'
 import { activeAccount, tabById, type WorkspaceAction } from '@shared/workspace'
 
@@ -57,14 +53,30 @@ function actionsForCommand(command: AccountLoopCommand, snapshot: WorkspaceSnaps
 
 export function attachAccountLoop(contents: WebContents, source: LoopSource): void {
   contents.on('before-input-event', (event, input) => {
-    const command = matchAccountLoopChord(input)
-    if (!command || !host || host.overlayOpen()) {
+    if (!host || host.overlayOpen()) {
       return
     }
     if (source === 'chrome' && host.chromeEditable()) {
       return
     }
-    const actions = actionsForCommand(command, host.getSnapshot())
+    const snapshot = host.getSnapshot()
+    const command = matchShortcut(
+      {
+        type: input.type,
+        key: input.key,
+        control: input.control,
+        meta: input.meta,
+        shift: input.shift,
+        alt: input.alt,
+        isAutoRepeat: input.isAutoRepeat
+      },
+      snapshot.shortcuts,
+      'loop'
+    )
+    if (!isLoopCommand(command)) {
+      return
+    }
+    const actions = actionsForCommand(command, snapshot)
     if (actions.length === 0) {
       return
     }

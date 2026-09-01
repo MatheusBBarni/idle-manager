@@ -1,7 +1,16 @@
+import type { ShortcutMap } from './shortcuts'
+
 export type LayoutMode = 'grid' | 'single' | 'columns' | 'rows' | 'free'
 export type AccountStatus = 'running' | 'closed'
-export type Locale = 'pt' | 'en'
+export const LOCALES = ['pt', 'en', 'es', 'zh-Hans'] as const
+export type Locale = (typeof LOCALES)[number]
 export type ThemeName = 'dark' | 'light'
+
+const LOCALE_SET = new Set<string>(LOCALES)
+
+export function isLocale(value: unknown): value is Locale {
+  return typeof value === 'string' && LOCALE_SET.has(value)
+}
 
 export type Rect = {
   x: number
@@ -58,6 +67,7 @@ export type WorkspaceSnapshot = {
   theme: ThemeName
   windowBounds: WindowBounds | null
   launchAtStartup: boolean
+  shortcuts: ShortcutMap
 }
 
 export type AccountMetrics = {

@@ -19,7 +19,7 @@ import {
 } from 'lucide-react'
 import { Button, Dropdown, Label } from '@heroui/react'
 import { t } from '@shared/i18n'
-import type { LayoutMode } from '@shared/types'
+import type { LayoutMode, Locale } from '@shared/types'
 import { activeAccount, archivedTabs, visibleTabs } from '@shared/workspace'
 import { dispatch, useAppStore } from '../store'
 
@@ -50,7 +50,7 @@ function IconButton({
 }
 
 
-function RecentlyClosed({ locale }: { locale: 'pt' | 'en' }) {
+function RecentlyClosed({ locale }: { locale: Locale }) {
   const snapshot = useAppStore((state) => state.snapshot)
   const closed = archivedTabs(snapshot)
   return (

@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { I18nProvider } from '@heroui/react'
+import { chromeAriaLocale, chromeHtmlLang } from '@shared/i18n'
 import { activeAccount, visibleTabs } from '@shared/workspace'
 import { Shell } from './components/Shell'
 import { useAppStore } from './store'
@@ -14,7 +15,7 @@ export function App() {
     root.classList.toggle('dark', theme !== 'light')
     root.classList.toggle('light', theme === 'light')
     root.dataset.theme = themeName
-    root.lang = locale === 'pt' ? 'pt-BR' : 'en'
+    root.lang = chromeHtmlLang(locale)
   }, [locale, theme])
 
   useEffect(() => {
@@ -50,7 +51,7 @@ export function App() {
   }, [])
 
   return (
-    <I18nProvider locale={locale === 'pt' ? 'pt-BR' : 'en-US'}>
+    <I18nProvider locale={chromeAriaLocale(locale)}>
       <Shell />
     </I18nProvider>
   )

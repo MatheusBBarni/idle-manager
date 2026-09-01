@@ -7,12 +7,25 @@ import {
   type FractionRect,
   type GameTab,
   type LayoutMode,
+  isLocale,
   type Locale,
   type ThemeName,
   type WindowBounds,
   type WorkspaceSnapshot
 } from './types'
-import { hostnameOf, normalizeUrl } from './urls'
+import {
+  canonicalizeShortcutChord,
+  cloneShortcutMap,
+  isShortcutCommand,
+  normalizeShortcutMap,
+  parseShortcutChord,
+  SHORTCUT_DEFAULTS,
+  shortcutConflict,
+  type ShortcutChord,
+  type ShortcutCommand,
+  type ShortcutMap
+} from './shortcuts'
+import { hostnameOf, isValidHttpUrl, normalizeUrl } from './urls'
 
 export type WorkspaceAction =
   | { type: 'tab/create'; name: string; baseUrl: string; id?: string }
@@ -46,6 +59,7 @@ export type WorkspaceAction =
   | { type: 'prefs/locale'; locale: Locale }
   | { type: 'prefs/theme'; theme: ThemeName }
   | { type: 'prefs/launchAtStartup'; value: boolean }
+  | { type: 'prefs/shortcut'; command: ShortcutCommand; chord: ShortcutChord | null }
   | { type: 'window/bounds'; bounds: WindowBounds }
 
 export type WorkspaceExport = {
@@ -54,6 +68,7 @@ export type WorkspaceExport = {
   accounts: Record<string, Pick<Account, 'id' | 'tabId' | 'name' | 'color' | 'url' | 'homeUrl'>>
   locale: Locale
   theme: ThemeName
+  shortcuts: ShortcutMap
 }
 
 export function emptySnapshot(): WorkspaceSnapshot {
@@ -65,7 +80,8 @@ export function emptySnapshot(): WorkspaceSnapshot {
     locale: 'pt',
     theme: 'dark',
     windowBounds: null,
-    launchAtStartup: false
+    launchAtStartup: false,
+    shortcuts: cloneShortcutMap(SHORTCUT_DEFAULTS)
   }
 }
 
@@ -124,9 +140,15 @@ function nextColor(existing: Account[]): string {
   return ACCOUNT_COLORS.find((color) => !used.has(color)) ?? ACCOUNT_COLORS[existing.length % ACCOUNT_COLORS.length]
 }
 
+const ACCOUNT_NAME_PREFIX = {
+  pt: 'Conta',
+  en: 'Account',
+  es: 'Cuenta',
+  'zh-Hans': '账号'
+} as const satisfies Record<Locale, string>
+
 function nextAccountName(existing: Account[], locale: Locale): string {
-  const n = existing.length + 1
-  return locale === 'pt' ? `Conta ${n}` : `Account ${n}`
+  return `${ACCOUNT_NAME_PREFIX[locale]} ${existing.length + 1}`
 }
 
 function replaceTab(snapshot: WorkspaceSnapshot, tabId: string, patch: Partial<GameTab>): WorkspaceSnapshot {
@@ -187,6 +209,37 @@ function seedFreeBounds(snapshot: WorkspaceSnapshot, tab: GameTab): WorkspaceSna
     }
   })
   return next
+}
+
+function applyShortcutPref(
+  snapshot: WorkspaceSnapshot,
+  command: ShortcutCommand,
+  chord: ShortcutChord | null
+): WorkspaceSnapshot {
+  if (!isShortcutCommand(command)) {
+    return snapshot
+  }
+  if (chord === null) {
+    return {
+      ...snapshot,
+      shortcuts: {
+        ...snapshot.shortcuts,
+        [command]: { ...SHORTCUT_DEFAULTS[command] }
+      }
+    }
+  }
+  const parsed = parseShortcutChord(chord)
+  const canonical = parsed ? canonicalizeShortcutChord(command, parsed) : null
+  if (!canonical || shortcutConflict(snapshot.shortcuts, command, canonical)) {
+    return snapshot
+  }
+  return {
+    ...snapshot,
+    shortcuts: {
+      ...snapshot.shortcuts,
+      [command]: canonical
+    }
+  }
 }
 
 export function applyAction(snapshot: WorkspaceSnapshot, action: WorkspaceAction): WorkspaceSnapshot {
@@ -370,11 +423,13 @@ export function applyAction(snapshot: WorkspaceSnapshot, action: WorkspaceAction
       }
     }
     case 'prefs/locale':
-      return { ...snapshot, locale: action.locale }
+      return isLocale(action.locale) ? { ...snapshot, locale: action.locale } : snapshot
     case 'prefs/theme':
       return { ...snapshot, theme: action.theme }
     case 'prefs/launchAtStartup':
       return { ...snapshot, launchAtStartup: action.value }
+    case 'prefs/shortcut':
+      return applyShortcutPref(snapshot, action.command, action.chord)
     case 'window/bounds':
       return { ...snapshot, windowBounds: action.bounds }
     default:
@@ -388,12 +443,32 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value)
 }
 
+function isGameListDocument(raw: unknown): raw is { version: 1; kind: 'game-list'; tabs: unknown[] } {
+  return (
+    isRecord(raw) &&
+    raw.version === 1 &&
+    raw.kind === 'game-list' &&
+    Array.isArray(raw.tabs) &&
+    !Object.hasOwn(raw, 'accounts')
+  )
+}
+
 function asFinite(value: unknown): number | null {
   return typeof value === 'number' && Number.isFinite(value) ? value : null
 }
 
 function asString(value: unknown): string | null {
   return typeof value === 'string' && value.length > 0 ? value : null
+}
+
+function asGameListTab(value: unknown): GameListTab | null {
+  if (!isRecord(value) || typeof value.name !== 'string' || typeof value.baseUrl !== 'string') {
+    return null
+  }
+  if (!isValidHttpUrl(value.baseUrl)) {
+    return null
+  }
+  return { name: value.name, baseUrl: value.baseUrl }
 }
 
 function asTab(value: unknown): GameTab | null {
@@ -500,10 +575,11 @@ export function parseSnapshot(raw: unknown): WorkspaceSnapshot {
     activeTabId: activeTabId && tabs.some((tab) => tab.id === activeTabId && !tab.archived)
       ? activeTabId
       : firstVisibleId(tabs),
-    locale: raw.locale === 'en' ? 'en' : 'pt',
+    locale: isLocale(raw.locale) ? raw.locale : 'pt',
     theme: raw.theme === 'light' ? 'light' : 'dark',
     windowBounds: asWindowBounds(raw.windowBounds),
-    launchAtStartup: raw.launchAtStartup === true
+    launchAtStartup: raw.launchAtStartup === true,
+    shortcuts: normalizeShortcutMap(raw.shortcuts)
   }
 }
 
@@ -532,8 +608,51 @@ export function exportMetadata(snapshot: WorkspaceSnapshot): WorkspaceExport {
       ])
     ),
     locale: snapshot.locale,
-    theme: snapshot.theme
+    theme: snapshot.theme,
+    shortcuts: cloneShortcutMap(snapshot.shortcuts)
   }
+}
+
+export type GameListTab = { name: string; baseUrl: string }
+
+export type GameListExport = {
+  version: 1
+  kind: 'game-list'
+  tabs: GameListTab[]
+}
+
+export function exportGameList(snapshot: WorkspaceSnapshot): GameListExport {
+  return {
+    version: 1,
+    kind: 'game-list',
+    tabs: visibleTabs(snapshot).map((tab) => ({ name: tab.name, baseUrl: tab.baseUrl }))
+  }
+}
+
+export function parseGameList(raw: unknown): GameListTab[] {
+  if (!isGameListDocument(raw)) {
+    return []
+  }
+  return raw.tabs.map(asGameListTab).filter((tab): tab is GameListTab => tab !== null)
+}
+
+export function gameListImportActions(
+  snapshot: WorkspaceSnapshot,
+  tabs: GameListTab[]
+): WorkspaceAction[] {
+  if (tabs.length === 0) {
+    return []
+  }
+  const actions: WorkspaceAction[] = tabs.map((tab) => ({
+    type: 'tab/create',
+    name: tab.name,
+    baseUrl: tab.baseUrl
+  }))
+  const prior = tabById(snapshot, snapshot.activeTabId)
+  if (prior && !prior.archived) {
+    actions.push({ type: 'tab/activate', id: prior.id })
+  }
+  return actions
 }
 
 export function snapshotFromImport(raw: unknown): WorkspaceSnapshot {

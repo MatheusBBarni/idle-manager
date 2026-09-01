@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { landing } from './landing'
+import { TWITTER_HREF } from '../lib/urls'
 
 describe('landing isolation claims', () => {
   it('keeps the English first-screen isolation-vs-bot copy', () => {
@@ -39,5 +40,11 @@ describe('landing isolation claims', () => {
       'Not a proxy or anti-detect browser',
       'Not a shared cookie-jar swapper'
     ])
+  })
+
+  it('points both locales at the Idle manager X account', () => {
+    expect(landing.en.twitterLink).toBe('Follow on X')
+    expect(landing.pt.twitterLink).toBe('Siga no X')
+    expect(TWITTER_HREF).toBe('https://x.com/idlemanagerapp')
   })
 })
