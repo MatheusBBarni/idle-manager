@@ -105,10 +105,19 @@ const frozenEn: Record<Exclude<MessageKey, 'localeEs' | 'localeZhHans'>, string>
   localeEn: 'English',
   urlBar: 'Address',
   shortcuts: 'Keyboard shortcuts',
+  settingsGeneral: 'General',
   shortcutCreate: 'Create account',
   shortcutPrev: 'Previous account',
   shortcutNext: 'Next account',
   shortcutStart: 'Start targeted account',
+  shortcutSidebar: 'Toggle sidebar',
+  shortcutTabNext: 'Next tab',
+  shortcutAccountSlot: 'Account slots 1–9',
+  shortcutScopeLoop: 'Works in a game panel',
+  shortcutScopeChrome: 'Chrome only',
+  shortcutReset: 'Reset',
+  shortcutPressChord: 'Press a modifier shortcut',
+  shortcutTaken: 'That shortcut is already assigned',
   updateGetting: 'Getting update',
   updateApply: 'Apply',
   updateLater: 'Later'
@@ -203,10 +212,19 @@ const frozenPt: Record<Exclude<MessageKey, 'localeEs' | 'localeZhHans'>, string>
   localeEn: 'English',
   urlBar: 'Endereço',
   shortcuts: 'Atalhos de teclado',
+  settingsGeneral: 'Geral',
   shortcutCreate: 'Criar conta',
   shortcutPrev: 'Conta anterior',
   shortcutNext: 'Próxima conta',
   shortcutStart: 'Iniciar a conta em foco',
+  shortcutSidebar: 'Alternar barra lateral',
+  shortcutTabNext: 'Próxima aba',
+  shortcutAccountSlot: 'Contas 1–9',
+  shortcutScopeLoop: 'Funciona no painel do jogo',
+  shortcutScopeChrome: 'Só na interface',
+  shortcutReset: 'Redefinir',
+  shortcutPressChord: 'Pressione um atalho com modificador',
+  shortcutTaken: 'Esse atalho já está em uso',
   updateGetting: 'Baixando atualização',
   updateApply: 'Aplicar',
   updateLater: 'Depois'
@@ -291,6 +309,33 @@ describe('i18n', () => {
       expect(t('en', key), key).toBe(frozenEn[key])
       expect(t('pt', key), key).toBe(frozenPt[key])
     }
+  })
+
+  it('translates Shortcuts tab copy in every locale without leftover English', () => {
+    const keys = [
+      'settingsGeneral',
+      'shortcutScopeLoop',
+      'shortcutScopeChrome',
+      'shortcutReset',
+      'shortcutPressChord',
+      'shortcutTaken',
+      'shortcutSidebar',
+      'shortcutTabNext',
+      'shortcutAccountSlot'
+    ] as const
+    for (const locale of LOCALES) {
+      for (const key of keys) {
+        expect(t(locale, key).length).toBeGreaterThan(0)
+        if (locale === 'en') {
+          continue
+        }
+        expect(t(locale, key), `${locale}:${key}`).not.toBe(t('en', key))
+      }
+    }
+    expect(t('pt', 'settingsGeneral')).not.toMatch(/general/i)
+    expect(t('pt', 'shortcutReset')).not.toMatch(/reset/i)
+    expect(t('es', 'shortcutTaken')).not.toMatch(/already assigned/i)
+    expect(t('zh-Hans', 'shortcutPressChord')).not.toMatch(/press a modifier/i)
   })
 
   it('maps chrome html lang and aria locale for pt, en, es, and zh-Hans', () => {

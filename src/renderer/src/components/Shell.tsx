@@ -34,6 +34,9 @@ export function Shell() {
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
+      if (useAppStore.getState().shortcutCapturing) {
+        return
+      }
       const command = matchShortcut(
         {
           type: 'keyDown',

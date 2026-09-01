@@ -6,6 +6,7 @@ import {
   chordIdentity,
   cloneShortcutMap,
   displayShortcut,
+  displayShortcutLabel,
   matchShortcut,
   normalizeShortcutMap,
   shortcutConflict,
@@ -192,6 +193,12 @@ describe('chordIdentity and displayShortcut', () => {
     expect(displayShortcut({ key: 'n', shift: true, alt: false }, 'darwin')).toBe('⌘⇧N')
     expect(displayShortcut({ key: 'Enter', shift: false, alt: false }, 'win')).toBe('Ctrl+Enter')
     expect(displayShortcut({ key: 'Enter', shift: false, alt: false }, 'darwin')).toBe('⌘↩')
+    expect(
+      displayShortcutLabel('account-slot', { key: '1', shift: false, alt: false }, 'win')
+    ).toBe('Ctrl+1…9')
+    expect(displayShortcutLabel('tab-new', { key: 't', shift: false, alt: false }, 'win')).toBe(
+      'Ctrl+T'
+    )
   })
 })
 

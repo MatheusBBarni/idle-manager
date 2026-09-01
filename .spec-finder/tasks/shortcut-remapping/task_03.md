@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 title: Ship Settings Shortcuts tab with capture and reset
 type: frontend
 complexity: high
@@ -82,11 +82,11 @@ An operator can open Settings → Shortcuts, see every documented action with it
 
 ## Subtasks
 
-- [ ] 03.1 Split Settings into General and Shortcuts panes with HeroUI Tabs; keep General prefs and import/export.
-- [ ] 03.2 List the full catalog with current chords and a visible loop vs chrome-only distinction.
-- [ ] 03.3 Capture a modifier chord, refuse illegal/duplicate, cancel on Escape without closing Settings.
-- [ ] 03.4 Reset one row to the shipped default; block Shell dispatch while capturing.
-- [ ] 03.5 Add i18n for all `LOCALES` and run focused Vitest plus `pnpm typecheck` to terminal exit.
+- [x] 03.1 Split Settings into General and Shortcuts panes with HeroUI Tabs; keep General prefs and import/export.
+- [x] 03.2 List the full catalog with current chords and a visible loop vs chrome-only distinction.
+- [x] 03.3 Capture a modifier chord, refuse illegal/duplicate, cancel on Escape without closing Settings.
+- [x] 03.4 Reset one row to the shipped default; block Shell dispatch while capturing.
+- [x] 03.5 Add i18n for all `LOCALES` and run focused Vitest plus `pnpm typecheck` to terminal exit.
 
 ## Implementation Details
 
@@ -124,8 +124,8 @@ Follow TechSpec Contracts (`displayShortcut`, capture vs overlay), Architecture 
 
 ### Unit Tests
 
-- [ ] Given each `LOCALES` value, when Shortcuts strings are translated, then keys exist and non-English locales are not leftover English for new labels.
-- [ ] Given `shortcutConflict` / `displayShortcut`, when a taken chord or slot occupancy is checked, then the occupying command is returned (helpers already in task_01; add UI-facing cases only if new wrappers appear).
+- [x] Given each `LOCALES` value, when Shortcuts strings are translated, then keys exist and non-English locales are not leftover English for new labels.
+- [x] Given `shortcutConflict` / `displayShortcut`, when a taken chord or slot occupancy is checked, then the occupying command is returned (helpers already in task_01; add UI-facing cases only if new wrappers appear).
 
 ### Integration Tests
 

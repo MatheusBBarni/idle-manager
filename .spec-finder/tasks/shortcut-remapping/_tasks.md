@@ -6,7 +6,7 @@ Canonical execution order. Numeric IDs are the run order. Parallelizable tasks s
 |---|---|---|---|---|---|---|
 | task_01 | Persist the full shortcut map | US-08 | backend | high | [] | completed |
 | task_02 | Honor remapped chords on loop and chrome paths | US-02 | backend | high | [task_01] | completed |
-| task_03 | Ship Settings Shortcuts tab with capture and reset | US-01 | frontend | high | [task_02] | pending |
+| task_03 | Ship Settings Shortcuts tab with capture and reset | US-01 | frontend | high | [task_02] | completed |
 
 ## Execution order
 

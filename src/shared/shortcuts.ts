@@ -211,6 +211,18 @@ export function displayShortcut(chord: ShortcutChord, platform: 'darwin' | 'win'
   return parts.join('+')
 }
 
+export function displayShortcutLabel(
+  command: ShortcutCommand,
+  chord: ShortcutChord,
+  platform: 'darwin' | 'win'
+): string {
+  const shown = displayShortcut(chord, platform)
+  if (command !== 'account-slot') {
+    return shown
+  }
+  return shown.endsWith('1') ? `${shown.slice(0, -1)}1…9` : shown
+}
+
 export function commandScope(command: ShortcutCommand): ShortcutScope {
   return LOOP_SET.has(command) ? 'loop' : 'chrome'
 }
