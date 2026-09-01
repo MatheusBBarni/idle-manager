@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 title: Honor remapped chords on loop and chrome paths
 type: backend
 complexity: high
@@ -81,11 +81,11 @@ After `prefs/shortcut` changes a command, the next matching key runs that action
 
 ## Subtasks
 
-- [ ] 02.1 Point the loop interceptor at `matchShortcut` + snapshot map without new attach sites.
-- [ ] 02.2 Point Shell chrome keydown at `matchShortcut` + `chrome` scope for the documented chrome catalog.
-- [ ] 02.3 Keep overlay/editable skips and unmatched keys reaching the game.
-- [ ] 02.4 Remove frozen live-match duplication so defaults cannot drift from the shared map.
-- [ ] 02.5 Run focused Vitest and `pnpm typecheck` to terminal exit.
+- [x] 02.1 Point the loop interceptor at `matchShortcut` + snapshot map without new attach sites.
+- [x] 02.2 Point Shell chrome keydown at `matchShortcut` + `chrome` scope for the documented chrome catalog.
+- [x] 02.3 Keep overlay/editable skips and unmatched keys reaching the game.
+- [x] 02.4 Remove frozen live-match duplication so defaults cannot drift from the shared map.
+- [x] 02.5 Run focused Vitest and `pnpm typecheck` to terminal exit.
 
 ## Implementation Details
 
@@ -123,11 +123,11 @@ Follow TechSpec Contracts (scopes, matcher rules, `tab-next` shift invert, slot 
 
 ### Unit Tests
 
-- [ ] Given a custom loop chord on `account-create` in the map, when `matchShortcut(..., 'loop')`, then `account-create`; the shipped create chord → `null` unless reassigned.
-- [ ] Given that same custom chord, when `matchShortcut(..., 'chrome')`, then `null`.
-- [ ] Given a custom `tab-new` chord, when chrome scope, then `tab-new`; loop scope → `null`.
-- [ ] Given default map, when shipped loop and chrome chords are matched in their scopes, then the same commands as today.
-- [ ] Given wrap/create helpers, when `nextAccountId` / `keyboardCreateActions` run, then existing task_01-era behavior is unchanged.
+- [x] Given a custom loop chord on `account-create` in the map, when `matchShortcut(..., 'loop')`, then `account-create`; the shipped create chord → `null` unless reassigned.
+- [x] Given that same custom chord, when `matchShortcut(..., 'chrome')`, then `null`.
+- [x] Given a custom `tab-new` chord, when chrome scope, then `tab-new`; loop scope → `null`.
+- [x] Given default map, when shipped loop and chrome chords are matched in their scopes, then the same commands as today.
+- [x] Given wrap/create helpers, when `nextAccountId` / `keyboardCreateActions` run, then existing task_01-era behavior is unchanged.
 
 ### Integration Tests
 
