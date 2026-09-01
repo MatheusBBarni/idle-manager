@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 title: Journal Windows don't-paint knobs
 type: spike
 complexity: medium

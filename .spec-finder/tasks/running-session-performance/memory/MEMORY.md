@@ -2,7 +2,7 @@
 
 ## Current State
 
-task_01 and task_02 implemented. task_03–task_04 pending.
+task_01–task_03 done. task_04 pending.
 
 ## Shared Decisions
 
@@ -16,8 +16,8 @@ task_01 and task_02 implemented. task_03–task_04 pending.
 ## Open Risks
 
 - GPU vs Task Manager (G-03) is dogfood, not CI.
+- Don't-paint cannot be evidenced on this Darwin host.
 
 ## Handoffs
 
-- task_03: chrome totals are whole-app + nullable GPU; journal those next to Task Manager. Do not edit `views.ts` paint policy.
-- task_04: wait for task_03 pass/fail; warning and metrics chrome already ship.
+- task_04: **knob 1 fail, knob 2 fail**. Do not change `views.ts` / `index.ts` paint policy. Ship is metrics + warning only (documented non-ship of diet).

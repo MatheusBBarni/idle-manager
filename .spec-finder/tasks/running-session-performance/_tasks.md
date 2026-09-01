@@ -6,7 +6,7 @@ Canonical execution order. Numeric IDs are the run order. Parallelizable tasks s
 |---|---|---|---|---|---|---|
 | task_01 | Show whole-app cost in chrome | US-05 | frontend | high | [] | completed |
 | task_02 | Warn on 7th running start | US-06 | frontend | medium | [task_01] | completed |
-| task_03 | Journal Windows don't-paint knobs | F-07 | spike | medium | [task_01] | pending |
+| task_03 | Journal Windows don't-paint knobs | F-07 | spike | medium | [task_01] | completed |
 | task_04 | Don't-paint knobs that passed | US-01 | backend | medium | [task_03] | pending |
 
 ## Execution order
