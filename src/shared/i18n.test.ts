@@ -103,6 +103,8 @@ const frozenEn: Record<Exclude<MessageKey, 'localeEs' | 'localeZhHans'>, string>
   minimize: 'Minimize',
   maximize: 'Maximize',
   closeWindow: 'Close',
+  quit: 'Quit',
+  trayRestore: 'Restore',
   runningCount: 'running',
   runningStartWarning: '7+ running may stress this PC',
   sleepBlocked: 'Sleep blocked',
@@ -214,6 +216,8 @@ const frozenPt: Record<Exclude<MessageKey, 'localeEs' | 'localeZhHans'>, string>
   minimize: 'Minimizar',
   maximize: 'Maximizar',
   closeWindow: 'Fechar',
+  quit: 'Sair',
+  trayRestore: 'Restaurar',
   runningCount: 'em execução',
   runningStartWarning: '7+ em execução podem sobrecarregar este PC',
   sleepBlocked: 'Suspensão bloqueada',
@@ -284,6 +288,17 @@ describe('i18n', () => {
     for (const locale of ['pt', 'es', 'zh-Hans'] as const) {
       expect(t(locale, 'sleepBlocked').length).toBeGreaterThan(0)
       expect(t(locale, 'sleepBlocked')).not.toBe(t('en', 'sleepBlocked'))
+    }
+  })
+
+  it('has quit and trayRestore in every locale', () => {
+    expect(t('en', 'quit')).toBe('Quit')
+    expect(t('en', 'trayRestore')).toBe('Restore')
+    for (const locale of ['pt', 'es', 'zh-Hans'] as const) {
+      expect(t(locale, 'quit').length).toBeGreaterThan(0)
+      expect(t(locale, 'quit')).not.toBe(t('en', 'quit'))
+      expect(t(locale, 'trayRestore').length).toBeGreaterThan(0)
+      expect(t(locale, 'trayRestore')).not.toBe(t('en', 'trayRestore'))
     }
   })
 

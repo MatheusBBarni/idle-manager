@@ -157,6 +157,11 @@ function GeneralSettings() {
           {t(locale, 'importGameList')}
         </Button>
       </div>
+      <div>
+        <Button size="sm" variant="secondary" onPress={() => void window.opsource.windowControl('quit')}>
+          {t(locale, 'quit')}
+        </Button>
+      </div>
     </div>
   )
 }

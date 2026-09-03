@@ -12,6 +12,7 @@ import { attachAccountLoop, bindAccountLoop } from './accountLoop'
 import { verifyIsolation } from './isolationVerify'
 import { collectMetrics } from './metrics'
 import { loadSnapshot, saveSnapshot } from './persistence'
+import { beginQuit } from './appSession'
 import { stopSleepBlock, syncSleepBlock } from './sleepBlock'
 import { handleUpdateCommand, startUpdater } from './updater'
 import {
@@ -221,6 +222,10 @@ function registerIpc(): void {
     applyStage(report)
   })
   ipcMain.handle('ops:window', (_event, command: WindowCommand) => {
+    if (command === 'quit') {
+      beginQuit()
+      return false
+    }
     if (!mainWindow) {
       return false
     }
