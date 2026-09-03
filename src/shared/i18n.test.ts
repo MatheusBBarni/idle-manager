@@ -104,6 +104,7 @@ const frozenEn: Record<Exclude<MessageKey, 'localeEs' | 'localeZhHans'>, string>
   closeWindow: 'Close',
   runningCount: 'running',
   runningStartWarning: '7+ running may stress this PC',
+  sleepBlocked: 'Sleep blocked',
   localePt: 'Português',
   localeEn: 'English',
   urlBar: 'Address',
@@ -213,6 +214,7 @@ const frozenPt: Record<Exclude<MessageKey, 'localeEs' | 'localeZhHans'>, string>
   closeWindow: 'Fechar',
   runningCount: 'em execução',
   runningStartWarning: '7+ em execução podem sobrecarregar este PC',
+  sleepBlocked: 'Suspensão bloqueada',
   localePt: 'Português',
   localeEn: 'English',
   urlBar: 'Endereço',
@@ -273,6 +275,14 @@ describe('i18n', () => {
     expect(t('pt', 'importGameList')).not.toBe(t('en', 'importGameList'))
     expect(t('pt', 'exportGameList')).not.toMatch(/export game list/i)
     expect(t('pt', 'importGameList')).not.toMatch(/import game list/i)
+  })
+
+  it('uses Sleep blocked in English and distinct copy in the other locales', () => {
+    expect(t('en', 'sleepBlocked')).toBe('Sleep blocked')
+    for (const locale of ['pt', 'es', 'zh-Hans'] as const) {
+      expect(t(locale, 'sleepBlocked').length).toBeGreaterThan(0)
+      expect(t(locale, 'sleepBlocked')).not.toBe(t('en', 'sleepBlocked'))
+    }
   })
 
   it('has getting, apply, and later copy in both locales', () => {

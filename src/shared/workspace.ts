@@ -123,6 +123,10 @@ export function activeAccount(snapshot: WorkspaceSnapshot): Account | null {
   return snapshot.accounts[tab.activeAccountId] ?? null
 }
 
+export function hasRunningAccount(snapshot: WorkspaceSnapshot): boolean {
+  return Object.values(snapshot.accounts).some((account) => account.status === 'running')
+}
+
 export function accountIdsToWipe(snapshot: WorkspaceSnapshot, action: WorkspaceAction): string[] {
   if (action.type === 'account/delete') {
     return [action.id]

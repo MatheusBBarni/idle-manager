@@ -4,7 +4,7 @@ Canonical execution order. Numeric IDs are the run order. Parallelizable tasks s
 
 | ID | Title | Primary slice | Type | Complexity | Dependencies | Status |
 |---|---|---|---|---|---|---|
-| task_01 | Show sleep-blocked hint from the running set | US-02 | frontend | medium | [] | pending |
+| task_01 | Show sleep-blocked hint from the running set | US-02 | frontend | medium | [] | completed |
 | task_02 | Block OS sleep while any account is running and release on last close or quit | US-01 | backend | medium | [task_01] | pending |
 
 ## Execution order

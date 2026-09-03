@@ -11,6 +11,7 @@ import {
   exportMetadata,
   gameListImportActions,
   lastArchivedTab,
+  hasRunningAccount,
   parseGameList,
   parseSnapshot,
   snapshotFromImport,
@@ -397,6 +398,37 @@ describe('chrome locale allowlist', () => {
     let en = applyAction(withTab(), { type: 'prefs/locale', locale: 'en' })
     en = applyAction(en, { type: 'account/create', tabId: 'tab-gengar', id: 'acc-en' })
     expect(en.accounts['acc-en']?.name).toBe('Account 1')
+  })
+})
+
+describe('hasRunningAccount', () => {
+  it('is false on an empty snapshot', () => {
+    expect(hasRunningAccount(emptySnapshot())).toBe(false)
+  })
+
+  it('is true when one account is running', () => {
+    let state = withTab()
+    state = applyAction(state, { type: 'account/create', tabId: 'tab-gengar', id: 'acc-run', name: 'Run' })
+    state = applyAction(state, { type: 'account/setStatus', id: 'acc-run', status: 'running' })
+    expect(hasRunningAccount(state)).toBe(true)
+  })
+
+  it('is true when the running account is popped out', () => {
+    let state = withTab()
+    state = applyAction(state, { type: 'account/create', tabId: 'tab-gengar', id: 'acc-run', name: 'Run' })
+    state = applyAction(state, { type: 'account/setStatus', id: 'acc-run', status: 'running' })
+    state = applyAction(state, { type: 'account/setPoppedOut', id: 'acc-run', poppedOut: true })
+    expect(state.accounts['acc-run']?.poppedOut).toBe(true)
+    expect(hasRunningAccount(state)).toBe(true)
+  })
+
+  it('is false when every account is closed', () => {
+    let state = withTab()
+    state = applyAction(state, { type: 'account/create', tabId: 'tab-gengar', id: 'acc-a', name: 'A' })
+    state = applyAction(state, { type: 'account/create', tabId: 'tab-gengar', id: 'acc-b', name: 'B' })
+    expect(state.accounts['acc-a']?.status).toBe('closed')
+    expect(state.accounts['acc-b']?.status).toBe('closed')
+    expect(hasRunningAccount(state)).toBe(false)
   })
 })
 
