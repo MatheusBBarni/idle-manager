@@ -12,7 +12,14 @@ import { attachAccountLoop, bindAccountLoop } from './accountLoop'
 import { verifyIsolation } from './isolationVerify'
 import { collectMetrics } from './metrics'
 import { loadSnapshot, saveSnapshot } from './persistence'
-import { beginQuit, bindAppSession, interceptClose, restoreMainWindow, syncDismissedSession } from './appSession'
+import {
+  attachMainWindow,
+  beginQuit,
+  bindAppSession,
+  detachMainWindow,
+  focusOrRestoreMainWindow,
+  syncDismissedSession
+} from './appSession'
 import { stopSleepBlock, syncSleepBlock } from './sleepBlock'
 import { handleUpdateCommand, startUpdater } from './updater'
 import {
@@ -49,24 +56,6 @@ const gotTheLock = app.requestSingleInstanceLock()
 let mainWindow: BrowserWindow | null = null
 let snapshot: WorkspaceSnapshot = emptySnapshot()
 let saveTimer: NodeJS.Timeout | null = null
-
-if (!gotTheLock) {
-  app.quit()
-} else {
-  app.on('second-instance', () => {
-    if (!mainWindow || mainWindow.isDestroyed()) {
-      return
-    }
-    if (!mainWindow.isVisible()) {
-      restoreMainWindow()
-      return
-    }
-    if (mainWindow.isMinimized()) {
-      mainWindow.restore()
-    }
-    mainWindow.focus()
-  })
-}
 
 function scheduleSave(): void {
   if (saveTimer) {
@@ -143,18 +132,15 @@ function createWindow(): void {
   })
 
   setChromeWindow(mainWindow)
+  attachMainWindow(mainWindow)
   Menu.setApplicationMenu(null)
   attachAccountLoop(mainWindow.webContents, 'chrome')
 
   mainWindow.on('ready-to-show', () => mainWindow?.show())
   mainWindow.on('resized', persistBounds)
   mainWindow.on('moved', persistBounds)
-  mainWindow.on('close', (event) => {
-    if (interceptClose()) {
-      event.preventDefault()
-    }
-  })
   mainWindow.on('closed', () => {
+    detachMainWindow()
     setChromeWindow(null)
     mainWindow = null
   })
@@ -319,10 +305,7 @@ function registerIpc(): void {
   ipcMain.handle('ops:updateCommand', (_event, command: UpdateCommand) => handleUpdateCommand(command))
 }
 
-app.whenReady().then(async () => {
-  if (!gotTheLock) {
-    return
-  }
+async function startPrimary(): Promise<void> {
   if (verifying) {
     const code = await verifyIsolation()
     app.exit(code)
@@ -335,7 +318,6 @@ app.whenReady().then(async () => {
 
   snapshot = await loadSnapshot()
   bindAppSession({
-    getWindow: () => mainWindow,
     getSnapshot: () => snapshot,
     iconPath
   })
@@ -399,27 +381,30 @@ app.whenReady().then(async () => {
     const payload = collectMetrics(liveViews())
     mainWindow.webContents.send('ops:metrics', payload)
   }, 1000)
-})
+}
 
-app.on('before-quit', () => {
-  stopSleepBlock()
-  void flushAll()
-  void saveSnapshot(snapshot)
-})
-
-app.on('window-all-closed', () => {
-  destroyAllViews()
-  if (process.platform !== 'darwin') {
-    app.quit()
-  }
-})
-
-app.on('activate', () => {
-  if (!gotTheLock) {
-    return
-  }
-  if (BrowserWindow.getAllWindows().length === 0) {
-    createWindow()
-    syncViews(snapshot)
-  }
-})
+if (!gotTheLock) {
+  app.quit()
+} else {
+  app.on('second-instance', focusOrRestoreMainWindow)
+  app.whenReady().then(() => {
+    void startPrimary()
+  })
+  app.on('before-quit', () => {
+    stopSleepBlock()
+    void flushAll()
+    void saveSnapshot(snapshot)
+  })
+  app.on('window-all-closed', () => {
+    destroyAllViews()
+    if (process.platform !== 'darwin') {
+      app.quit()
+    }
+  })
+  app.on('activate', () => {
+    if (BrowserWindow.getAllWindows().length === 0) {
+      createWindow()
+      syncViews(snapshot)
+    }
+  })
+}

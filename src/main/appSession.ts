@@ -6,68 +6,52 @@ import type { Locale, WorkspaceSnapshot } from '@shared/types'
 let quitting = false
 let trayReady = false
 let tray: Tray | null = null
+let mainWindow: BrowserWindow | null = null
 let iconPath = ''
-let getWindow: () => BrowserWindow | null = () => null
-let getSnapshot: () => WorkspaceSnapshot | null = () => null
-
-export function isQuitting(): boolean {
-  return quitting
+let getSnapshot: () => WorkspaceSnapshot = () => {
+  throw new Error('appSession not bound')
 }
 
 export function noteTrayReady(ok: boolean): void {
   trayReady = ok
 }
 
-export function beginQuit(): void {
+export function allowClose(): void {
   quitting = true
   destroyTray()
+}
+
+export function beginQuit(): void {
+  allowClose()
   app.quit()
 }
 
 export function bindAppSession(options: {
-  getWindow: () => BrowserWindow | null
   getSnapshot: () => WorkspaceSnapshot
   iconPath: string
 }): void {
-  getWindow = options.getWindow
   getSnapshot = options.getSnapshot
   iconPath = options.iconPath
   noteTrayReady(process.platform === 'win32')
 }
 
-export function interceptClose(): boolean {
-  const snapshot = getSnapshot()
-  if (!snapshot) {
-    return false
-  }
-  const runningCount = runningAccountCount(snapshot)
-  if (
-    !shouldDismissToTray({
-      platform: process.platform,
-      isQuitting: quitting,
-      trayReady,
-      runningCount
-    })
-  ) {
-    return false
-  }
-  if (!showTray(snapshot)) {
-    noteTrayReady(false)
-    return false
-  }
-  const win = getWindow()
-  if (!win || win.isDestroyed()) {
-    return false
-  }
-  win.hide()
-  win.setSkipTaskbar(true)
-  return true
+export function attachMainWindow(win: BrowserWindow): void {
+  mainWindow = win
+  win.on('close', (event) => {
+    if (dismissToTray()) {
+      event.preventDefault()
+    }
+  })
+}
+
+export function detachMainWindow(): void {
+  mainWindow = null
 }
 
 export function restoreMainWindow(): void {
   destroyTray()
-  const win = getWindow()
-  if (!win || win.isDestroyed()) {
+  const win = liveWindow()
+  if (!win) {
     return
   }
   win.setSkipTaskbar(false)
@@ -75,22 +59,67 @@ export function restoreMainWindow(): void {
   win.focus()
 }
 
+export function focusOrRestoreMainWindow(): void {
+  const win = liveWindow()
+  if (!win) {
+    return
+  }
+  if (!win.isVisible()) {
+    restoreMainWindow()
+    return
+  }
+  if (win.isMinimized()) {
+    win.restore()
+  }
+  win.focus()
+}
+
 export function syncDismissedSession(snapshot: WorkspaceSnapshot): void {
   if (!tray || tray.isDestroyed()) {
     return
   }
-  const runningCount = runningAccountCount(snapshot)
-  if (runningCount === 0) {
+  if (runningAccountCount(snapshot) === 0) {
     restoreMainWindow()
     return
   }
-  tray.setToolTip(trayTooltip(snapshot.locale, runningCount))
-  tray.setContextMenu(buildMenu(snapshot.locale))
+  decorateTray(snapshot)
 }
 
-function showTray(snapshot: WorkspaceSnapshot): boolean {
+function liveWindow(): BrowserWindow | null {
+  if (!mainWindow || mainWindow.isDestroyed()) {
+    return null
+  }
+  return mainWindow
+}
+
+function dismissToTray(): boolean {
+  const snapshot = getSnapshot()
+  if (
+    !shouldDismissToTray({
+      platform: process.platform,
+      isQuitting: quitting,
+      trayReady,
+      runningCount: runningAccountCount(snapshot)
+    })
+  ) {
+    return false
+  }
+  const win = liveWindow()
+  if (!win) {
+    return false
+  }
+  if (!ensureTray(snapshot)) {
+    noteTrayReady(false)
+    return false
+  }
+  win.hide()
+  win.setSkipTaskbar(true)
+  return true
+}
+
+function ensureTray(snapshot: WorkspaceSnapshot): boolean {
   if (tray && !tray.isDestroyed()) {
-    syncDismissedSession(snapshot)
+    decorateTray(snapshot)
     return true
   }
   try {
@@ -100,9 +129,8 @@ function showTray(snapshot: WorkspaceSnapshot): boolean {
       return false
     }
     tray = new Tray(image)
-    tray.setToolTip(trayTooltip(snapshot.locale, runningAccountCount(snapshot)))
-    tray.setContextMenu(buildMenu(snapshot.locale))
     tray.on('click', () => restoreMainWindow())
+    decorateTray(snapshot)
     noteTrayReady(true)
     return true
   } catch (error) {
@@ -110,6 +138,15 @@ function showTray(snapshot: WorkspaceSnapshot): boolean {
     tray = null
     return false
   }
+}
+
+function decorateTray(snapshot: WorkspaceSnapshot): void {
+  if (!tray || tray.isDestroyed()) {
+    return
+  }
+  const runningCount = runningAccountCount(snapshot)
+  tray.setToolTip(trayTooltip(snapshot.locale, runningCount))
+  tray.setContextMenu(buildMenu(snapshot.locale))
 }
 
 function buildMenu(locale: Locale): Menu {

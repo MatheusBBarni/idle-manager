@@ -1,5 +1,5 @@
 import electronUpdater, { type AppUpdater } from 'electron-updater'
-import { beginQuit } from './appSession'
+import { allowClose } from './appSession'
 import {
   reduceUpdateStatus,
   type UpdateCommand,
@@ -81,7 +81,7 @@ export async function handleUpdateCommand(command: UpdateCommand): Promise<void>
   }
   try {
     await persist()
-    beginQuit()
+    allowClose()
     getAutoUpdater().quitAndInstall()
   } catch (error) {
     console.error('updater apply failed', error)
