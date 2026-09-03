@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 title: Dismiss a live farm to the tray
 type: backend
 complexity: high
@@ -87,11 +87,11 @@ On Windows, Close must put a running farm out of the way without stopping ticks,
 
 ## Subtasks
 
-- [ ] 02.1 Add shared dismiss policy + tooltip tests (win32/running/tray/!quit vs all false paths).
-- [ ] 02.2 On win32 Close, hide + skipTaskbar + Tray when policy is true; fail closed otherwise.
-- [ ] 02.3 Restore and tray Quit; destroy tray when shown; handle runningCount → 0 while dismissed.
-- [ ] 02.4 Hook Apply so install uses `beginQuit` then `quitAndInstall`.
-- [ ] 02.5 Run shared tests and typecheck; record Windows dogfood or host limitation.
+- [x] 02.1 Add shared dismiss policy + tooltip tests (win32/running/tray/!quit vs all false paths).
+- [x] 02.2 On win32 Close, hide + skipTaskbar + Tray when policy is true; fail closed otherwise.
+- [x] 02.3 Restore and tray Quit; destroy tray when shown; handle runningCount → 0 while dismissed.
+- [x] 02.4 Hook Apply so install uses `beginQuit` then `quitAndInstall`.
+- [x] 02.5 Run shared tests and typecheck; record Windows dogfood or host limitation.
 
 ## Implementation Details
 
@@ -131,11 +131,11 @@ Reuse task_01 `beginQuit`, `quit`, and `trayRestore` keys. Do not re-own ipc/pre
 
 ### Unit Tests
 
-- [ ] Given `platform: 'win32'`, `isQuitting: false`, `trayReady: true`, `runningCount: 3`, when `shouldDismissToTray`, then true.
-- [ ] Given `platform: 'darwin'` or `'linux'`, same other flags, then false.
-- [ ] Given `runningCount: 0` or `isQuitting: true` or `trayReady: false`, then false.
-- [ ] Given a snapshot with mixed running/closed accounts, when `runningAccountCount`, then only `status === 'running'` is counted.
-- [ ] Given locale `en` and count `4`, when `trayTooltip`, then the string includes `4` and the `runningCount` copy.
+- [x] Given `platform: 'win32'`, `isQuitting: false`, `trayReady: true`, `runningCount: 3`, when `shouldDismissToTray`, then true.
+- [x] Given `platform: 'darwin'` or `'linux'`, same other flags, then false.
+- [x] Given `runningCount: 0` or `isQuitting: true` or `trayReady: false`, then false.
+- [x] Given a snapshot with mixed running/closed accounts, when `runningAccountCount`, then only `status === 'running'` is counted.
+- [x] Given locale `en` and count `4`, when `trayTooltip`, then the string includes `4` and the `runningCount` copy.
 
 ### Integration Tests
 

@@ -12,7 +12,7 @@ import { attachAccountLoop, bindAccountLoop } from './accountLoop'
 import { verifyIsolation } from './isolationVerify'
 import { collectMetrics } from './metrics'
 import { loadSnapshot, saveSnapshot } from './persistence'
-import { beginQuit } from './appSession'
+import { beginQuit, bindAppSession, interceptClose, syncDismissedSession } from './appSession'
 import { stopSleepBlock, syncSleepBlock } from './sleepBlock'
 import { handleUpdateCommand, startUpdater } from './updater'
 import {
@@ -76,6 +76,7 @@ function applyDispatchEffects(action: WorkspaceAction, before: WorkspaceSnapshot
 function afterSnapshotWrite(): void {
   syncViews(snapshot)
   syncSleepBlock(snapshot)
+  syncDismissedSession(snapshot)
   broadcast()
   scheduleSave()
 }
@@ -129,6 +130,11 @@ function createWindow(): void {
   mainWindow.on('ready-to-show', () => mainWindow?.show())
   mainWindow.on('resized', persistBounds)
   mainWindow.on('moved', persistBounds)
+  mainWindow.on('close', (event) => {
+    if (interceptClose()) {
+      event.preventDefault()
+    }
+  })
   mainWindow.on('closed', () => {
     setChromeWindow(null)
     mainWindow = null
@@ -306,6 +312,11 @@ app.whenReady().then(async () => {
   }
 
   snapshot = await loadSnapshot()
+  bindAppSession({
+    getWindow: () => mainWindow,
+    getSnapshot: () => snapshot,
+    iconPath
+  })
   syncSleepBlock(snapshot)
   if (snapshot.launchAtStartup) {
     app.setLoginItemSettings({ openAtLogin: true })
