@@ -51,6 +51,7 @@ export type WorkspaceAction =
   | { type: 'account/setStatus'; id: string; status: AccountStatus }
   | { type: 'account/stopTab'; tabId: string }
   | { type: 'account/stopFarm' }
+  | { type: 'account/restoreLastSet' }
   | { type: 'account/setUrl'; id: string; url: string }
   | { type: 'account/setMuted'; id: string; muted: boolean }
   | { type: 'account/setZoom'; id: string; zoomFactor: number }
@@ -489,6 +490,19 @@ function reduceWorkspace(snapshot: WorkspaceSnapshot, action: WorkspaceAction): 
       let next = snapshot
       for (const account of running) {
         next = replaceAccount(next, account.id, { status: 'closed', poppedOut: false })
+      }
+      return next
+    }
+    case 'account/restoreLastSet': {
+      const toStart = snapshot.lastRunningAccountIds.filter(
+        (id) => snapshot.accounts[id]?.status === 'closed'
+      )
+      if (toStart.length === 0) {
+        return snapshot
+      }
+      let next = snapshot
+      for (const id of toStart) {
+        next = replaceAccount(next, id, { status: 'running' })
       }
       return next
     }

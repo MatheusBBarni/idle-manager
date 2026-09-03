@@ -1,4 +1,4 @@
-import { CircleStop, EllipsisVertical, PanelLeftClose, PanelLeftOpen, Play, Plus, Square } from 'lucide-react'
+import { CircleStop, EllipsisVertical, PanelLeftClose, PanelLeftOpen, Play, Plus, RotateCcw, Square } from 'lucide-react'
 import { Button, Dropdown, Label } from '@heroui/react'
 import { ACCOUNT_COLORS, type Account } from '@shared/types'
 import { formatAge, formatBytes, formatCpu, t } from '@shared/i18n'
@@ -277,6 +277,16 @@ export function Sidebar() {
           }}
         >
           <CircleStop className="size-4" />
+        </Button>
+        <Button
+          isIconOnly
+          size="sm"
+          aria-label={t(locale, 'restoreLastSet')}
+          onPress={() => {
+            void dispatch({ type: 'account/restoreLastSet' })
+          }}
+        >
+          <RotateCcw className="size-4" />
         </Button>
       </div>
     </aside>

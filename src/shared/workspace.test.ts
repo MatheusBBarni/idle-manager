@@ -678,3 +678,68 @@ describe('stopFarm', () => {
     expect(applyAction(state, { type: 'account/stopFarm' })).toBe(state)
   })
 })
+
+describe('restoreLastSet', () => {
+  it('starts last-set members only and leaves unused closed jars closed', () => {
+    let state = withTab()
+    state = applyAction(state, { type: 'account/create', tabId: 'tab-gengar', id: 'acc-a' })
+    state = applyAction(state, { type: 'account/create', tabId: 'tab-gengar', id: 'acc-b' })
+    state = applyAction(state, { type: 'account/create', tabId: 'tab-gengar', id: 'acc-c' })
+    state = applyAction(state, { type: 'account/setStatus', id: 'acc-a', status: 'running' })
+    state = applyAction(state, { type: 'account/setStatus', id: 'acc-b', status: 'running' })
+    state = applyAction(state, { type: 'account/stopFarm' })
+    const action = { type: 'account/restoreLastSet' as const }
+    expect(accountIdsToWipe(state, action)).toEqual([])
+    state = applyAction(state, action)
+    expect(state.accounts['acc-a']?.status).toBe('running')
+    expect(state.accounts['acc-b']?.status).toBe('running')
+    expect(state.accounts['acc-c']?.status).toBe('closed')
+  })
+
+  it('skips deleted ids and does not recreate them', () => {
+    let state = withTab()
+    state = applyAction(state, { type: 'account/create', tabId: 'tab-gengar', id: 'acc-a' })
+    state = applyAction(state, { type: 'account/create', tabId: 'tab-gengar', id: 'acc-b' })
+    state = applyAction(state, { type: 'account/setStatus', id: 'acc-a', status: 'running' })
+    state = applyAction(state, { type: 'account/setStatus', id: 'acc-b', status: 'running' })
+    state = applyAction(state, { type: 'account/stopFarm' })
+    state = applyAction(state, { type: 'account/delete', id: 'acc-a' })
+    const beforeCount = Object.keys(state.accounts).length
+    state = applyAction(state, { type: 'account/restoreLastSet' })
+    expect(state.accounts['acc-a']).toBeUndefined()
+    expect(state.accounts['acc-b']?.status).toBe('running')
+    expect(Object.keys(state.accounts)).toHaveLength(beforeCount)
+  })
+
+  it('returns the same snapshot when there is nothing to start', () => {
+    const empty = emptySnapshot()
+    expect(applyAction(empty, { type: 'account/restoreLastSet' })).toBe(empty)
+    let state = withTab()
+    state = applyAction(state, { type: 'account/create', tabId: 'tab-gengar', id: 'acc-a' })
+    state = applyAction(state, { type: 'account/setStatus', id: 'acc-a', status: 'running' })
+    state = applyAction(state, { type: 'account/stopFarm' })
+    state = applyAction(state, { type: 'account/delete', id: 'acc-a' })
+    expect(applyAction(state, { type: 'account/restoreLastSet' })).toBe(state)
+  })
+
+  it('does not change activeTabId when restoring accounts on another tab', () => {
+    let state = withTab()
+    state = applyAction(state, {
+      type: 'tab/create',
+      id: 'tab-other',
+      name: 'Other',
+      baseUrl: 'https://example.com'
+    })
+    state = applyAction(state, { type: 'account/create', tabId: 'tab-gengar', id: 'acc-a' })
+    state = applyAction(state, { type: 'account/create', tabId: 'tab-other', id: 'acc-b' })
+    state = applyAction(state, { type: 'account/setStatus', id: 'acc-a', status: 'running' })
+    state = applyAction(state, { type: 'account/setStatus', id: 'acc-b', status: 'running' })
+    state = applyAction(state, { type: 'account/stopFarm' })
+    state = applyAction(state, { type: 'tab/activate', id: 'tab-gengar' })
+    expect(state.activeTabId).toBe('tab-gengar')
+    state = applyAction(state, { type: 'account/restoreLastSet' })
+    expect(state.activeTabId).toBe('tab-gengar')
+    expect(state.accounts['acc-a']?.status).toBe('running')
+    expect(state.accounts['acc-b']?.status).toBe('running')
+  })
+})
