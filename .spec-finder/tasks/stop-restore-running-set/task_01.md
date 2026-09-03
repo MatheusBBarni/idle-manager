@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 title: Stop this tab and remember last-set
 type: backend
 complexity: high
@@ -73,11 +73,11 @@ A farm operator can put every running account in the **current tab** down in one
 
 ## Subtasks
 
-- [ ] 01.1 Snapshot field, parse/export/import defaults per Contracts
-- [ ] 01.2 Last-set algebra on `setStatus` / delete / tab delete
-- [ ] 01.3 `account/stopTab` closes that tab’s running accounts in one commit and freezes last-set only if the farm is empty afterward
-- [ ] 01.4 Expanded sidebar Stop this tab; Start all loop untouched
-- [ ] 01.5 Four-locale i18n + focused tests and repository gates
+- [x] 01.1 Snapshot field, parse/export/import defaults per Contracts
+- [x] 01.2 Last-set algebra on `setStatus` / delete / tab delete
+- [x] 01.3 `account/stopTab` closes that tab’s running accounts in one commit and freezes last-set only if the farm is empty afterward
+- [x] 01.4 Expanded sidebar Stop this tab; Start all loop untouched
+- [x] 01.5 Four-locale i18n + focused tests and repository gates
 
 ## Implementation Details
 

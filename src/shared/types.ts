@@ -69,6 +69,7 @@ export type WorkspaceSnapshot = {
   launchAtStartup: boolean
   blockSleepWhileRunning: boolean
   shortcuts: ShortcutMap
+  lastRunningAccountIds: string[]
 }
 
 export type AccountMetrics = {

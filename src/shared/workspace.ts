@@ -49,6 +49,7 @@ export type WorkspaceAction =
   | { type: 'account/reorder'; tabId: string; orderedIds: string[] }
   | { type: 'account/activate'; id: string }
   | { type: 'account/setStatus'; id: string; status: AccountStatus }
+  | { type: 'account/stopTab'; tabId: string }
   | { type: 'account/setUrl'; id: string; url: string }
   | { type: 'account/setMuted'; id: string; muted: boolean }
   | { type: 'account/setZoom'; id: string; zoomFactor: number }
@@ -83,7 +84,8 @@ export function emptySnapshot(): WorkspaceSnapshot {
     windowBounds: null,
     launchAtStartup: false,
     blockSleepWhileRunning: true,
-    shortcuts: cloneShortcutMap(SHORTCUT_DEFAULTS)
+    shortcuts: cloneShortcutMap(SHORTCUT_DEFAULTS),
+    lastRunningAccountIds: []
   }
 }
 
@@ -143,6 +145,72 @@ export function accountIdsToWipe(snapshot: WorkspaceSnapshot, action: WorkspaceA
       .map((account) => account.id)
   }
   return []
+}
+
+function sameStringArray(left: string[], right: string[]): boolean {
+  return left.length === right.length && left.every((id, index) => id === right[index])
+}
+
+function runningAccountIds(snapshot: WorkspaceSnapshot): string[] {
+  const seen = new Set<string>()
+  const ids: string[] = []
+  const pushIfRunning = (id: string) => {
+    if (seen.has(id)) {
+      return
+    }
+    if (snapshot.accounts[id]?.status !== 'running') {
+      return
+    }
+    seen.add(id)
+    ids.push(id)
+  }
+  for (const tab of snapshot.tabs) {
+    for (const id of tab.accountOrder) {
+      pushIfRunning(id)
+    }
+  }
+  for (const id of Object.keys(snapshot.accounts)) {
+    pushIfRunning(id)
+  }
+  return ids
+}
+
+function filterExistingAccountIds(ids: string[], accounts: Record<string, Account>): string[] {
+  const seen = new Set<string>()
+  const next: string[] = []
+  for (const id of ids) {
+    if (!id || seen.has(id) || !accounts[id]) {
+      continue
+    }
+    seen.add(id)
+    next.push(id)
+  }
+  return next
+}
+
+function parseLastRunningAccountIds(raw: unknown, accounts: Record<string, Account>): string[] {
+  if (!Array.isArray(raw)) {
+    return []
+  }
+  return filterExistingAccountIds(
+    raw.filter((item): item is string => typeof item === 'string'),
+    accounts
+  )
+}
+
+function withLastRunningAccountIds(
+  before: WorkspaceSnapshot,
+  after: WorkspaceSnapshot
+): WorkspaceSnapshot {
+  const beforeIds = runningAccountIds(before)
+  const afterIds = runningAccountIds(after)
+  const last =
+    afterIds.length > 0 ? afterIds : beforeIds.length > 0 ? beforeIds : before.lastRunningAccountIds
+  const nextLast = filterExistingAccountIds(last, after.accounts)
+  if (sameStringArray(nextLast, after.lastRunningAccountIds)) {
+    return after
+  }
+  return { ...after, lastRunningAccountIds: nextLast }
 }
 
 function nextColor(existing: Account[]): string {
@@ -252,7 +320,7 @@ function applyShortcutPref(
   }
 }
 
-export function applyAction(snapshot: WorkspaceSnapshot, action: WorkspaceAction): WorkspaceSnapshot {
+function reduceWorkspace(snapshot: WorkspaceSnapshot, action: WorkspaceAction): WorkspaceSnapshot {
   switch (action.type) {
     case 'tab/create': {
       const id = action.id ?? newId()
@@ -397,6 +465,21 @@ export function applyAction(snapshot: WorkspaceSnapshot, action: WorkspaceAction
       const poppedOut = action.status === 'closed' ? false : snapshot.accounts[action.id]?.poppedOut ?? false
       return replaceAccount(snapshot, action.id, { status: action.status, poppedOut })
     }
+    case 'account/stopTab': {
+      const tab = tabById(snapshot, action.tabId)
+      if (!tab) {
+        return snapshot
+      }
+      const running = accountsForTab(snapshot, tab.id).filter((account) => account.status === 'running')
+      if (running.length === 0) {
+        return snapshot
+      }
+      let next = snapshot
+      for (const account of running) {
+        next = replaceAccount(next, account.id, { status: 'closed', poppedOut: false })
+      }
+      return next
+    }
     case 'account/setUrl':
       return replaceAccount(snapshot, action.id, { url: normalizeUrl(action.url) })
     case 'account/setMuted':
@@ -447,6 +530,14 @@ export function applyAction(snapshot: WorkspaceSnapshot, action: WorkspaceAction
     default:
       return snapshot
   }
+}
+
+export function applyAction(snapshot: WorkspaceSnapshot, action: WorkspaceAction): WorkspaceSnapshot {
+  const next = reduceWorkspace(snapshot, action)
+  if (next === snapshot) {
+    return snapshot
+  }
+  return withLastRunningAccountIds(snapshot, next)
 }
 
 const LAYOUT_MODES = new Set<LayoutMode>(['grid', 'single', 'columns', 'rows', 'free'])
@@ -596,7 +687,8 @@ export function parseSnapshot(raw: unknown): WorkspaceSnapshot {
     windowBounds: asWindowBounds(raw.windowBounds),
     launchAtStartup: asBoolean(raw.launchAtStartup, false),
     blockSleepWhileRunning: asBoolean(raw.blockSleepWhileRunning, true),
-    shortcuts: normalizeShortcutMap(raw.shortcuts)
+    shortcuts: normalizeShortcutMap(raw.shortcuts),
+    lastRunningAccountIds: parseLastRunningAccountIds(raw.lastRunningAccountIds, accounts)
   }
 }
 
@@ -676,6 +768,7 @@ export function snapshotFromImport(raw: unknown): WorkspaceSnapshot {
   const imported = parseSnapshot(raw)
   return {
     ...imported,
+    lastRunningAccountIds: [],
     accounts: Object.fromEntries(
       Object.values(imported.accounts).map((account) => [
         account.id,

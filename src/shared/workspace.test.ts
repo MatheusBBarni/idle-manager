@@ -532,3 +532,107 @@ describe('shortcut map persistence', () => {
     expect(JSON.stringify(pack)).not.toMatch(/shortcuts/)
   })
 })
+
+describe('last running set and stopTab', () => {
+  it('closes only the target tab and never wipes', () => {
+    let state = withTab()
+    state = applyAction(state, {
+      type: 'tab/create',
+      id: 'tab-other',
+      name: 'Other',
+      baseUrl: 'https://example.com'
+    })
+    state = applyAction(state, { type: 'account/create', tabId: 'tab-gengar', id: 'acc-a' })
+    state = applyAction(state, { type: 'account/create', tabId: 'tab-gengar', id: 'acc-b' })
+    state = applyAction(state, { type: 'account/create', tabId: 'tab-other', id: 'acc-c' })
+    state = applyAction(state, { type: 'account/setStatus', id: 'acc-a', status: 'running' })
+    state = applyAction(state, { type: 'account/setStatus', id: 'acc-b', status: 'running' })
+    state = applyAction(state, { type: 'account/setStatus', id: 'acc-c', status: 'running' })
+    const action = { type: 'account/stopTab' as const, tabId: 'tab-gengar' }
+    expect(accountIdsToWipe(state, action)).toEqual([])
+    state = applyAction(state, action)
+    expect(state.accounts['acc-a']?.status).toBe('closed')
+    expect(state.accounts['acc-b']?.status).toBe('closed')
+    expect(state.accounts['acc-c']?.status).toBe('running')
+    expect(state.accounts['acc-a']?.poppedOut).toBe(false)
+    expect(state.accounts['acc-b']?.poppedOut).toBe(false)
+  })
+
+  it('freezes last-set to every running id when stopTab empties the farm', () => {
+    let state = withTab()
+    state = applyAction(state, { type: 'account/create', tabId: 'tab-gengar', id: 'acc-a' })
+    state = applyAction(state, { type: 'account/create', tabId: 'tab-gengar', id: 'acc-b' })
+    state = applyAction(state, { type: 'account/create', tabId: 'tab-gengar', id: 'acc-c' })
+    state = applyAction(state, { type: 'account/setStatus', id: 'acc-a', status: 'running' })
+    state = applyAction(state, { type: 'account/setStatus', id: 'acc-b', status: 'running' })
+    state = applyAction(state, { type: 'account/setStatus', id: 'acc-c', status: 'running' })
+    state = applyAction(state, { type: 'account/stopTab', tabId: 'tab-gengar' })
+    expect(state.lastRunningAccountIds).toEqual(['acc-a', 'acc-b', 'acc-c'])
+    expect(state.accounts['acc-a']?.status).toBe('closed')
+    expect(state.accounts['acc-b']?.status).toBe('closed')
+    expect(state.accounts['acc-c']?.status).toBe('closed')
+  })
+
+  it('shrinks last-set to remaining running ids on a hand close', () => {
+    let state = withTab()
+    state = applyAction(state, { type: 'account/create', tabId: 'tab-gengar', id: 'acc-a' })
+    state = applyAction(state, { type: 'account/create', tabId: 'tab-gengar', id: 'acc-b' })
+    state = applyAction(state, { type: 'account/setStatus', id: 'acc-a', status: 'running' })
+    state = applyAction(state, { type: 'account/setStatus', id: 'acc-b', status: 'running' })
+    expect(state.lastRunningAccountIds).toEqual(['acc-a', 'acc-b'])
+    state = applyAction(state, { type: 'account/setStatus', id: 'acc-a', status: 'closed' })
+    expect(state.lastRunningAccountIds).toEqual(['acc-b'])
+  })
+
+  it('parses missing last-set as empty, omits it from export, and clears it on import', () => {
+    expect(parseSnapshot({ version: 1, tabs: [], accounts: {} }).lastRunningAccountIds).toEqual([])
+    expect(
+      parseSnapshot({
+        version: 1,
+        tabs: [],
+        accounts: {},
+        lastRunningAccountIds: 'nope'
+      }).lastRunningAccountIds
+    ).toEqual([])
+    let state = withTab()
+    state = applyAction(state, { type: 'account/create', tabId: 'tab-gengar', id: 'acc-a' })
+    state = applyAction(state, { type: 'account/setStatus', id: 'acc-a', status: 'running' })
+    expect(state.lastRunningAccountIds).toEqual(['acc-a'])
+    expect(exportMetadata(state)).not.toHaveProperty('lastRunningAccountIds')
+    const imported = snapshotFromImport({
+      version: 1,
+      tabs: [{ id: 'tab-gengar', name: 'Gengar', baseUrl: 'https://gengar.com.br', accountOrder: ['acc-a'] }],
+      accounts: {
+        'acc-a': {
+          id: 'acc-a',
+          tabId: 'tab-gengar',
+          name: 'A',
+          color: '#FF6B35',
+          url: 'https://gengar.com.br',
+          status: 'running'
+        }
+      },
+      lastRunningAccountIds: ['acc-a']
+    })
+    expect(imported.lastRunningAccountIds).toEqual([])
+  })
+
+  it('returns the same snapshot when stopTab has no work', () => {
+    let state = withTab()
+    state = applyAction(state, { type: 'account/create', tabId: 'tab-gengar', id: 'acc-a' })
+    expect(applyAction(state, { type: 'account/stopTab', tabId: 'tab-gengar' })).toBe(state)
+    expect(applyAction(state, { type: 'account/stopTab', tabId: 'missing' })).toBe(state)
+  })
+
+  it('drops a deleted account from last-set', () => {
+    let state = withTab()
+    state = applyAction(state, { type: 'account/create', tabId: 'tab-gengar', id: 'acc-a' })
+    state = applyAction(state, { type: 'account/create', tabId: 'tab-gengar', id: 'acc-b' })
+    state = applyAction(state, { type: 'account/setStatus', id: 'acc-a', status: 'running' })
+    state = applyAction(state, { type: 'account/setStatus', id: 'acc-b', status: 'running' })
+    state = applyAction(state, { type: 'account/stopTab', tabId: 'tab-gengar' })
+    expect(state.lastRunningAccountIds).toEqual(['acc-a', 'acc-b'])
+    state = applyAction(state, { type: 'account/delete', id: 'acc-a' })
+    expect(state.lastRunningAccountIds).toEqual(['acc-b'])
+  })
+})
