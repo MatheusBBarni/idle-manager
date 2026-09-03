@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 title: Add Settings Quit that always exits
 type: frontend
 complexity: high
@@ -72,10 +72,10 @@ A live farm must be leavable on purpose from Settings because later Close will n
 
 ## Subtasks
 
-- [ ] 01.1 Extend `WindowCommand` and preload so chrome can request Quit.
-- [ ] 01.2 Add `beginQuit()` in main and wire `ops:window` `'quit'` without changing Close.
-- [ ] 01.3 Add Settings Quit using `quit` copy in all four locales; add `trayRestore` keys for task_02.
-- [ ] 01.4 Prove i18n dictionaries stay aligned; typecheck the new command.
+- [x] 01.1 Extend `WindowCommand` and preload so chrome can request Quit.
+- [x] 01.2 Add `beginQuit()` in main and wire `ops:window` `'quit'` without changing Close.
+- [x] 01.3 Add Settings Quit using `quit` copy in all four locales; add `trayRestore` keys for task_02.
+- [x] 01.4 Prove i18n dictionaries stay aligned; typecheck the new command.
 
 ## Implementation Details
 
@@ -116,8 +116,8 @@ Use TechSpec Contracts (`WindowCommand`, `beginQuit`), Architecture (`appSession
 
 ### Unit Tests
 
-- [ ] Given the four locale dictionaries, when keys are listed, then `quit` and `trayRestore` exist and `i18n.test.ts` frozen maps include them.
-- [ ] Given `WindowCommand`, when chrome types `windowControl('quit')`, then TypeScript accepts it (no remaining `'min' | 'max' | 'close' | 'isMaximized'`-only alias).
+- [x] Given the four locale dictionaries, when keys are listed, then `quit` and `trayRestore` exist and `i18n.test.ts` frozen maps include them.
+- [x] Given `WindowCommand`, when chrome types `windowControl('quit')`, then TypeScript accepts it (no remaining `'min' | 'max' | 'close' | 'isMaximized'`-only alias).
 
 ### Integration Tests
 

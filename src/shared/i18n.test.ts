@@ -30,6 +30,9 @@ const frozenEn: Record<Exclude<MessageKey, 'localeEs' | 'localeZhHans'>, string>
   startAccount: 'Start',
   stopAccount: 'Close panel',
   startAll: 'Start all',
+  stopTab: 'Stop this tab',
+  stopFarm: 'Stop whole farm',
+  restoreLastSet: 'Restore last set',
   renameAccount: 'Rename',
   recolor: 'Color',
   deleteAccount: 'Delete account',
@@ -58,6 +61,7 @@ const frozenEn: Record<Exclude<MessageKey, 'localeEs' | 'localeZhHans'>, string>
   themeDark: 'Dark',
   themeLight: 'Light',
   launchAtStartup: 'Launch at startup',
+  blockSleepWhileRunning: 'Block OS sleep while running',
   importWorkspace: 'Import workspace',
   exportWorkspace: 'Export workspace',
   importGameList: 'Import game list',
@@ -102,8 +106,11 @@ const frozenEn: Record<Exclude<MessageKey, 'localeEs' | 'localeZhHans'>, string>
   minimize: 'Minimize',
   maximize: 'Maximize',
   closeWindow: 'Close',
+  quit: 'Quit',
+  trayRestore: 'Restore',
   runningCount: 'running',
   runningStartWarning: '7+ running may stress this PC',
+  sleepBlocked: 'Sleep blocked',
   localePt: 'Português',
   localeEn: 'English',
   urlBar: 'Address',
@@ -138,6 +145,9 @@ const frozenPt: Record<Exclude<MessageKey, 'localeEs' | 'localeZhHans'>, string>
   startAccount: 'Iniciar',
   stopAccount: 'Fechar painel',
   startAll: 'Iniciar todas',
+  stopTab: 'Parar esta aba',
+  stopFarm: 'Parar todas em execução',
+  restoreLastSet: 'Restaurar as últimas contas',
   renameAccount: 'Renomear',
   recolor: 'Cor',
   deleteAccount: 'Excluir conta',
@@ -166,6 +176,7 @@ const frozenPt: Record<Exclude<MessageKey, 'localeEs' | 'localeZhHans'>, string>
   themeDark: 'Escuro',
   themeLight: 'Claro',
   launchAtStartup: 'Iniciar com o sistema',
+  blockSleepWhileRunning: 'Bloquear suspensão com contas em execução',
   importWorkspace: 'Importar espaço de trabalho',
   exportWorkspace: 'Exportar espaço de trabalho',
   importGameList: 'Importar lista de jogos',
@@ -211,8 +222,11 @@ const frozenPt: Record<Exclude<MessageKey, 'localeEs' | 'localeZhHans'>, string>
   minimize: 'Minimizar',
   maximize: 'Maximizar',
   closeWindow: 'Fechar',
+  quit: 'Sair',
+  trayRestore: 'Restaurar',
   runningCount: 'em execução',
   runningStartWarning: '7+ em execução podem sobrecarregar este PC',
+  sleepBlocked: 'Suspensão bloqueada',
   localePt: 'Português',
   localeEn: 'English',
   urlBar: 'Endereço',
@@ -273,6 +287,33 @@ describe('i18n', () => {
     expect(t('pt', 'importGameList')).not.toBe(t('en', 'importGameList'))
     expect(t('pt', 'exportGameList')).not.toMatch(/export game list/i)
     expect(t('pt', 'importGameList')).not.toMatch(/import game list/i)
+  })
+
+  it('uses Sleep blocked in English and distinct copy in the other locales', () => {
+    expect(t('en', 'sleepBlocked')).toBe('Sleep blocked')
+    for (const locale of ['pt', 'es', 'zh-Hans'] as const) {
+      expect(t(locale, 'sleepBlocked').length).toBeGreaterThan(0)
+      expect(t(locale, 'sleepBlocked')).not.toBe(t('en', 'sleepBlocked'))
+    }
+  })
+
+  it('has quit and trayRestore in every locale', () => {
+    expect(t('en', 'quit')).toBe('Quit')
+    expect(t('en', 'trayRestore')).toBe('Restore')
+    for (const locale of ['pt', 'es', 'zh-Hans'] as const) {
+      expect(t(locale, 'quit').length).toBeGreaterThan(0)
+      expect(t(locale, 'quit')).not.toBe(t('en', 'quit'))
+      expect(t(locale, 'trayRestore').length).toBeGreaterThan(0)
+      expect(t(locale, 'trayRestore')).not.toBe(t('en', 'trayRestore'))
+    }
+  })
+
+  it('uses Block OS sleep while running in English and distinct copy in the other locales', () => {
+    expect(t('en', 'blockSleepWhileRunning')).toBe('Block OS sleep while running')
+    for (const locale of ['pt', 'es', 'zh-Hans'] as const) {
+      expect(t(locale, 'blockSleepWhileRunning').length).toBeGreaterThan(0)
+      expect(t(locale, 'blockSleepWhileRunning')).not.toBe(t('en', 'blockSleepWhileRunning'))
+    }
   })
 
   it('has getting, apply, and later copy in both locales', () => {

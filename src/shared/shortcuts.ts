@@ -15,6 +15,9 @@ export type ShortcutCommand =
   | 'account-prev'
   | 'account-next'
   | 'account-start'
+  | 'account-stop-tab'
+  | 'account-stop-farm'
+  | 'account-restore-last'
 
 export type ShortcutScope = 'loop' | 'chrome'
 
@@ -48,14 +51,20 @@ export const SHORTCUT_COMMANDS = [
   'account-create',
   'account-prev',
   'account-next',
-  'account-start'
+  'account-start',
+  'account-stop-tab',
+  'account-stop-farm',
+  'account-restore-last'
 ] as const satisfies readonly ShortcutCommand[]
 
 export const LOOP_COMMANDS = [
   'account-create',
   'account-prev',
   'account-next',
-  'account-start'
+  'account-start',
+  'account-stop-tab',
+  'account-stop-farm',
+  'account-restore-last'
 ] as const satisfies readonly ShortcutCommand[]
 
 export const CHROME_COMMANDS = [
@@ -96,7 +105,10 @@ export const SHORTCUT_DEFAULTS: ShortcutMap = {
   'account-create': { key: 'n', shift: true, alt: false },
   'account-prev': { key: '[', shift: true, alt: false },
   'account-next': { key: ']', shift: true, alt: false },
-  'account-start': { key: 'Enter', shift: false, alt: false }
+  'account-start': { key: 'Enter', shift: false, alt: false },
+  'account-stop-tab': { key: 'w', shift: false, alt: false },
+  'account-stop-farm': { key: 'w', shift: true, alt: false },
+  'account-restore-last': { key: 'Enter', shift: true, alt: false }
 }
 
 export function isShortcutCommand(value: unknown): value is ShortcutCommand {

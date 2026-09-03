@@ -29,26 +29,33 @@ function liveTab(snapshot: WorkspaceSnapshot) {
 }
 
 function actionsForCommand(command: AccountLoopCommand, snapshot: WorkspaceSnapshot): WorkspaceAction[] {
-  if (command === 'account-start') {
-    const account = activeAccount(snapshot)
-    if (!account) {
-      return []
+  switch (command) {
+    case 'account-start': {
+      const account = activeAccount(snapshot)
+      return account ? [{ type: 'account/setStatus', id: account.id, status: 'running' }] : []
     }
-    return [{ type: 'account/setStatus', id: account.id, status: 'running' }]
+    case 'account-stop-farm':
+      return [{ type: 'account/stopFarm' }]
+    case 'account-restore-last':
+      return [{ type: 'account/restoreLastSet' }]
+    case 'account-stop-tab': {
+      const tab = liveTab(snapshot)
+      return tab ? [{ type: 'account/stopTab', tabId: tab.id }] : []
+    }
+    case 'account-create': {
+      const tab = liveTab(snapshot)
+      return tab ? keyboardCreateActions(tab.id, newId()) : []
+    }
+    case 'account-next':
+    case 'account-prev': {
+      const tab = liveTab(snapshot)
+      if (!tab) {
+        return []
+      }
+      const id = nextAccountId(tab.accountOrder, tab.activeAccountId, command === 'account-next' ? 1 : -1)
+      return id ? [{ type: 'account/activate', id }] : []
+    }
   }
-
-  const tab = liveTab(snapshot)
-  if (!tab) {
-    return []
-  }
-  if (command === 'account-create') {
-    return keyboardCreateActions(tab.id, newId())
-  }
-  const id = nextAccountId(tab.accountOrder, tab.activeAccountId, command === 'account-next' ? 1 : -1)
-  if (!id) {
-    return []
-  }
-  return [{ type: 'account/activate', id }]
 }
 
 export function attachAccountLoop(contents: WebContents, source: LoopSource): void {

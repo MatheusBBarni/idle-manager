@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 title: Block OS sleep while any account is running and release on last close or quit
 type: backend
 complexity: medium
@@ -81,10 +81,10 @@ An operator who leaves accounts running needs Windows (and other OSes) not to id
 
 ## Subtasks
 
-- [ ] 02.1 Add `sleepBlock.ts` with single-id start/stop per TechSpec Contracts.
-- [ ] 02.2 Wire sync on `commitAll`, load, and import-workspace; stop on `before-quit`.
-- [ ] 02.3 Failed start logs, clears id, retries next sync; isolation-verify path untouched.
-- [ ] 02.4 Run `pnpm test`, `pnpm typecheck`, and `pnpm verify:isolation` to terminal exit.
+- [x] 02.1 Add `sleepBlock.ts` with single-id start/stop per TechSpec Contracts.
+- [x] 02.2 Wire sync on `commitAll`, load, and import-workspace; stop on `before-quit`.
+- [x] 02.3 Failed start logs, clears id, retries next sync; isolation-verify path untouched.
+- [x] 02.4 Run `pnpm test`, `pnpm typecheck`, and `pnpm verify:isolation` to terminal exit.
 
 ## Implementation Details
 
@@ -118,15 +118,15 @@ Follow TechSpec Contracts (`syncSleepBlock`, `stopSleepBlock`, `prevent-app-susp
 
 ### Unit Tests
 
-- [ ] Not applicable for `powerSaveBlocker` — Vitest cannot load Electron. Predicate coverage remains task_01. Re-run `pnpm test` to prove shared tests still pass.
+- [x] Not applicable for `powerSaveBlocker` — Vitest cannot load Electron. Predicate coverage remains task_01. Re-run `pnpm test` to prove shared tests still pass.
 
 ### Integration Tests
 
-- [ ] Not applicable — no Electron test harness in this repo (TechSpec Non-Goals).
+- [x] Not applicable — no Electron test harness in this repo (TechSpec Non-Goals).
 
 ### Platform or Manual Evidence
 
-- [ ] G-01/G-03 overnight idle-timer journal cannot run in CI. If a Windows packaged idle-timer pass is unavailable, document that limitation in the report and continue with the automated gates. Do not invent Park or `prevent-display-sleep` to fake G-01.
+- [x] G-01/G-03 overnight idle-timer journal cannot run in CI. If a Windows packaged idle-timer pass is unavailable, document that limitation in the report and continue with the automated gates. Do not invent Park or `prevent-display-sleep` to fake G-01.
 
 ### Verification Commands
 

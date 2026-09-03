@@ -47,11 +47,15 @@ describe('matchShortcut defaults', () => {
     expect(matchShortcut(mod({ key: ']', shift: true }), map, 'loop')).toBe('account-next')
     expect(matchShortcut(mod({ key: '}', shift: true }), map, 'loop')).toBe('account-next')
     expect(matchShortcut(mod({ key: 'Enter' }), map, 'loop')).toBe('account-start')
+    expect(matchShortcut(mod({ key: 'w' }), map, 'loop')).toBe('account-stop-tab')
+    expect(matchShortcut(mod({ key: 'w', shift: true }), map, 'loop')).toBe('account-stop-farm')
+    expect(matchShortcut(mod({ key: 'Enter', shift: true }), map, 'loop')).toBe('account-restore-last')
 
     expect(matchShortcut(mod({ key: 't' }), map, 'loop')).toBeNull()
     expect(matchShortcut(mod({ key: 'Tab' }), map, 'loop')).toBeNull()
     expect(matchShortcut(mod({ key: '1' }), map, 'loop')).toBeNull()
     expect(matchShortcut(mod({ key: 'r' }), map, 'loop')).toBeNull()
+    expect(matchShortcut(mod({ key: 'x' }), map, 'loop')).toBeNull()
   })
 
   it('matches chrome defaults in chrome scope and ignores loop defaults there', () => {
@@ -70,6 +74,9 @@ describe('matchShortcut defaults', () => {
     expect(matchShortcut(mod({ key: 'Tab' }), map, 'chrome')).toBe('tab-next')
     expect(matchShortcut(mod({ key: 'n', shift: true }), map, 'chrome')).toBeNull()
     expect(matchShortcut(mod({ key: 'Enter' }), map, 'chrome')).toBeNull()
+    expect(matchShortcut(mod({ key: 'w' }), map, 'chrome')).toBeNull()
+    expect(matchShortcut(mod({ key: 'w', shift: true }), map, 'chrome')).toBeNull()
+    expect(matchShortcut(mod({ key: 'Enter', shift: true }), map, 'chrome')).toBeNull()
   })
 
   it('returns null without platform mod, on keyUp, and on repeat', () => {
@@ -140,6 +147,22 @@ describe('shortcutConflict', () => {
     ).toBeNull()
     expect(
       shortcutConflict(SHORTCUT_DEFAULTS, 'tab-new', { key: 'q', shift: true, alt: false })
+    ).toBeNull()
+  })
+
+  it('has no default conflicts for stop-tab, stop-farm, and restore chords', () => {
+    expect(
+      shortcutConflict(SHORTCUT_DEFAULTS, 'account-stop-tab', SHORTCUT_DEFAULTS['account-stop-tab'])
+    ).toBeNull()
+    expect(
+      shortcutConflict(SHORTCUT_DEFAULTS, 'account-stop-farm', SHORTCUT_DEFAULTS['account-stop-farm'])
+    ).toBeNull()
+    expect(
+      shortcutConflict(
+        SHORTCUT_DEFAULTS,
+        'account-restore-last',
+        SHORTCUT_DEFAULTS['account-restore-last']
+      )
     ).toBeNull()
   })
 })

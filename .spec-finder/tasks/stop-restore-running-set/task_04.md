@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 title: Keyboard trio plus bind list
 type: backend
 complexity: high
@@ -77,11 +77,11 @@ A farm operator can stop this tab, stop the whole farm, and restore last set fro
 
 ## Subtasks
 
-- [ ] 04.1 Catalog the three loop commands and shipped defaults without conflicts
-- [ ] 04.2 Interceptor maps commands to the three workspace actions
-- [ ] 04.3 Settings Shortcuts rows + four-locale labels
-- [ ] 04.4 README Keyboard table rows matching Settings
-- [ ] 04.5 Focused matcher/i18n tests and repository gates
+- [x] 04.1 Catalog the three loop commands and shipped defaults without conflicts
+- [x] 04.2 Interceptor maps commands to the three workspace actions
+- [x] 04.3 Settings Shortcuts rows + four-locale labels
+- [x] 04.4 README Keyboard table rows matching Settings
+- [x] 04.5 Focused matcher/i18n tests and repository gates
 
 ## Implementation Details
 

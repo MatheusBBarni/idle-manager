@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 title: Restore the last running set
 type: backend
 complexity: medium
@@ -76,10 +76,10 @@ A farm operator can start **only** the accounts that were running the last time 
 
 ## Subtasks
 
-- [ ] 03.1 `account/restoreLastSet` starts existing closed last-set members only
-- [ ] 03.2 Skip missing ids; identity when nothing to start
-- [ ] 03.3 Expanded sidebar Restore last set + four-locale copy
-- [ ] 03.4 Focused tests and repository gates
+- [x] 03.1 `account/restoreLastSet` starts existing closed last-set members only
+- [x] 03.2 Skip missing ids; identity when nothing to start
+- [x] 03.3 Expanded sidebar Restore last set + four-locale copy
+- [x] 03.4 Focused tests and repository gates
 
 ## Implementation Details
 

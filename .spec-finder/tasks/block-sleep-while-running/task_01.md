@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 title: Show sleep-blocked hint from the running set
 type: frontend
 complexity: medium
@@ -71,10 +71,10 @@ An operator with any account running needs a footer hint that sleep is blocked, 
 
 ## Subtasks
 
-- [ ] 01.1 Export `hasRunningAccount` and unit-test empty, running, popped-out running, and all-closed.
-- [ ] 01.2 Add `sleepBlocked` in all four i18n maps; EN `Sleep blocked`; extend i18n tests.
-- [ ] 01.3 Show the hint on StatusBar from the predicate with `role="status"`; hide at zero running.
-- [ ] 01.4 Run focused tests and repository gates to terminal exit.
+- [x] 01.1 Export `hasRunningAccount` and unit-test empty, running, popped-out running, and all-closed.
+- [x] 01.2 Add `sleepBlocked` in all four i18n maps; EN `Sleep blocked`; extend i18n tests.
+- [x] 01.3 Show the hint on StatusBar from the predicate with `role="status"`; hide at zero running.
+- [x] 01.4 Run focused tests and repository gates to terminal exit.
 
 ## Implementation Details
 
@@ -109,20 +109,20 @@ Follow TechSpec Contracts (`hasRunningAccount`, i18n key), Architecture (StatusB
 
 ### Unit Tests
 
-- [ ] Given `emptySnapshot()`, when `hasRunningAccount`, then `false`.
-- [ ] Given one account `status: 'running'`, when `hasRunningAccount`, then `true`.
-- [ ] Given one running account with `poppedOut: true`, when `hasRunningAccount`, then `true`.
-- [ ] Given only `status: 'closed'` accounts, when `hasRunningAccount`, then `false`.
-- [ ] Given `sleepBlocked`, when `t('en', 'sleepBlocked')`, then `Sleep blocked`.
-- [ ] Given `pt`, `es`, `zh-Hans`, when `t(locale, 'sleepBlocked')`, then non-empty and not equal to EN.
+- [x] Given `emptySnapshot()`, when `hasRunningAccount`, then `false`.
+- [x] Given one account `status: 'running'`, when `hasRunningAccount`, then `true`.
+- [x] Given one running account with `poppedOut: true`, when `hasRunningAccount`, then `true`.
+- [x] Given only `status: 'closed'` accounts, when `hasRunningAccount`, then `false`.
+- [x] Given `sleepBlocked`, when `t('en', 'sleepBlocked')`, then `Sleep blocked`.
+- [x] Given `pt`, `es`, `zh-Hans`, when `t(locale, 'sleepBlocked')`, then non-empty and not equal to EN.
 
 ### Integration Tests
 
-- [ ] Not applicable — Vitest is `src/shared/**/*.test.ts` only; StatusBar is renderer.
+- [x] Not applicable — Vitest is `src/shared/**/*.test.ts` only; StatusBar is renderer.
 
 ### Platform or Manual Evidence
 
-- [ ] StatusBar `role="status"` and no overlay cannot be proven in Vitest. If a packaged UI pass is unavailable, document that limitation in the report and continue with `pnpm test` + `pnpm typecheck`.
+- [x] StatusBar `role="status"` and no overlay cannot be proven in Vitest. If a packaged UI pass is unavailable, document that limitation in the report and continue with `pnpm test` + `pnpm typecheck`.
 
 ### Verification Commands
 

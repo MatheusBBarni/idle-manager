@@ -31,7 +31,10 @@ const SHORTCUT_LABELS: Record<ShortcutCommand, MessageKey> = {
   'account-create': 'shortcutCreate',
   'account-prev': 'shortcutPrev',
   'account-next': 'shortcutNext',
-  'account-start': 'shortcutStart'
+  'account-start': 'shortcutStart',
+  'account-stop-tab': 'stopTab',
+  'account-stop-farm': 'stopFarm',
+  'account-restore-last': 'restoreLastSet'
 }
 
 export function SettingsModal({ onClose }: { onClose: () => void }) {
@@ -133,6 +136,16 @@ function GeneralSettings() {
         />
         {t(locale, 'launchAtStartup')}
       </label>
+      <label className="flex items-center gap-2 text-sm">
+        <input
+          type="checkbox"
+          checked={snapshot.blockSleepWhileRunning}
+          onChange={(event) =>
+            void dispatch({ type: 'prefs/blockSleepWhileRunning', value: event.target.checked })
+          }
+        />
+        {t(locale, 'blockSleepWhileRunning')}
+      </label>
       <div className="flex flex-wrap gap-2">
         <Button size="sm" variant="secondary" onPress={() => void window.opsource.exportWorkspace()}>
           {t(locale, 'exportWorkspace')}
@@ -145,6 +158,11 @@ function GeneralSettings() {
         </Button>
         <Button size="sm" variant="secondary" onPress={() => void window.opsource.importGameList()}>
           {t(locale, 'importGameList')}
+        </Button>
+      </div>
+      <div>
+        <Button size="sm" variant="secondary" onPress={() => void window.opsource.windowControl('quit')}>
+          {t(locale, 'quit')}
         </Button>
       </div>
     </div>

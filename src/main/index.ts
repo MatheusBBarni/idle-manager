@@ -12,6 +12,15 @@ import { attachAccountLoop, bindAccountLoop } from './accountLoop'
 import { verifyIsolation } from './isolationVerify'
 import { collectMetrics } from './metrics'
 import { loadSnapshot, saveSnapshot } from './persistence'
+import {
+  attachMainWindow,
+  beginQuit,
+  bindAppSession,
+  detachMainWindow,
+  focusOrRestoreMainWindow,
+  syncDismissedSession
+} from './appSession'
+import { stopSleepBlock, syncSleepBlock } from './sleepBlock'
 import { handleUpdateCommand, startUpdater } from './updater'
 import {
   applyStage,
@@ -42,6 +51,7 @@ app.setName('Idle manager')
 
 const verifying = process.argv.includes('--verify-isolation')
 const preloadPath = fileURLToPath(new URL('../preload/index.cjs', import.meta.url))
+const gotTheLock = app.requestSingleInstanceLock()
 
 let mainWindow: BrowserWindow | null = null
 let snapshot: WorkspaceSnapshot = emptySnapshot()
@@ -71,6 +81,14 @@ function applyDispatchEffects(action: WorkspaceAction, before: WorkspaceSnapshot
   }
 }
 
+function afterSnapshotWrite(): void {
+  syncViews(snapshot)
+  syncSleepBlock(snapshot)
+  syncDismissedSession(snapshot)
+  broadcast()
+  scheduleSave()
+}
+
 function commitAll(actions: WorkspaceAction[]): WorkspaceSnapshot {
   if (actions.length === 0) {
     return snapshot
@@ -80,9 +98,7 @@ function commitAll(actions: WorkspaceAction[]): WorkspaceSnapshot {
     snapshot = applyAction(snapshot, action)
     applyDispatchEffects(action, before)
   }
-  syncViews(snapshot)
-  broadcast()
-  scheduleSave()
+  afterSnapshotWrite()
   return snapshot
 }
 
@@ -116,6 +132,7 @@ function createWindow(): void {
   })
 
   setChromeWindow(mainWindow)
+  attachMainWindow(mainWindow)
   Menu.setApplicationMenu(null)
   attachAccountLoop(mainWindow.webContents, 'chrome')
 
@@ -123,6 +140,7 @@ function createWindow(): void {
   mainWindow.on('resized', persistBounds)
   mainWindow.on('moved', persistBounds)
   mainWindow.on('closed', () => {
+    detachMainWindow()
     setChromeWindow(null)
     mainWindow = null
   })
@@ -215,6 +233,10 @@ function registerIpc(): void {
     applyStage(report)
   })
   ipcMain.handle('ops:window', (_event, command: WindowCommand) => {
+    if (command === 'quit') {
+      beginQuit()
+      return false
+    }
     if (!mainWindow) {
       return false
     }
@@ -247,9 +269,7 @@ function registerIpc(): void {
       return false
     }
     snapshot = snapshotFromImport(JSON.parse(await readFile(file, 'utf8')))
-    syncViews(snapshot)
-    broadcast()
-    scheduleSave()
+    afterSnapshotWrite()
     return true
   })
   ipcMain.handle('ops:exportGames', async () => {
@@ -285,7 +305,7 @@ function registerIpc(): void {
   ipcMain.handle('ops:updateCommand', (_event, command: UpdateCommand) => handleUpdateCommand(command))
 }
 
-app.whenReady().then(async () => {
+async function startPrimary(): Promise<void> {
   if (verifying) {
     const code = await verifyIsolation()
     app.exit(code)
@@ -297,6 +317,11 @@ app.whenReady().then(async () => {
   }
 
   snapshot = await loadSnapshot()
+  bindAppSession({
+    getSnapshot: () => snapshot,
+    iconPath
+  })
+  syncSleepBlock(snapshot)
   if (snapshot.launchAtStartup) {
     app.setLoginItemSettings({ openAtLogin: true })
   }
@@ -356,23 +381,30 @@ app.whenReady().then(async () => {
     const payload = collectMetrics(liveViews())
     mainWindow.webContents.send('ops:metrics', payload)
   }, 1000)
-})
+}
 
-app.on('before-quit', () => {
-  void flushAll()
-  void saveSnapshot(snapshot)
-})
-
-app.on('window-all-closed', () => {
-  destroyAllViews()
-  if (process.platform !== 'darwin') {
-    app.quit()
-  }
-})
-
-app.on('activate', () => {
-  if (BrowserWindow.getAllWindows().length === 0) {
-    createWindow()
-    syncViews(snapshot)
-  }
-})
+if (!gotTheLock) {
+  app.quit()
+} else {
+  app.on('second-instance', focusOrRestoreMainWindow)
+  app.whenReady().then(() => {
+    void startPrimary()
+  })
+  app.on('before-quit', () => {
+    stopSleepBlock()
+    void flushAll()
+    void saveSnapshot(snapshot)
+  })
+  app.on('window-all-closed', () => {
+    destroyAllViews()
+    if (process.platform !== 'darwin') {
+      app.quit()
+    }
+  })
+  app.on('activate', () => {
+    if (BrowserWindow.getAllWindows().length === 0) {
+      createWindow()
+      syncViews(snapshot)
+    }
+  })
+}

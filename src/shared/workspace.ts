@@ -49,6 +49,9 @@ export type WorkspaceAction =
   | { type: 'account/reorder'; tabId: string; orderedIds: string[] }
   | { type: 'account/activate'; id: string }
   | { type: 'account/setStatus'; id: string; status: AccountStatus }
+  | { type: 'account/stopTab'; tabId: string }
+  | { type: 'account/stopFarm' }
+  | { type: 'account/restoreLastSet' }
   | { type: 'account/setUrl'; id: string; url: string }
   | { type: 'account/setMuted'; id: string; muted: boolean }
   | { type: 'account/setZoom'; id: string; zoomFactor: number }
@@ -59,6 +62,7 @@ export type WorkspaceAction =
   | { type: 'prefs/locale'; locale: Locale }
   | { type: 'prefs/theme'; theme: ThemeName }
   | { type: 'prefs/launchAtStartup'; value: boolean }
+  | { type: 'prefs/blockSleepWhileRunning'; value: boolean }
   | { type: 'prefs/shortcut'; command: ShortcutCommand; chord: ShortcutChord | null }
   | { type: 'window/bounds'; bounds: WindowBounds }
 
@@ -81,7 +85,9 @@ export function emptySnapshot(): WorkspaceSnapshot {
     theme: 'dark',
     windowBounds: null,
     launchAtStartup: false,
-    shortcuts: cloneShortcutMap(SHORTCUT_DEFAULTS)
+    blockSleepWhileRunning: true,
+    shortcuts: cloneShortcutMap(SHORTCUT_DEFAULTS),
+    lastRunningAccountIds: []
   }
 }
 
@@ -123,6 +129,14 @@ export function activeAccount(snapshot: WorkspaceSnapshot): Account | null {
   return snapshot.accounts[tab.activeAccountId] ?? null
 }
 
+export function hasRunningAccount(snapshot: WorkspaceSnapshot): boolean {
+  return Object.values(snapshot.accounts).some((account) => account.status === 'running')
+}
+
+export function shouldBlockSleep(snapshot: WorkspaceSnapshot): boolean {
+  return snapshot.blockSleepWhileRunning && hasRunningAccount(snapshot)
+}
+
 export function accountIdsToWipe(snapshot: WorkspaceSnapshot, action: WorkspaceAction): string[] {
   if (action.type === 'account/delete') {
     return [action.id]
@@ -133,6 +147,72 @@ export function accountIdsToWipe(snapshot: WorkspaceSnapshot, action: WorkspaceA
       .map((account) => account.id)
   }
   return []
+}
+
+function sameStringArray(left: string[], right: string[]): boolean {
+  return left.length === right.length && left.every((id, index) => id === right[index])
+}
+
+function runningAccountIds(snapshot: WorkspaceSnapshot): string[] {
+  const seen = new Set<string>()
+  const ids: string[] = []
+  const pushIfRunning = (id: string) => {
+    if (seen.has(id)) {
+      return
+    }
+    if (snapshot.accounts[id]?.status !== 'running') {
+      return
+    }
+    seen.add(id)
+    ids.push(id)
+  }
+  for (const tab of snapshot.tabs) {
+    for (const id of tab.accountOrder) {
+      pushIfRunning(id)
+    }
+  }
+  for (const id of Object.keys(snapshot.accounts)) {
+    pushIfRunning(id)
+  }
+  return ids
+}
+
+function filterExistingAccountIds(ids: string[], accounts: Record<string, Account>): string[] {
+  const seen = new Set<string>()
+  const next: string[] = []
+  for (const id of ids) {
+    if (!id || seen.has(id) || !accounts[id]) {
+      continue
+    }
+    seen.add(id)
+    next.push(id)
+  }
+  return next
+}
+
+function parseLastRunningAccountIds(raw: unknown, accounts: Record<string, Account>): string[] {
+  if (!Array.isArray(raw)) {
+    return []
+  }
+  return filterExistingAccountIds(
+    raw.filter((item): item is string => typeof item === 'string'),
+    accounts
+  )
+}
+
+function withLastRunningAccountIds(
+  before: WorkspaceSnapshot,
+  after: WorkspaceSnapshot
+): WorkspaceSnapshot {
+  const beforeIds = runningAccountIds(before)
+  const afterIds = runningAccountIds(after)
+  const last =
+    afterIds.length > 0 ? afterIds : beforeIds.length > 0 ? beforeIds : before.lastRunningAccountIds
+  const nextLast = filterExistingAccountIds(last, after.accounts)
+  if (sameStringArray(nextLast, after.lastRunningAccountIds)) {
+    return after
+  }
+  return { ...after, lastRunningAccountIds: nextLast }
 }
 
 function nextColor(existing: Account[]): string {
@@ -174,6 +254,29 @@ function replaceAccount(
       [accountId]: { ...current, ...patch }
     }
   }
+}
+
+function patchAccounts(
+  snapshot: WorkspaceSnapshot,
+  ids: string[],
+  patch: Partial<Account>
+): WorkspaceSnapshot {
+  if (ids.length === 0) {
+    return snapshot
+  }
+  let next = snapshot
+  for (const id of ids) {
+    next = replaceAccount(next, id, patch)
+  }
+  return next
+}
+
+function closeRunningAccounts(snapshot: WorkspaceSnapshot, accounts: Account[]): WorkspaceSnapshot {
+  return patchAccounts(
+    snapshot,
+    accounts.filter((account) => account.status === 'running').map((account) => account.id),
+    { status: 'closed', poppedOut: false }
+  )
 }
 
 function firstVisibleId(tabs: GameTab[], except?: string): string | null {
@@ -242,7 +345,7 @@ function applyShortcutPref(
   }
 }
 
-export function applyAction(snapshot: WorkspaceSnapshot, action: WorkspaceAction): WorkspaceSnapshot {
+function reduceWorkspace(snapshot: WorkspaceSnapshot, action: WorkspaceAction): WorkspaceSnapshot {
   switch (action.type) {
     case 'tab/create': {
       const id = action.id ?? newId()
@@ -387,6 +490,21 @@ export function applyAction(snapshot: WorkspaceSnapshot, action: WorkspaceAction
       const poppedOut = action.status === 'closed' ? false : snapshot.accounts[action.id]?.poppedOut ?? false
       return replaceAccount(snapshot, action.id, { status: action.status, poppedOut })
     }
+    case 'account/stopTab': {
+      const tab = tabById(snapshot, action.tabId)
+      if (!tab) {
+        return snapshot
+      }
+      return closeRunningAccounts(snapshot, accountsForTab(snapshot, tab.id))
+    }
+    case 'account/stopFarm':
+      return closeRunningAccounts(snapshot, Object.values(snapshot.accounts))
+    case 'account/restoreLastSet':
+      return patchAccounts(
+        snapshot,
+        snapshot.lastRunningAccountIds.filter((id) => snapshot.accounts[id]?.status === 'closed'),
+        { status: 'running' }
+      )
     case 'account/setUrl':
       return replaceAccount(snapshot, action.id, { url: normalizeUrl(action.url) })
     case 'account/setMuted':
@@ -428,6 +546,8 @@ export function applyAction(snapshot: WorkspaceSnapshot, action: WorkspaceAction
       return { ...snapshot, theme: action.theme }
     case 'prefs/launchAtStartup':
       return { ...snapshot, launchAtStartup: action.value }
+    case 'prefs/blockSleepWhileRunning':
+      return { ...snapshot, blockSleepWhileRunning: action.value }
     case 'prefs/shortcut':
       return applyShortcutPref(snapshot, action.command, action.chord)
     case 'window/bounds':
@@ -435,6 +555,14 @@ export function applyAction(snapshot: WorkspaceSnapshot, action: WorkspaceAction
     default:
       return snapshot
   }
+}
+
+export function applyAction(snapshot: WorkspaceSnapshot, action: WorkspaceAction): WorkspaceSnapshot {
+  const next = reduceWorkspace(snapshot, action)
+  if (next === snapshot) {
+    return snapshot
+  }
+  return withLastRunningAccountIds(snapshot, next)
 }
 
 const LAYOUT_MODES = new Set<LayoutMode>(['grid', 'single', 'columns', 'rows', 'free'])
@@ -455,6 +583,10 @@ function isGameListDocument(raw: unknown): raw is { version: 1; kind: 'game-list
 
 function asFinite(value: unknown): number | null {
   return typeof value === 'number' && Number.isFinite(value) ? value : null
+}
+
+function asBoolean(value: unknown, fallback: boolean): boolean {
+  return typeof value === 'boolean' ? value : fallback
 }
 
 function asString(value: unknown): string | null {
@@ -578,8 +710,10 @@ export function parseSnapshot(raw: unknown): WorkspaceSnapshot {
     locale: isLocale(raw.locale) ? raw.locale : 'pt',
     theme: raw.theme === 'light' ? 'light' : 'dark',
     windowBounds: asWindowBounds(raw.windowBounds),
-    launchAtStartup: raw.launchAtStartup === true,
-    shortcuts: normalizeShortcutMap(raw.shortcuts)
+    launchAtStartup: asBoolean(raw.launchAtStartup, false),
+    blockSleepWhileRunning: asBoolean(raw.blockSleepWhileRunning, true),
+    shortcuts: normalizeShortcutMap(raw.shortcuts),
+    lastRunningAccountIds: parseLastRunningAccountIds(raw.lastRunningAccountIds, accounts)
   }
 }
 
@@ -659,6 +793,7 @@ export function snapshotFromImport(raw: unknown): WorkspaceSnapshot {
   const imported = parseSnapshot(raw)
   return {
     ...imported,
+    lastRunningAccountIds: [],
     accounts: Object.fromEntries(
       Object.values(imported.accounts).map((account) => [
         account.id,

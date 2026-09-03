@@ -3,7 +3,7 @@ import { formatBytes, formatCpu, formatUptime, t, type MessageKey } from '@share
 import { hasGpuMetrics } from '@shared/metricsAggregate'
 import { RUNNING_START_WARN_AFTER } from '@shared/metricsDisplay'
 import type { LayoutMode } from '@shared/types'
-import { activeAccount, visibleTabs } from '@shared/workspace'
+import { activeAccount, shouldBlockSleep, visibleTabs } from '@shared/workspace'
 import { useAppStore } from '../store'
 
 const layoutLabel: Record<LayoutMode, MessageKey> = {
@@ -24,6 +24,7 @@ export function StatusBar() {
   const account = activeAccount(snapshot)
   const running = Object.values(snapshot.accounts).filter((item) => item.status === 'running').length
   const warnRunningStart = running > RUNNING_START_WARN_AFTER
+  const sleepBlocked = shouldBlockSleep(snapshot)
   const aggregate = metrics?.aggregate
 
   return (
@@ -36,6 +37,7 @@ export function StatusBar() {
       <span>
         {running} {t(locale, 'runningCount')}
       </span>
+      {sleepBlocked ? <span role="status">{t(locale, 'sleepBlocked')}</span> : null}
       {warnRunningStart ? <span className="text-signal">{t(locale, 'runningStartWarning')}</span> : null}
       <span>
         {t(locale, 'cpu')} {formatCpu(aggregate?.cpu ?? 0)}

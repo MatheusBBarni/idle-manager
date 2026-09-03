@@ -1,4 +1,4 @@
-import { EllipsisVertical, PanelLeftClose, PanelLeftOpen, Play, Plus } from 'lucide-react'
+import { CircleStop, EllipsisVertical, PanelLeftClose, PanelLeftOpen, Play, Plus, RotateCcw, Square } from 'lucide-react'
 import { Button, Dropdown, Label } from '@heroui/react'
 import { ACCOUNT_COLORS, type Account } from '@shared/types'
 import { formatAge, formatBytes, formatCpu, t } from '@shared/i18n'
@@ -225,7 +225,7 @@ export function Sidebar() {
           <AccountRow key={account.id} account={account} active={tab?.activeAccountId === account.id} />
         ))}
       </div>
-      <div className="flex gap-2 border-t border-hairline p-3">
+      <div className="flex flex-wrap gap-2 border-t border-hairline p-3">
         <Button
           size="sm"
           variant="secondary"
@@ -253,6 +253,40 @@ export function Sidebar() {
           }}
         >
           <Play className="size-4" />
+        </Button>
+        <Button
+          isIconOnly
+          size="sm"
+          aria-label={t(locale, 'stopTab')}
+          isDisabled={!tab}
+          onPress={() => {
+            if (!tab) {
+              return
+            }
+            void dispatch({ type: 'account/stopTab', tabId: tab.id })
+          }}
+        >
+          <Square className="size-4" />
+        </Button>
+        <Button
+          isIconOnly
+          size="sm"
+          aria-label={t(locale, 'stopFarm')}
+          onPress={() => {
+            void dispatch({ type: 'account/stopFarm' })
+          }}
+        >
+          <CircleStop className="size-4" />
+        </Button>
+        <Button
+          isIconOnly
+          size="sm"
+          aria-label={t(locale, 'restoreLastSet')}
+          onPress={() => {
+            void dispatch({ type: 'account/restoreLastSet' })
+          }}
+        >
+          <RotateCcw className="size-4" />
         </Button>
       </div>
     </aside>

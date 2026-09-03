@@ -19,12 +19,15 @@ describe('nextAccountId', () => {
 })
 
 describe('ACCOUNT_LOOP_SHORTCUTS', () => {
-  it('exposes the four frozen display chords from shipped defaults', () => {
+  it('exposes the frozen display chords from shipped defaults', () => {
     expect(ACCOUNT_LOOP_SHORTCUTS.map((row) => row.win)).toEqual([
       'Ctrl+Shift+N',
       'Ctrl+Shift+[',
       'Ctrl+Shift+]',
-      'Ctrl+Enter'
+      'Ctrl+Enter',
+      'Ctrl+W',
+      'Ctrl+Shift+W',
+      'Ctrl+Shift+Enter'
     ])
   })
 })

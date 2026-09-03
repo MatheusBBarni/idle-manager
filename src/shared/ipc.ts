@@ -10,7 +10,7 @@ export type NavCommand =
   | { kind: 'home'; accountId: string }
   | { kind: 'load'; accountId: string; url: string }
 
-export type WindowCommand = 'min' | 'max' | 'close' | 'isMaximized'
+export type WindowCommand = 'min' | 'max' | 'close' | 'isMaximized' | 'quit'
 
 export type OpsourceAPI = {
   getState: () => Promise<WorkspaceSnapshot>

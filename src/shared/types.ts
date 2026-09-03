@@ -67,7 +67,9 @@ export type WorkspaceSnapshot = {
   theme: ThemeName
   windowBounds: WindowBounds | null
   launchAtStartup: boolean
+  blockSleepWhileRunning: boolean
   shortcuts: ShortcutMap
+  lastRunningAccountIds: string[]
 }
 
 export type AccountMetrics = {
