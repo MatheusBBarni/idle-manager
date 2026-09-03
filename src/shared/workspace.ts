@@ -256,6 +256,29 @@ function replaceAccount(
   }
 }
 
+function patchAccounts(
+  snapshot: WorkspaceSnapshot,
+  ids: string[],
+  patch: Partial<Account>
+): WorkspaceSnapshot {
+  if (ids.length === 0) {
+    return snapshot
+  }
+  let next = snapshot
+  for (const id of ids) {
+    next = replaceAccount(next, id, patch)
+  }
+  return next
+}
+
+function closeRunningAccounts(snapshot: WorkspaceSnapshot, accounts: Account[]): WorkspaceSnapshot {
+  return patchAccounts(
+    snapshot,
+    accounts.filter((account) => account.status === 'running').map((account) => account.id),
+    { status: 'closed', poppedOut: false }
+  )
+}
+
 function firstVisibleId(tabs: GameTab[], except?: string): string | null {
   return tabs.find((tab) => !tab.archived && tab.id !== except)?.id ?? null
 }
@@ -472,40 +495,16 @@ function reduceWorkspace(snapshot: WorkspaceSnapshot, action: WorkspaceAction): 
       if (!tab) {
         return snapshot
       }
-      const running = accountsForTab(snapshot, tab.id).filter((account) => account.status === 'running')
-      if (running.length === 0) {
-        return snapshot
-      }
-      let next = snapshot
-      for (const account of running) {
-        next = replaceAccount(next, account.id, { status: 'closed', poppedOut: false })
-      }
-      return next
+      return closeRunningAccounts(snapshot, accountsForTab(snapshot, tab.id))
     }
-    case 'account/stopFarm': {
-      const running = Object.values(snapshot.accounts).filter((account) => account.status === 'running')
-      if (running.length === 0) {
-        return snapshot
-      }
-      let next = snapshot
-      for (const account of running) {
-        next = replaceAccount(next, account.id, { status: 'closed', poppedOut: false })
-      }
-      return next
-    }
-    case 'account/restoreLastSet': {
-      const toStart = snapshot.lastRunningAccountIds.filter(
-        (id) => snapshot.accounts[id]?.status === 'closed'
+    case 'account/stopFarm':
+      return closeRunningAccounts(snapshot, Object.values(snapshot.accounts))
+    case 'account/restoreLastSet':
+      return patchAccounts(
+        snapshot,
+        snapshot.lastRunningAccountIds.filter((id) => snapshot.accounts[id]?.status === 'closed'),
+        { status: 'running' }
       )
-      if (toStart.length === 0) {
-        return snapshot
-      }
-      let next = snapshot
-      for (const id of toStart) {
-        next = replaceAccount(next, id, { status: 'running' })
-      }
-      return next
-    }
     case 'account/setUrl':
       return replaceAccount(snapshot, action.id, { url: normalizeUrl(action.url) })
     case 'account/setMuted':
