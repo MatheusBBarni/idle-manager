@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 title: Stop the whole farm
 type: backend
 complexity: medium
@@ -68,10 +68,10 @@ A farm operator can put **every** running account down in one action, including 
 
 ## Subtasks
 
-- [ ] 02.1 `account/stopFarm` closes all running accounts in one commit
-- [ ] 02.2 Last-set freezes to the full pre-empty running set
-- [ ] 02.3 Expanded sidebar Stop whole farm + four-locale copy
-- [ ] 02.4 Focused tests and repository gates
+- [x] 02.1 `account/stopFarm` closes all running accounts in one commit
+- [x] 02.2 Last-set freezes to the full pre-empty running set
+- [x] 02.3 Expanded sidebar Stop whole farm + four-locale copy
+- [x] 02.4 Focused tests and repository gates
 
 ## Implementation Details
 

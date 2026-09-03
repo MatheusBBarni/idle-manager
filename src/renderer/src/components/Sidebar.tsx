@@ -1,4 +1,4 @@
-import { EllipsisVertical, PanelLeftClose, PanelLeftOpen, Play, Plus, Square } from 'lucide-react'
+import { CircleStop, EllipsisVertical, PanelLeftClose, PanelLeftOpen, Play, Plus, Square } from 'lucide-react'
 import { Button, Dropdown, Label } from '@heroui/react'
 import { ACCOUNT_COLORS, type Account } from '@shared/types'
 import { formatAge, formatBytes, formatCpu, t } from '@shared/i18n'
@@ -267,6 +267,16 @@ export function Sidebar() {
           }}
         >
           <Square className="size-4" />
+        </Button>
+        <Button
+          isIconOnly
+          size="sm"
+          aria-label={t(locale, 'stopFarm')}
+          onPress={() => {
+            void dispatch({ type: 'account/stopFarm' })
+          }}
+        >
+          <CircleStop className="size-4" />
         </Button>
       </div>
     </aside>

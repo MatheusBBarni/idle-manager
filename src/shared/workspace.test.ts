@@ -636,3 +636,45 @@ describe('last running set and stopTab', () => {
     expect(state.lastRunningAccountIds).toEqual(['acc-b'])
   })
 })
+
+describe('stopFarm', () => {
+  it('closes every running account including pop-outs and freezes last-set', () => {
+    let state = withTab()
+    state = applyAction(state, {
+      type: 'tab/create',
+      id: 'tab-other',
+      name: 'Other',
+      baseUrl: 'https://example.com'
+    })
+    state = applyAction(state, { type: 'account/create', tabId: 'tab-gengar', id: 'acc-a' })
+    state = applyAction(state, { type: 'account/create', tabId: 'tab-other', id: 'acc-b' })
+    state = applyAction(state, { type: 'account/setStatus', id: 'acc-a', status: 'running' })
+    state = applyAction(state, { type: 'account/setStatus', id: 'acc-b', status: 'running' })
+    state = applyAction(state, { type: 'account/setPoppedOut', id: 'acc-b', poppedOut: true })
+    const action = { type: 'account/stopFarm' as const }
+    expect(accountIdsToWipe(state, action)).toEqual([])
+    state = applyAction(state, action)
+    expect(state.accounts['acc-a']?.status).toBe('closed')
+    expect(state.accounts['acc-b']?.status).toBe('closed')
+    expect(state.accounts['acc-a']?.poppedOut).toBe(false)
+    expect(state.accounts['acc-b']?.poppedOut).toBe(false)
+    expect(state.lastRunningAccountIds).toEqual(['acc-a', 'acc-b'])
+  })
+
+  it('freezes last-set to every running id, not the last closed id', () => {
+    let state = withTab()
+    state = applyAction(state, { type: 'account/create', tabId: 'tab-gengar', id: 'acc-a' })
+    state = applyAction(state, { type: 'account/create', tabId: 'tab-gengar', id: 'acc-b' })
+    state = applyAction(state, { type: 'account/create', tabId: 'tab-gengar', id: 'acc-c' })
+    state = applyAction(state, { type: 'account/setStatus', id: 'acc-a', status: 'running' })
+    state = applyAction(state, { type: 'account/setStatus', id: 'acc-b', status: 'running' })
+    state = applyAction(state, { type: 'account/setStatus', id: 'acc-c', status: 'running' })
+    state = applyAction(state, { type: 'account/stopFarm' })
+    expect(state.lastRunningAccountIds).toEqual(['acc-a', 'acc-b', 'acc-c'])
+  })
+
+  it('returns the same snapshot when nothing is running', () => {
+    const state = emptySnapshot()
+    expect(applyAction(state, { type: 'account/stopFarm' })).toBe(state)
+  })
+})
