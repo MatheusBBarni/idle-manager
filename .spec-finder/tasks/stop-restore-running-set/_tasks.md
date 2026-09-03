@@ -7,7 +7,7 @@ Canonical execution order. Numeric IDs are the run order. Parallelizable tasks s
 | task_01 | Stop this tab and remember last-set | US-01 | backend | high | [] | completed |
 | task_02 | Stop the whole farm | US-02 | backend | medium | [task_01] | completed |
 | task_03 | Restore the last running set | US-03 | backend | medium | [task_01] | completed |
-| task_04 | Keyboard trio plus bind list | US-04 | backend | high | [task_01, task_02, task_03] | pending |
+| task_04 | Keyboard trio plus bind list | US-04 | backend | high | [task_01, task_02, task_03] | completed |
 
 ## Execution order
 

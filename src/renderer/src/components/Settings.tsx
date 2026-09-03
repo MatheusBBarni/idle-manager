@@ -31,7 +31,10 @@ const SHORTCUT_LABELS: Record<ShortcutCommand, MessageKey> = {
   'account-create': 'shortcutCreate',
   'account-prev': 'shortcutPrev',
   'account-next': 'shortcutNext',
-  'account-start': 'shortcutStart'
+  'account-start': 'shortcutStart',
+  'account-stop-tab': 'stopTab',
+  'account-stop-farm': 'stopFarm',
+  'account-restore-last': 'restoreLastSet'
 }
 
 export function SettingsModal({ onClose }: { onClose: () => void }) {

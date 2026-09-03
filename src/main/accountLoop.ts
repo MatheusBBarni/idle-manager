@@ -36,10 +36,19 @@ function actionsForCommand(command: AccountLoopCommand, snapshot: WorkspaceSnaps
     }
     return [{ type: 'account/setStatus', id: account.id, status: 'running' }]
   }
+  if (command === 'account-stop-farm') {
+    return [{ type: 'account/stopFarm' }]
+  }
+  if (command === 'account-restore-last') {
+    return [{ type: 'account/restoreLastSet' }]
+  }
 
   const tab = liveTab(snapshot)
   if (!tab) {
     return []
+  }
+  if (command === 'account-stop-tab') {
+    return [{ type: 'account/stopTab', tabId: tab.id }]
   }
   if (command === 'account-create') {
     return keyboardCreateActions(tab.id, newId())

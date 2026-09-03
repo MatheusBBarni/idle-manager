@@ -134,6 +134,9 @@ Modifier is `Cmd` on macOS and `Ctrl` elsewhere.
 | `Mod+Shift+[` | Previous account |
 | `Mod+Shift+]` | Next account |
 | `Mod+Enter` | Start targeted account |
+| `Mod+W` | Stop this tab |
+| `Mod+Shift+W` | Stop whole farm |
+| `Mod+Shift+Enter` | Restore last set |
 
 The URL bar navigates **only** the active account, not every panel in the tab.
 
