@@ -58,6 +58,7 @@ const frozenEn: Record<Exclude<MessageKey, 'localeEs' | 'localeZhHans'>, string>
   themeDark: 'Dark',
   themeLight: 'Light',
   launchAtStartup: 'Launch at startup',
+  blockSleepWhileRunning: 'Block OS sleep while running',
   importWorkspace: 'Import workspace',
   exportWorkspace: 'Export workspace',
   importGameList: 'Import game list',
@@ -167,6 +168,7 @@ const frozenPt: Record<Exclude<MessageKey, 'localeEs' | 'localeZhHans'>, string>
   themeDark: 'Escuro',
   themeLight: 'Claro',
   launchAtStartup: 'Iniciar com o sistema',
+  blockSleepWhileRunning: 'Bloquear suspensão com contas em execução',
   importWorkspace: 'Importar espaço de trabalho',
   exportWorkspace: 'Exportar espaço de trabalho',
   importGameList: 'Importar lista de jogos',
@@ -282,6 +284,14 @@ describe('i18n', () => {
     for (const locale of ['pt', 'es', 'zh-Hans'] as const) {
       expect(t(locale, 'sleepBlocked').length).toBeGreaterThan(0)
       expect(t(locale, 'sleepBlocked')).not.toBe(t('en', 'sleepBlocked'))
+    }
+  })
+
+  it('uses Block OS sleep while running in English and distinct copy in the other locales', () => {
+    expect(t('en', 'blockSleepWhileRunning')).toBe('Block OS sleep while running')
+    for (const locale of ['pt', 'es', 'zh-Hans'] as const) {
+      expect(t(locale, 'blockSleepWhileRunning').length).toBeGreaterThan(0)
+      expect(t(locale, 'blockSleepWhileRunning')).not.toBe(t('en', 'blockSleepWhileRunning'))
     }
   })
 

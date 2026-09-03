@@ -59,6 +59,7 @@ export type WorkspaceAction =
   | { type: 'prefs/locale'; locale: Locale }
   | { type: 'prefs/theme'; theme: ThemeName }
   | { type: 'prefs/launchAtStartup'; value: boolean }
+  | { type: 'prefs/blockSleepWhileRunning'; value: boolean }
   | { type: 'prefs/shortcut'; command: ShortcutCommand; chord: ShortcutChord | null }
   | { type: 'window/bounds'; bounds: WindowBounds }
 
@@ -81,6 +82,7 @@ export function emptySnapshot(): WorkspaceSnapshot {
     theme: 'dark',
     windowBounds: null,
     launchAtStartup: false,
+    blockSleepWhileRunning: true,
     shortcuts: cloneShortcutMap(SHORTCUT_DEFAULTS)
   }
 }
@@ -125,6 +127,10 @@ export function activeAccount(snapshot: WorkspaceSnapshot): Account | null {
 
 export function hasRunningAccount(snapshot: WorkspaceSnapshot): boolean {
   return Object.values(snapshot.accounts).some((account) => account.status === 'running')
+}
+
+export function shouldBlockSleep(snapshot: WorkspaceSnapshot): boolean {
+  return snapshot.blockSleepWhileRunning && hasRunningAccount(snapshot)
 }
 
 export function accountIdsToWipe(snapshot: WorkspaceSnapshot, action: WorkspaceAction): string[] {
@@ -432,6 +438,8 @@ export function applyAction(snapshot: WorkspaceSnapshot, action: WorkspaceAction
       return { ...snapshot, theme: action.theme }
     case 'prefs/launchAtStartup':
       return { ...snapshot, launchAtStartup: action.value }
+    case 'prefs/blockSleepWhileRunning':
+      return { ...snapshot, blockSleepWhileRunning: action.value }
     case 'prefs/shortcut':
       return applyShortcutPref(snapshot, action.command, action.chord)
     case 'window/bounds':
@@ -459,6 +467,10 @@ function isGameListDocument(raw: unknown): raw is { version: 1; kind: 'game-list
 
 function asFinite(value: unknown): number | null {
   return typeof value === 'number' && Number.isFinite(value) ? value : null
+}
+
+function asBoolean(value: unknown, fallback: boolean): boolean {
+  return typeof value === 'boolean' ? value : fallback
 }
 
 function asString(value: unknown): string | null {
@@ -582,7 +594,8 @@ export function parseSnapshot(raw: unknown): WorkspaceSnapshot {
     locale: isLocale(raw.locale) ? raw.locale : 'pt',
     theme: raw.theme === 'light' ? 'light' : 'dark',
     windowBounds: asWindowBounds(raw.windowBounds),
-    launchAtStartup: raw.launchAtStartup === true,
+    launchAtStartup: asBoolean(raw.launchAtStartup, false),
+    blockSleepWhileRunning: asBoolean(raw.blockSleepWhileRunning, true),
     shortcuts: normalizeShortcutMap(raw.shortcuts)
   }
 }

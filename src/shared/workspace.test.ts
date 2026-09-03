@@ -12,6 +12,7 @@ import {
   gameListImportActions,
   lastArchivedTab,
   hasRunningAccount,
+  shouldBlockSleep,
   parseGameList,
   parseSnapshot,
   snapshotFromImport,
@@ -429,6 +430,32 @@ describe('hasRunningAccount', () => {
     expect(state.accounts['acc-a']?.status).toBe('closed')
     expect(state.accounts['acc-b']?.status).toBe('closed')
     expect(hasRunningAccount(state)).toBe(false)
+  })
+})
+
+describe('shouldBlockSleep', () => {
+  it('defaults on and follows the running set until the setting is turned off', () => {
+    expect(emptySnapshot().blockSleepWhileRunning).toBe(true)
+    expect(parseSnapshot({ version: 1, tabs: [], accounts: {} }).blockSleepWhileRunning).toBe(true)
+    expect(
+      parseSnapshot({ version: 1, tabs: [], accounts: {}, blockSleepWhileRunning: false })
+        .blockSleepWhileRunning
+    ).toBe(false)
+    expect(
+      parseSnapshot({ version: 1, tabs: [], accounts: {}, blockSleepWhileRunning: 'no' })
+        .blockSleepWhileRunning
+    ).toBe(true)
+
+    let state = withTab()
+    state = applyAction(state, { type: 'account/create', tabId: 'tab-gengar', id: 'acc-run', name: 'Run' })
+    state = applyAction(state, { type: 'account/setStatus', id: 'acc-run', status: 'running' })
+    expect(shouldBlockSleep(state)).toBe(true)
+
+    const off = applyAction(state, { type: 'prefs/blockSleepWhileRunning', value: false })
+    expect(off.blockSleepWhileRunning).toBe(false)
+    expect(hasRunningAccount(off)).toBe(true)
+    expect(shouldBlockSleep(off)).toBe(false)
+    expect(accountIdsToWipe(state, { type: 'prefs/blockSleepWhileRunning', value: false })).toEqual([])
   })
 })
 

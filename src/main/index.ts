@@ -72,6 +72,13 @@ function applyDispatchEffects(action: WorkspaceAction, before: WorkspaceSnapshot
   }
 }
 
+function afterSnapshotWrite(): void {
+  syncViews(snapshot)
+  syncSleepBlock(snapshot)
+  broadcast()
+  scheduleSave()
+}
+
 function commitAll(actions: WorkspaceAction[]): WorkspaceSnapshot {
   if (actions.length === 0) {
     return snapshot
@@ -81,10 +88,7 @@ function commitAll(actions: WorkspaceAction[]): WorkspaceSnapshot {
     snapshot = applyAction(snapshot, action)
     applyDispatchEffects(action, before)
   }
-  syncViews(snapshot)
-  syncSleepBlock(snapshot)
-  broadcast()
-  scheduleSave()
+  afterSnapshotWrite()
   return snapshot
 }
 
@@ -249,10 +253,7 @@ function registerIpc(): void {
       return false
     }
     snapshot = snapshotFromImport(JSON.parse(await readFile(file, 'utf8')))
-    syncViews(snapshot)
-    syncSleepBlock(snapshot)
-    broadcast()
-    scheduleSave()
+    afterSnapshotWrite()
     return true
   })
   ipcMain.handle('ops:exportGames', async () => {

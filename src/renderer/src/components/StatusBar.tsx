@@ -3,7 +3,7 @@ import { formatBytes, formatCpu, formatUptime, t, type MessageKey } from '@share
 import { hasGpuMetrics } from '@shared/metricsAggregate'
 import { RUNNING_START_WARN_AFTER } from '@shared/metricsDisplay'
 import type { LayoutMode } from '@shared/types'
-import { activeAccount, hasRunningAccount, visibleTabs } from '@shared/workspace'
+import { activeAccount, shouldBlockSleep, visibleTabs } from '@shared/workspace'
 import { useAppStore } from '../store'
 
 const layoutLabel: Record<LayoutMode, MessageKey> = {
@@ -24,7 +24,7 @@ export function StatusBar() {
   const account = activeAccount(snapshot)
   const running = Object.values(snapshot.accounts).filter((item) => item.status === 'running').length
   const warnRunningStart = running > RUNNING_START_WARN_AFTER
-  const sleepBlocked = hasRunningAccount(snapshot)
+  const sleepBlocked = shouldBlockSleep(snapshot)
   const aggregate = metrics?.aggregate
 
   return (

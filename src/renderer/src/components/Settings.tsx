@@ -133,6 +133,16 @@ function GeneralSettings() {
         />
         {t(locale, 'launchAtStartup')}
       </label>
+      <label className="flex items-center gap-2 text-sm">
+        <input
+          type="checkbox"
+          checked={snapshot.blockSleepWhileRunning}
+          onChange={(event) =>
+            void dispatch({ type: 'prefs/blockSleepWhileRunning', value: event.target.checked })
+          }
+        />
+        {t(locale, 'blockSleepWhileRunning')}
+      </label>
       <div className="flex flex-wrap gap-2">
         <Button size="sm" variant="secondary" onPress={() => void window.opsource.exportWorkspace()}>
           {t(locale, 'exportWorkspace')}

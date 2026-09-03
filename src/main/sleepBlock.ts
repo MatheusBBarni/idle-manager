@@ -1,6 +1,6 @@
 import { powerSaveBlocker } from 'electron'
 import type { WorkspaceSnapshot } from '@shared/types'
-import { hasRunningAccount } from '@shared/workspace'
+import { shouldBlockSleep } from '@shared/workspace'
 
 let blockerId: number | null = null
 
@@ -13,21 +13,17 @@ export function stopSleepBlock(): void {
 }
 
 export function syncSleepBlock(snapshot: WorkspaceSnapshot): void {
-  if (!hasRunningAccount(snapshot)) {
+  if (!shouldBlockSleep(snapshot)) {
     stopSleepBlock()
     return
   }
   if (blockerId != null && powerSaveBlocker.isStarted(blockerId)) {
     return
   }
-  if (blockerId != null) {
-    powerSaveBlocker.stop(blockerId)
-    blockerId = null
-  }
+  stopSleepBlock()
   const id = powerSaveBlocker.start('prevent-app-suspension')
   if (!powerSaveBlocker.isStarted(id)) {
     console.error('sleep block start failed')
-    blockerId = null
     return
   }
   blockerId = id
