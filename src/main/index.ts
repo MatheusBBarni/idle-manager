@@ -12,6 +12,7 @@ import { attachAccountLoop, bindAccountLoop } from './accountLoop'
 import { verifyIsolation } from './isolationVerify'
 import { collectMetrics } from './metrics'
 import { loadSnapshot, saveSnapshot } from './persistence'
+import { stopSleepBlock, syncSleepBlock } from './sleepBlock'
 import { handleUpdateCommand, startUpdater } from './updater'
 import {
   applyStage,
@@ -81,6 +82,7 @@ function commitAll(actions: WorkspaceAction[]): WorkspaceSnapshot {
     applyDispatchEffects(action, before)
   }
   syncViews(snapshot)
+  syncSleepBlock(snapshot)
   broadcast()
   scheduleSave()
   return snapshot
@@ -248,6 +250,7 @@ function registerIpc(): void {
     }
     snapshot = snapshotFromImport(JSON.parse(await readFile(file, 'utf8')))
     syncViews(snapshot)
+    syncSleepBlock(snapshot)
     broadcast()
     scheduleSave()
     return true
@@ -297,6 +300,7 @@ app.whenReady().then(async () => {
   }
 
   snapshot = await loadSnapshot()
+  syncSleepBlock(snapshot)
   if (snapshot.launchAtStartup) {
     app.setLoginItemSettings({ openAtLogin: true })
   }
@@ -359,6 +363,7 @@ app.whenReady().then(async () => {
 })
 
 app.on('before-quit', () => {
+  stopSleepBlock()
   void flushAll()
   void saveSnapshot(snapshot)
 })
