@@ -6,7 +6,7 @@ Canonical execution order. Numeric IDs are the run order. Parallelizable tasks s
 |---|---|---|---|---|---|---|
 | task_01 | Add Settings Quit that always exits | US-04 | frontend | high | [] | completed |
 | task_02 | Dismiss a live farm to the tray | US-01 | backend | high | [task_01] | completed |
-| task_03 | Restore from a second launch | US-03 | backend | low | [task_02] | pending |
+| task_03 | Restore from a second launch | US-03 | backend | low | [task_02] | completed |
 
 ## Execution order
 

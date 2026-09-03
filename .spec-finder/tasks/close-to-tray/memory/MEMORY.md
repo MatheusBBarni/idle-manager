@@ -2,8 +2,7 @@
 
 ## Current State
 
-- task_01 completed: Settings Quit via `WindowCommand` `'quit'` and `beginQuit()`.
-- task_02 implemented: win32 Close dismisses to Tray; empty Close quits; Apply uses `beginQuit`. task_03 pending.
+- task_01–task_03 implemented: Settings Quit, win32 Close-to-tray, single-instance restore/focus.
 
 ## Shared Decisions
 
@@ -12,12 +11,13 @@
 - Updater Apply `beginQuit` hook is task_02 (interceptor is what can block install).
 - Single-instance lock is task_03 only.
 - Quitting flag lives in `src/main/appSession.ts` (`isQuitting()` / `beginQuit()`). No snapshot field.
-- `restoreMainWindow()` is the only restore seam (tray click, tray menu, runningCount→0, later second-instance).
+- `restoreMainWindow()` is the only restore seam (tray click, tray menu, runningCount→0, second-instance).
 
 ## Shared Learnings
 
 - `ops:window` `'quit'` must run `beginQuit()` even when `mainWindow` is missing.
 - win32 `trayReady` is optimistic until Tray construct; failure fail-closes that Close.
+- A process that loses `requestSingleInstanceLock` can still see `whenReady`; skip chrome setup there.
 
 ## Open Risks
 
@@ -27,4 +27,4 @@
 
 ## Handoffs
 
-- task_03: own only `requestSingleInstanceLock` + `second-instance` in `index.ts`. Reuse `restoreMainWindow`; do not expand tray scope.
+- Packet complete except Windows dogfood journal (PRD G-01–G-04).

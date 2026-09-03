@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 title: Restore from a second launch
 type: backend
 complexity: low
@@ -66,9 +66,9 @@ A dismissed farm has no taskbar button, so launching Idle manager again must not
 
 ## Subtasks
 
-- [ ] 03.1 Take a single-instance lock; quit if this process lost.
-- [ ] 03.2 On second-instance, restore if dismissed else focus; do not open another chrome farm.
-- [ ] 03.3 Typecheck; record whether second-launch was exercised on this host.
+- [x] 03.1 Take a single-instance lock; quit if this process lost.
+- [x] 03.2 On second-instance, restore if dismissed else focus; do not open another chrome farm.
+- [x] 03.3 Typecheck; record whether second-launch was exercised on this host.
 
 ## Implementation Details
 

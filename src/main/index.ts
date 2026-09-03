@@ -12,7 +12,7 @@ import { attachAccountLoop, bindAccountLoop } from './accountLoop'
 import { verifyIsolation } from './isolationVerify'
 import { collectMetrics } from './metrics'
 import { loadSnapshot, saveSnapshot } from './persistence'
-import { beginQuit, bindAppSession, interceptClose, syncDismissedSession } from './appSession'
+import { beginQuit, bindAppSession, interceptClose, restoreMainWindow, syncDismissedSession } from './appSession'
 import { stopSleepBlock, syncSleepBlock } from './sleepBlock'
 import { handleUpdateCommand, startUpdater } from './updater'
 import {
@@ -44,10 +44,29 @@ app.setName('Idle manager')
 
 const verifying = process.argv.includes('--verify-isolation')
 const preloadPath = fileURLToPath(new URL('../preload/index.cjs', import.meta.url))
+const gotTheLock = app.requestSingleInstanceLock()
 
 let mainWindow: BrowserWindow | null = null
 let snapshot: WorkspaceSnapshot = emptySnapshot()
 let saveTimer: NodeJS.Timeout | null = null
+
+if (!gotTheLock) {
+  app.quit()
+} else {
+  app.on('second-instance', () => {
+    if (!mainWindow || mainWindow.isDestroyed()) {
+      return
+    }
+    if (!mainWindow.isVisible()) {
+      restoreMainWindow()
+      return
+    }
+    if (mainWindow.isMinimized()) {
+      mainWindow.restore()
+    }
+    mainWindow.focus()
+  })
+}
 
 function scheduleSave(): void {
   if (saveTimer) {
@@ -301,6 +320,9 @@ function registerIpc(): void {
 }
 
 app.whenReady().then(async () => {
+  if (!gotTheLock) {
+    return
+  }
   if (verifying) {
     const code = await verifyIsolation()
     app.exit(code)
@@ -393,6 +415,9 @@ app.on('window-all-closed', () => {
 })
 
 app.on('activate', () => {
+  if (!gotTheLock) {
+    return
+  }
   if (BrowserWindow.getAllWindows().length === 0) {
     createWindow()
     syncViews(snapshot)
