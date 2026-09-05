@@ -169,6 +169,7 @@ textarea {
   .chrome-tab {
     position: relative;
     z-index: 1;
+    -webkit-app-region: no-drag;
     display: flex;
     min-width: 80px;
     max-width: 220px;
@@ -239,6 +240,7 @@ textarea {
   .chrome-tab-close {
     position: relative;
     z-index: 1;
+    -webkit-app-region: no-drag;
     display: flex;
     width: 18px;
     height: 18px;
@@ -258,6 +260,7 @@ textarea {
   }
 
   .chrome-tab-new {
+    -webkit-app-region: no-drag;
     display: flex;
     width: 28px;
     height: 28px;

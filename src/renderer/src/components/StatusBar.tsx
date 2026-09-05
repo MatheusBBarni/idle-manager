@@ -28,7 +28,7 @@ export function StatusBar() {
   const aggregate = metrics?.aggregate
 
   return (
-    <footer className="flex h-8 items-center gap-3 border-t border-hairline bg-canvas px-4 font-mono text-xs text-muted">
+    <footer className="flex h-8 items-center gap-3 border-t border-hairline bg-canvas px-4 font-mono text-xs tabular-nums text-muted">
       <span className="text-signal">{t(locale, 'statusReady')}</span>
       <span>{tab?.name ?? '-'}</span>
       <span>{tab ? t(locale, layoutLabel[tab.layout]) : '-'}</span>

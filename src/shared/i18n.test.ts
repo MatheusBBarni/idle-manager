@@ -1,5 +1,13 @@
 import { describe, expect, it } from 'vitest'
-import { chromeAriaLocale, chromeHtmlLang, MESSAGE_KEYS, t, type MessageKey } from './i18n'
+import {
+  chromeAriaLocale,
+  chromeHtmlLang,
+  formatBytes,
+  formatCpu,
+  MESSAGE_KEYS,
+  t,
+  type MessageKey
+} from './i18n'
 import { LOCALES } from './types'
 
 const shared = new Set<MessageKey>([
@@ -393,5 +401,18 @@ describe('i18n', () => {
     expect(chromeAriaLocale('en')).toBe('en-US')
     expect(chromeAriaLocale('es')).toBe('es')
     expect(chromeAriaLocale('zh-Hans')).toBe('zh-Hans')
+  })
+
+  it('formats run usage with KB and one decimal below 10', () => {
+    expect(formatBytes(0)).toBe('0 B')
+    expect(formatBytes(512)).toBe('512 B')
+    expect(formatBytes(2048)).toBe('2.0 KB')
+    expect(formatBytes(10 * 1024)).toBe('10 KB')
+    expect(formatBytes(1.5 * 1024 * 1024)).toBe('1.5 MB')
+    expect(formatBytes(186 * 1024 * 1024)).toBe('186 MB')
+    expect(formatBytes(1.5 * 1024 * 1024 * 1024)).toBe('1.5 GB')
+    expect(formatCpu(0)).toBe('0.0%')
+    expect(formatCpu(2.4)).toBe('2.4%')
+    expect(formatCpu(12.3)).toBe('12%')
   })
 })

@@ -35,6 +35,7 @@ type AppStore = {
   sidebarCollapsed: boolean
   shortcutCapturing: ShortcutCommand | null
   updateStatus: UpdateStatus
+  popoverOpen: boolean
   setSnapshot: (snapshot: WorkspaceSnapshot) => void
   setMetrics: (metrics: MetricsPayload) => void
   setUpdateStatus: (updateStatus: UpdateStatus) => void
@@ -45,6 +46,7 @@ type AppStore = {
   setMeta: (meta: { platform: NodeJS.Platform; version: string }) => void
   setSidebarCollapsed: (value: boolean) => void
   setShortcutCapturing: (value: ShortcutCommand | null) => void
+  setPopoverOpen: (popoverOpen: boolean) => void
 }
 
 export const useAppStore = create<AppStore>((set) => ({
@@ -59,6 +61,7 @@ export const useAppStore = create<AppStore>((set) => ({
   sidebarCollapsed: false,
   shortcutCapturing: null,
   updateStatus: { phase: 'idle' },
+  popoverOpen: false,
   setSnapshot: (snapshot) => set({ snapshot }),
   setMetrics: (metrics) => set({ metrics }),
   setUpdateStatus: (updateStatus) => set({ updateStatus }),
@@ -72,7 +75,8 @@ export const useAppStore = create<AppStore>((set) => ({
   setDialog: (dialog) => set({ dialog }),
   setMeta: (meta) => set(meta),
   setSidebarCollapsed: (sidebarCollapsed) => set({ sidebarCollapsed }),
-  setShortcutCapturing: (shortcutCapturing) => set({ shortcutCapturing })
+  setShortcutCapturing: (shortcutCapturing) => set({ shortcutCapturing }),
+  setPopoverOpen: (popoverOpen) => set({ popoverOpen })
 }))
 
 export async function dispatch(action: WorkspaceAction): Promise<WorkspaceSnapshot> {

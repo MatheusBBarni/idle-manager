@@ -502,35 +502,31 @@ export function chromeAriaLocale(locale: Locale): string {
   return CHROME_DOC_LANG[locale].aria
 }
 
-export function formatAge(from: number | null, now: number): string {
-  if (!from) {
-    return '-'
+function formatScaled(value: number): string {
+  if (value >= 10) {
+    return value.toFixed(0)
   }
-  const seconds = Math.max(0, Math.round((now - from) / 1000))
-  if (seconds < 60) {
-    return `${seconds}s`
-  }
-  const minutes = Math.floor(seconds / 60)
-  if (minutes < 60) {
-    return `${minutes}m`
-  }
-  const hours = Math.floor(minutes / 60)
-  return `${hours}h`
+  return value.toFixed(1)
 }
 
 export function formatBytes(bytes: number): string {
-  if (bytes < 1024) {
-    return `${bytes} B`
+  const n = Math.max(0, bytes)
+  if (n < 1024) {
+    return `${Math.round(n)} B`
   }
-  const mb = bytes / (1024 * 1024)
+  const kb = n / 1024
+  if (kb < 1024) {
+    return `${formatScaled(kb)} KB`
+  }
+  const mb = kb / 1024
   if (mb < 1024) {
-    return `${mb >= 100 ? mb.toFixed(0) : mb.toFixed(0)} MB`
+    return `${formatScaled(mb)} MB`
   }
-  return `${(mb / 1024).toFixed(1)} GB`
+  return `${formatScaled(mb / 1024)} GB`
 }
 
 export function formatCpu(cpu: number): string {
-  return `${Math.max(0, cpu).toFixed(1)}%`
+  return `${formatScaled(Math.max(0, cpu))}%`
 }
 
 export function formatUptime(ms: number): string {

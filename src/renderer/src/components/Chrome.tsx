@@ -54,7 +54,7 @@ function RecentlyClosed({ locale }: { locale: Locale }) {
   const snapshot = useAppStore((state) => state.snapshot)
   const closed = archivedTabs(snapshot)
   return (
-    <Dropdown className="h-full justify-center">
+    <Dropdown className="app-no-drag h-full justify-center">
       <Button
         isIconOnly
         size="sm"
@@ -111,7 +111,7 @@ export function Chrome() {
     <header className="bg-tab-strip">
       <div className="app-drag flex h-9 items-stretch">
         {platform === 'darwin' ? <div className="w-[72px] shrink-0" /> : null}
-        <div className="chrome-tabstrip app-no-drag min-w-0 flex-1">
+        <div className="chrome-tabstrip min-w-0 flex-1">
         {tabs.map((item) => {
           const active = item.id === snapshot.activeTabId
           return (
@@ -146,6 +146,7 @@ export function Chrome() {
           <Plus className="size-4" />
         </button>
         <RecentlyClosed locale={locale} />
+        <div className="min-w-2 flex-1" />
         </div>
         <div className="app-no-drag flex shrink-0 items-center gap-1 pr-2">
           <IconButton label={t(locale, 'settings')} onPress={() => useAppStore.getState().setDialog({ id: 'settings' })}>

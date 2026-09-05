@@ -1,9 +1,31 @@
+import { type ReactNode } from 'react'
 import { CircleStop, EllipsisVertical, PanelLeftClose, PanelLeftOpen, Play, Plus, RotateCcw, Square } from 'lucide-react'
-import { Button, Dropdown, Label } from '@heroui/react'
+import { Button, Dropdown, Label, Tooltip } from '@heroui/react'
 import { ACCOUNT_COLORS, type Account } from '@shared/types'
-import { formatAge, formatBytes, formatCpu, t } from '@shared/i18n'
+import { formatBytes, formatCpu, t } from '@shared/i18n'
 import { accountsForTab, visibleTabs } from '@shared/workspace'
 import { dispatch, useAppStore } from '../store'
+
+function FooterIcon({
+  label,
+  disabled,
+  onPress,
+  children
+}: {
+  label: string
+  disabled?: boolean
+  onPress: () => void
+  children: ReactNode
+}) {
+  return (
+    <Tooltip delay={400}>
+      <Button isIconOnly size="sm" aria-label={label} isDisabled={disabled} onPress={onPress}>
+        {children}
+      </Button>
+      <Tooltip.Content className="max-w-52 px-2 py-1 text-xs">{label}</Tooltip.Content>
+    </Tooltip>
+  )
+}
 
 function AccountRow({ account, active }: { account: Account; active: boolean }) {
   const snapshot = useAppStore((state) => state.snapshot)
@@ -14,7 +36,7 @@ function AccountRow({ account, active }: { account: Account; active: boolean }) 
 
   return (
     <div
-      className={`group relative flex items-start gap-2 rounded-2xl px-3 py-2 ${
+      className={`group relative flex items-start gap-2 rounded-lg px-3 py-2 ${
         active ? 'bg-canvas-soft' : 'hover:bg-canvas-soft/70'
       }`}
     >
@@ -33,26 +55,25 @@ function AccountRow({ account, active }: { account: Account; active: boolean }) 
         <span className="mt-1.5 size-2.5 shrink-0 rounded-full" style={{ background: account.color }} />
         <span className="min-w-0 flex-1">
           <span className="block truncate text-sm font-semibold">{account.name}</span>
-          <span className="mt-0.5 flex flex-wrap items-center gap-x-2 text-xs text-muted">
+          <span className="mt-0.5 flex min-w-0 flex-col gap-0.5 text-xs">
             <span className={running ? 'text-signal' : 'text-faint'}>
               {running ? t(locale, 'online') : t(locale, 'closed')}
+              {account.poppedOut ? ` · ${t(locale, 'poppedOut')}` : ''}
             </span>
-            {running && live ? (
-              <>
+            {running ? (
+              <span className="flex gap-2 font-mono text-[11px] tabular-nums text-muted">
                 <span>
-                  {t(locale, 'cpu')} {formatCpu(live.cpu)}
+                  {t(locale, 'cpu')} {formatCpu(live?.cpu ?? 0)}
                 </span>
                 <span>
-                  {t(locale, 'ram')} {formatBytes(live.memoryBytes)}
+                  {t(locale, 'ram')} {formatBytes(live?.memoryBytes ?? 0)}
                 </span>
-                <span>{formatAge(live.lastActivityAt ?? account.lastActivityAt, Date.now())}</span>
-              </>
+              </span>
             ) : null}
-            {account.poppedOut ? <span>{t(locale, 'poppedOut')}</span> : null}
           </span>
         </span>
       </button>
-      <Dropdown>
+      <Dropdown onOpenChange={(open) => useAppStore.getState().setPopoverOpen(open)}>
         <Button isIconOnly size="sm" variant="ghost" aria-label={account.name} className="text-muted">
           <EllipsisVertical className="size-4" />
         </Button>
@@ -64,7 +85,7 @@ function AccountRow({ account, active }: { account: Account; active: boolean }) 
                 type="button"
                 title={color}
                 aria-label={color}
-                className={`size-4 rounded-full ${account.color === color ? 'ring-1 ring-ink ring-offset-1 ring-offset-overlay' : ''}`}
+                className={`size-4 cursor-pointer rounded-full transition-transform hover:scale-110 ${account.color === color ? 'ring-1 ring-ink ring-offset-1 ring-offset-overlay' : ''}`}
                 style={{ background: color }}
                 onClick={() => void dispatch({ type: 'account/recolor', id: account.id, color })}
               />
@@ -73,11 +94,12 @@ function AccountRow({ account, active }: { account: Account; active: boolean }) 
           <Dropdown.Menu
             onAction={(key) => {
               const id = String(key)
-              if (id === 'start') {
-                void dispatch({ type: 'account/setStatus', id: account.id, status: 'running' })
-              }
-              if (id === 'stop') {
-                void dispatch({ type: 'account/setStatus', id: account.id, status: 'closed' })
+              if (id === 'toggle') {
+                void dispatch({
+                  type: 'account/setStatus',
+                  id: account.id,
+                  status: running ? 'closed' : 'running'
+                })
               }
               if (id === 'rename') {
                 useAppStore.getState().setDialog({ id: 'account-rename', accountId: account.id })
@@ -104,11 +126,11 @@ function AccountRow({ account, active }: { account: Account; active: boolean }) 
               }
             }}
           >
-            <Dropdown.Item id="start" textValue={t(locale, 'startAccount')}>
-              <Label>{t(locale, 'startAccount')}</Label>
-            </Dropdown.Item>
-            <Dropdown.Item id="stop" textValue={t(locale, 'stopAccount')}>
-              <Label>{t(locale, 'stopAccount')}</Label>
+            <Dropdown.Item
+              id="toggle"
+              textValue={t(locale, running ? 'stopAccount' : 'startAccount')}
+            >
+              <Label>{t(locale, running ? 'stopAccount' : 'startAccount')}</Label>
             </Dropdown.Item>
             <Dropdown.Item id="rename" textValue={t(locale, 'renameAccount')}>
               <Label>{t(locale, 'renameAccount')}</Label>
@@ -225,69 +247,63 @@ export function Sidebar() {
           <AccountRow key={account.id} account={account} active={tab?.activeAccountId === account.id} />
         ))}
       </div>
-      <div className="flex flex-wrap gap-2 border-t border-hairline p-3">
+      <div className="flex flex-col gap-2 border-t border-hairline p-3">
         <Button
           size="sm"
           variant="secondary"
-          className="flex-1"
+          className="w-full"
           isDisabled={!tab}
           onPress={() => useAppStore.getState().setDialog({ id: 'account-create' })}
         >
           <Plus className="size-4" />
           {t(locale, 'addAccount')}
         </Button>
-        <Button
-          isIconOnly
-          size="sm"
-          aria-label={t(locale, 'startAll')}
-          isDisabled={!tab}
-          onPress={() => {
-            if (!tab) {
-              return
-            }
-            for (const account of accounts) {
-              if (account.status === 'closed') {
-                void dispatch({ type: 'account/setStatus', id: account.id, status: 'running' })
+        <div className="flex justify-center gap-2">
+          <FooterIcon
+            label={t(locale, 'startAll')}
+            disabled={!tab}
+            onPress={() => {
+              if (!tab) {
+                return
               }
-            }
-          }}
-        >
-          <Play className="size-4" />
-        </Button>
-        <Button
-          isIconOnly
-          size="sm"
-          aria-label={t(locale, 'stopTab')}
-          isDisabled={!tab}
-          onPress={() => {
-            if (!tab) {
-              return
-            }
-            void dispatch({ type: 'account/stopTab', tabId: tab.id })
-          }}
-        >
-          <Square className="size-4" />
-        </Button>
-        <Button
-          isIconOnly
-          size="sm"
-          aria-label={t(locale, 'stopFarm')}
-          onPress={() => {
-            void dispatch({ type: 'account/stopFarm' })
-          }}
-        >
-          <CircleStop className="size-4" />
-        </Button>
-        <Button
-          isIconOnly
-          size="sm"
-          aria-label={t(locale, 'restoreLastSet')}
-          onPress={() => {
-            void dispatch({ type: 'account/restoreLastSet' })
-          }}
-        >
-          <RotateCcw className="size-4" />
-        </Button>
+              for (const account of accounts) {
+                if (account.status === 'closed') {
+                  void dispatch({ type: 'account/setStatus', id: account.id, status: 'running' })
+                }
+              }
+            }}
+          >
+            <Play className="size-4" />
+          </FooterIcon>
+          <FooterIcon
+            label={t(locale, 'stopTab')}
+            disabled={!tab}
+            onPress={() => {
+              if (!tab) {
+                return
+              }
+              void dispatch({ type: 'account/stopTab', tabId: tab.id })
+            }}
+          >
+            <Square className="size-4" />
+          </FooterIcon>
+          <FooterIcon
+            label={t(locale, 'stopFarm')}
+            onPress={() => {
+              void dispatch({ type: 'account/stopFarm' })
+            }}
+          >
+            <CircleStop className="size-4" />
+          </FooterIcon>
+          <FooterIcon
+            label={t(locale, 'restoreLastSet')}
+            onPress={() => {
+              void dispatch({ type: 'account/restoreLastSet' })
+            }}
+          >
+            <RotateCcw className="size-4" />
+          </FooterIcon>
+        </div>
       </div>
     </aside>
   )
